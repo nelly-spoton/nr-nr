@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SpotOn Intelligence — April 25, 2026</title>
+<title>SpotOn Intelligence V2 — April 28, 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
@@ -13,302 +13,386 @@
   --th:#FEE2E2;--tht:#991B1B;--tm:#FEF3C7;--tmt:#92400E;--tl:#DCFCE7;--tlt:#166534;
   --blue:#1D3FBE;--blue-l:#EEF2FF;--bg2:#F7F5F0;--white:#FFF;
   --slack:#4A154B;--slack-l:#F4ECF7;
+  --ss-align:#0F766E;--ss-capture:#7C3AED;--ss-demo:#1D4ED8;--ss-trade:#B45309;--ss-handoff:#166534;
+  --ss-align-l:#F0FDFA;--ss-capture-l:#F5F3FF;--ss-demo-l:#EFF6FF;--ss-trade-l:#FFFBEB;--ss-handoff-l:#F0FDF4;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{background:var(--cream);color:var(--ink);font-family:'Poppins',sans-serif;font-size:14px;line-height:1.55;}
 
-/* ── AUTH GATE ── */
-#auth-gate{
-  position:fixed;inset:0;z-index:9999;
-  background:var(--ink);
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;
-  transition:opacity .4s ease;
-}
+/* AUTH GATE */
+#auth-gate{position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .4s ease;}
 #auth-gate.hidden{opacity:0;pointer-events:none;}
-.gate-inner{
-  text-align:center;
-  max-width:400px;
-  padding:48px 40px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:16px;
-}
-.gate-logo{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  margin-bottom:32px;
-}
-.gate-dot{
-  width:36px;height:36px;background:var(--blue);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  color:white;font-size:16px;font-weight:700;flex-shrink:0;
-}
+.gate-inner{text-align:center;max-width:400px;padding:48px 40px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;}
+.gate-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:32px;}
+.gate-dot{width:36px;height:36px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:700;flex-shrink:0;}
 .gate-brand{font-size:20px;font-weight:700;color:white;letter-spacing:-.3px;}
 .gate-brand em{font-style:italic;color:#7B9CFF;}
 .gate-title{font-size:26px;font-weight:800;color:white;margin-bottom:10px;line-height:1.15;}
 .gate-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:36px;line-height:1.6;}
 .gate-sub strong{color:rgba(255,255,255,.75);font-weight:600;}
 #gate-btn-wrap{display:flex;justify-content:center;}
-.gate-error{
-  margin-top:20px;
-  padding:12px 16px;
-  background:rgba(192,57,43,.15);
-  border:1px solid rgba(192,57,43,.4);
-  border-radius:8px;
-  color:#FCA5A5;
-  font-size:12px;
-  display:none;
-}
+.gate-error{margin-top:20px;padding:12px 16px;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);border-radius:8px;color:#FCA5A5;font-size:12px;display:none;}
 .gate-error.show{display:block;}
-.gate-footer{
-  margin-top:28px;
-  font-size:11px;
-  color:rgba(255,255,255,.25);
-  line-height:1.5;
-}
-
-/* ── USER BAR (shown after login) ── */
-#user-bar{
-  display:none;
-  align-items:center;gap:8px;
-  font-size:11px;color:var(--muted);
-}
-#user-bar.show{display:flex;}
-#user-avatar{
-  width:24px;height:24px;border-radius:50%;border:1px solid var(--rule);
-}
-#user-name{font-weight:600;color:var(--ink);}
-#sign-out-btn{
-  font-size:11px;color:var(--muted);background:none;border:none;
-  cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;
-  font-family:'Poppins',sans-serif;
-}
-#sign-out-btn:hover{color:var(--ink);}
+.gate-footer{margin-top:28px;font-size:11px;color:rgba(255,255,255,.25);line-height:1.5;}
 
 /* HEADER */
 .hdr{background:var(--white);border-bottom:2px solid var(--ink);position:sticky;top:0;z-index:100;}
-.hdr-top{display:flex;align-items:center;justify-content:space-between;padding:11px 28px;border-bottom:1px solid var(--rule);}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-bottom:1px solid var(--rule);flex-wrap:wrap;gap:8px;}
 .brand{display:flex;align-items:center;gap:8px;}
 .bdot{width:26px;height:26px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;}
-.bname{font-size:16px;font-weight:700;letter-spacing:-.3px;}
+.bname{font-size:15px;font-weight:700;letter-spacing:-.3px;}
 .bname em{font-style:italic;color:var(--blue);}
-.hmeta{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
-.rpbtn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:var(--blue);color:white;border:none;border-radius:20px;font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;}
-.rpbtn:hover{background:#1535a8;transform:translateY(-1px);}
-.tabs{display:flex;padding:0 28px;}
-.tab{padding:10px 18px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;letter-spacing:.3px;color:var(--muted);border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;text-transform:uppercase;}
+.bver{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:var(--tm);color:var(--tmt);padding:2px 7px;border-radius:20px;margin-left:6px;}
+.hdr-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.hmeta{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+#user-bar{display:none;align-items:center;gap:7px;font-size:11px;color:var(--muted);}
+#user-bar.show{display:flex;}
+#user-avatar{width:22px;height:22px;border-radius:50%;border:1px solid var(--rule);}
+#user-name{font-weight:600;color:var(--ink);font-size:11px;}
+#sign-out-btn{font-size:10px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'Poppins',sans-serif;}
+.rpbtn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:var(--blue);color:white;border:none;border-radius:20px;font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;}
+.rpbtn:hover{background:#1535a8;}
+.tabs{display:flex;padding:0 24px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:9px 16px;font-family:'Poppins',sans-serif;font-size:11px;font-weight:500;letter-spacing:.3px;color:var(--muted);border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
 .tab:hover{color:var(--ink);}
 .tab.on{color:var(--blue);border-bottom-color:var(--blue);}
 .panel{display:none;}.panel.on{display:block;}
 
 /* SHARED */
-.pill{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:20px;}
+.pill{font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;padding:2px 8px;border-radius:20px;}
 .ph{background:var(--th);color:var(--tht);}.pm{background:var(--tm);color:var(--tmt);}.pl{background:var(--tl);color:var(--tlt);}
 .lnk{font-size:11px;color:var(--blue);text-decoration:none;font-weight:500;margin-right:10px;}
 .lnk:hover{text-decoration:underline;}
 .src{font-size:10px;color:var(--muted);}
-#toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:white;padding:10px 18px;border-radius:8px;font-size:12px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;}
-#toast.on{opacity:1;transform:translateY(0);}
+#toast-msg{position:fixed;bottom:20px;right:20px;background:var(--ink);color:white;padding:10px 18px;border-radius:8px;font-size:12px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;}
+#toast-msg.on{opacity:1;transform:translateY(0);}
+
+/* GOVERNANCE BADGES */
+.gov{display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;border:1px solid;}
+.gov-sell{background:#DCFCE7;color:#166534;border-color:#86EFAC;}
+.gov-pmm{background:#FEF3C7;color:#92400E;border-color:#FCD34D;}
+.gov-prod{background:#DBEAFE;color:#1E40AF;border-color:#93C5FD;}
+.gov-mgr{background:#F3E8FF;color:#5B21B6;border-color:#C4B5FD;}
+.gov-int{background:#F1F5F9;color:#475569;border-color:#CBD5E1;}
+.gov-dnu{background:#FEE2E2;color:#991B1B;border-color:#FCA5A5;}
+
+/* SERVICE STANDARDS BADGES */
+.ss-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 9px;border-radius:20px;}
+.ss-align{background:var(--ss-align-l);color:var(--ss-align);}
+.ss-capture{background:var(--ss-capture-l);color:var(--ss-capture);}
+.ss-demo{background:var(--ss-demo-l);color:var(--ss-demo);}
+.ss-trade{background:var(--ss-trade-l);color:var(--ss-trade);}
+.ss-handoff{background:var(--ss-handoff-l);color:var(--ss-handoff);}
+
+/* SERVICE STANDARDS MAP CARD */
+.ss-map{border-radius:8px;overflow:hidden;margin-top:10px;border:1px solid var(--rule);}
+.ss-map-hdr{padding:8px 12px;display:flex;align-items:center;gap:8px;justify-content:space-between;}
+.ss-map-hdr.align-bg{background:var(--ss-align-l);border-bottom:1px solid #99F6E4;}
+.ss-map-hdr.capture-bg{background:var(--ss-capture-l);border-bottom:1px solid #DDD6FE;}
+.ss-map-hdr.demo-bg{background:var(--ss-demo-l);border-bottom:1px solid #BFDBFE;}
+.ss-map-hdr.trade-bg{background:var(--ss-trade-l);border-bottom:1px solid #FDE68A;}
+.ss-map-hdr.handoff-bg{background:var(--ss-handoff-l);border-bottom:1px solid #BBF7D0;}
+.ss-map-title{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.ss-map-body{padding:10px 12px;background:var(--white);display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ss-map-body.single{grid-template-columns:1fr;}
+.ss-field{font-size:11px;line-height:1.45;}
+.ss-field-lbl{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.ss-field-val{color:var(--ink);}
+.ss-field-val em{font-style:italic;color:var(--muted);}
+
+/* SIGNAL CARD */
+.sig-card{background:var(--white);border:1px solid var(--rule);border-radius:9px;margin-bottom:12px;overflow:hidden;border-left:4px solid transparent;}
+.sig-card.h{border-left-color:var(--red);}.sig-card.m{border-left-color:var(--amber);}.sig-card.l{border-left-color:var(--green);}
+.sig-card-top{padding:14px 16px 10px;}
+.sig-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.sig-title{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:5px;}
+.sig-body{font-size:12px;color:#3A3530;line-height:1.6;margin-bottom:8px;}
+.sig-body strong{font-weight:600;color:var(--ink);}
+.sig-action{background:var(--blue-l);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;line-height:1.5;margin-bottom:8px;}
+.sig-action::before{content:"Field action: ";font-weight:700;color:var(--blue);}
+.sig-links{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.sig-src{font-size:10px;color:var(--muted);}
+
+/* TOGGLE DETAILS */
+.sig-toggle{width:100%;text-align:left;background:var(--bg2);border:none;border-top:1px solid var(--rule);padding:8px 16px;font-family:'Poppins',sans-serif;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;letter-spacing:.3px;display:flex;align-items:center;gap:6px;}
+.sig-toggle:hover{background:#EEECE6;}
+.sig-toggle-icon{transition:transform .2s;}
+.sig-toggle.open .sig-toggle-icon{transform:rotate(180deg);}
+.sig-details{display:none;padding:12px 16px;border-top:1px solid var(--rule);background:var(--white);}
+.sig-details.open{display:block;}
 
 /* MARKET PULSE */
-.mp{max-width:1060px;margin:0 auto;padding:28px 20px 60px;}
-.mp-hdr{border-top:4px solid var(--ink);padding-top:20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;}
-.mp-title{font-size:26px;font-weight:800;}
-.mp-title em{font-style:italic;color:var(--blue);}
-.mp-meta{font-size:11px;color:var(--muted);text-align:right;}
-.mp-meta strong{display:block;font-size:13px;color:var(--ink);font-weight:600;}
-.alert{background:#FEF3C7;border:1px solid #F59E0B;border-radius:7px;padding:10px 16px;margin-bottom:20px;font-size:12px;font-weight:500;color:#78350F;}
-.t5g{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:28px;}
-.t5c{background:var(--white);border:1px solid var(--rule);border-radius:9px;padding:15px;border-top:4px solid var(--blue);}
-.t5n{font-size:32px;font-weight:800;color:var(--rule);line-height:1;margin-bottom:6px;}
-.t5t{font-size:12px;line-height:1.45;}
-.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.mp{max-width:1060px;margin:0 auto;padding:24px 18px 60px;}
+.sec-hdr{border-top:4px solid var(--ink);padding-top:18px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;}
+.sec-title{font-size:24px;font-weight:800;}
+.sec-title em{font-style:italic;color:var(--blue);}
+.sec-meta{font-size:10px;color:var(--muted);text-align:right;}
+.sec-meta strong{display:block;font-size:12px;color:var(--ink);font-weight:600;}
+.macro-alert{background:#FEF3C7;border:1px solid #F59E0B;border-radius:7px;padding:10px 16px;margin-bottom:18px;font-size:12px;font-weight:500;color:#78350F;display:flex;align-items:flex-start;gap:8px;}
+.t5g{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin-bottom:24px;}
+.t5c{background:var(--white);border:1px solid var(--rule);border-radius:9px;padding:14px;border-top:4px solid var(--blue);}
+.t5n{font-size:30px;font-weight:800;color:var(--rule);line-height:1;margin-bottom:5px;}
+.t5t{font-size:11.5px;line-height:1.45;}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:700px){.dgrid{grid-template-columns:1fr;}}
 .ds{background:var(--white);border:1px solid var(--rule);border-radius:9px;overflow:hidden;}
-.dsh{padding:11px 16px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:8px;background:var(--bg2);}
-.si{width:28px;height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.dsh{padding:10px 15px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:8px;background:var(--bg2);}
+.si{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
 .ic{background:#FEE2E2;}.ii{background:#FEF3C7;}.ip{background:#DCFCE7;}.il{background:#F3E8FF;}.ig{background:#DBEAFE;}.it{background:#F0FDF4;}.is{background:var(--blue-l);}
-.dst{font-size:14px;font-weight:700;}
-.di{padding:12px 16px;border-bottom:1px solid var(--rule);border-left:3px solid transparent;}
+.dst{font-size:13px;font-weight:700;}
+.di{padding:11px 15px;border-bottom:1px solid var(--rule);border-left:3px solid transparent;}
 .di:last-child{border-bottom:none;}
 .di.h{border-left-color:var(--red);}.di.m{border-left-color:var(--amber);}.di.l{border-left-color:var(--green);}
-.dih{font-size:12px;font-weight:600;margin-bottom:3px;line-height:1.35;}
+.dih{font-size:12px;font-weight:600;margin-bottom:2px;line-height:1.35;}
 .dib{font-size:11px;color:var(--muted);line-height:1.45;margin-bottom:5px;}
-.dif{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.dif{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;}
 .dis{font-size:10px;color:#AAA6A0;}
 .di a{font-size:10px;color:var(--blue);text-decoration:none;}
+.attack-map{background:var(--ink);border-radius:9px;padding:20px 22px;margin-top:18px;}
+.attack-map h3{font-size:16px;font-weight:700;color:white;margin-bottom:14px;}
+.am-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.am-card{background:rgba(255,255,255,.07);border-radius:7px;padding:12px;}
+.am-comp{font-size:11px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:6px;letter-spacing:.3px;}
+.am-row{font-size:11px;color:rgba(255,255,255,.65);line-height:1.45;margin-bottom:4px;}
+.am-row strong{color:rgba(255,255,255,.9);font-weight:600;}
+.am-q{font-size:11px;color:#93C5FD;font-style:italic;margin-top:6px;line-height:1.4;}
+.stack-map{margin-top:18px;}
+.stack-map h3{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--ink);}
 .rtbl{width:100%;border-collapse:collapse;font-size:11px;}
 .rtbl th{background:var(--ink);color:white;padding:7px 11px;text-align:left;font-size:10px;letter-spacing:.4px;font-weight:500;}
 .rtbl td{padding:8px 11px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.4;}
 .rtbl tr:last-child td{border-bottom:none;}
 .rtbl tr:nth-child(even) td{background:var(--bg2);}
-.cc{background:var(--ink);color:white;border-radius:9px;padding:22px 26px;margin-top:20px;}
-.cc h3{font-size:18px;font-weight:700;margin-bottom:12px;}
-.wl{list-style:none;margin-top:10px;}
-.wl li{font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;opacity:.9;align-items:flex-start;line-height:1.45;}
+.cc{background:var(--ink);color:white;border-radius:9px;padding:20px 24px;margin-top:18px;}
+.cc h3{font-size:17px;font-weight:700;margin-bottom:11px;}
+.wl{list-style:none;}
+.wl li{font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;opacity:.9;align-items:flex-start;line-height:1.45;}
 .wl li:last-child{border-bottom:none;}
-.wl li::before{content:'→';opacity:.4;flex-shrink:0;}
-
+.wl li::before{content:"→";opacity:.4;flex-shrink:0;}
+</style>
+<style>
 /* MONDAY BRIEF */
-.bw{max-width:640px;margin:0 auto;padding:40px 20px 60px;}
-.np{border-top:5px solid var(--ink);padding-top:20px;margin-bottom:28px;}
-.np-lbl{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-.np-ttl{font-size:36px;font-weight:800;line-height:1.05;margin-bottom:10px;}
+.bw{max-width:640px;margin:0 auto;padding:36px 18px 60px;}
+.np{border-top:5px solid var(--ink);padding-top:18px;margin-bottom:26px;}
+.np-lbl{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.np-ttl{font-size:34px;font-weight:800;line-height:1.05;margin-bottom:9px;}
 .np-ttl em{font-style:italic;color:var(--blue);}
-.np-dek{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px;}
-.np-meta{display:flex;align-items:center;gap:14px;padding-top:12px;border-top:1px solid var(--rule);flex-wrap:wrap;}
-.np-meta span{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+.np-dek{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:12px;}
+.np-meta{display:flex;align-items:center;gap:12px;padding-top:11px;border-top:1px solid var(--rule);flex-wrap:wrap;}
+.np-meta span{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;}
 .mdot{width:3px;height:3px;border-radius:50%;background:var(--muted);}
-.lede{background:var(--ink);color:white;border-radius:9px;padding:20px 24px;margin-bottom:32px;}
-.lede-ey{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.5;margin-bottom:8px;}
-.lede-tx{font-size:15px;line-height:1.6;opacity:.95;}
-.lede-tx strong{font-weight:700;}
-.story{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--rule);}
+.lede{background:var(--ink);color:white;border-radius:9px;padding:18px 22px;margin-bottom:28px;}
+.lede-ey{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.5;margin-bottom:7px;}
+.lede-tx{font-size:14px;line-height:1.65;opacity:.95;}
+.story{margin-bottom:26px;padding-bottom:26px;border-bottom:1px solid var(--rule);}
 .story:last-of-type{border-bottom:none;}
-.s-ey{display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-wrap:wrap;}
+.s-ey{display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap;}
 .s-topic{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);}
 .s-div{width:3px;height:3px;border-radius:50%;background:var(--rule);}
 .s-heat{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:20px;}
 .sh{background:var(--th);color:var(--tht);}.sm{background:var(--tm);color:var(--tmt);}
-.story h2{font-size:19px;font-weight:800;line-height:1.2;margin-bottom:8px;}
-.byline{font-size:10px;color:var(--muted);margin-bottom:12px;}
-.story p{font-size:13px;line-height:1.7;color:#3A3530;margin-bottom:10px;}
+.story h2{font-size:18px;font-weight:800;line-height:1.2;margin-bottom:7px;}
+.byline{font-size:10px;color:var(--muted);margin-bottom:11px;}
+.story p{font-size:13px;line-height:1.7;color:#3A3530;margin-bottom:9px;}
 .story p strong{font-weight:600;color:var(--ink);}
-.story p em{font-style:italic;}
-.move{background:var(--blue-l);border-left:3px solid var(--blue);border-radius:0 7px 7px 0;padding:10px 14px;font-size:12px;line-height:1.5;margin:12px 0;}
+.move{background:var(--blue-l);border-left:3px solid var(--blue);border-radius:0 7px 7px 0;padding:9px 13px;font-size:12px;line-height:1.5;margin:10px 0;}
 .move::before{content:"The move \2192  ";font-weight:700;color:var(--blue);}
-.fc{background:var(--slack-l);border-left:3px solid var(--slack);border-radius:0 7px 7px 0;padding:10px 14px;font-size:12px;line-height:1.5;margin:10px 0;}
-.fc::before{content:"\1F4E9 Field signal: ";font-weight:700;color:var(--slack);}
-.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0;}
-.ntile{background:var(--white);border:1px solid var(--rule);border-radius:9px;padding:14px 16px;text-align:center;}
-.nbig{font-size:26px;font-weight:800;line-height:1;}
+.disc-q{background:var(--bg2);border-radius:6px;padding:9px 13px;font-size:12px;line-height:1.5;margin:8px 0;}
+.disc-q::before{content:"\1F50D Discovery: ";font-weight:700;color:var(--ink);}
+.talk{background:var(--slack-l);border-left:3px solid var(--slack);border-radius:0 7px 7px 0;padding:9px 13px;font-size:12px;line-height:1.5;margin:8px 0;font-style:italic;}
+.talk::before{content:"\1F4AC Talk track: ";font-weight:700;font-style:normal;color:var(--slack);}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0;}
+.ntile{background:var(--white);border:1px solid var(--rule);border-radius:9px;padding:13px 15px;text-align:center;}
+.nbig{font-size:24px;font-weight:800;line-height:1;}
 .nlbl{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.35;}
-.watch-sec{background:var(--bg2);border-radius:9px;padding:20px 22px;margin:32px 0;}
-.watch-sec h3{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
-.wi{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule);align-items:flex-start;}
+.watch-sec{background:var(--bg2);border-radius:9px;padding:18px 20px;margin:28px 0;}
+.watch-sec h3{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.wi{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--rule);align-items:flex-start;}
 .wi:last-child{border-bottom:none;}
-.wd{font-size:10px;font-weight:700;color:var(--blue);white-space:nowrap;padding-top:2px;min-width:64px;}
+.wd{font-size:10px;font-weight:700;color:var(--blue);white-space:nowrap;padding-top:1px;min-width:60px;}
 .wt{font-size:12px;line-height:1.45;}
 .wt strong{font-weight:600;}
-.b-foot{margin-top:32px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.b-foot{margin-top:28px;padding-top:16px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 .b-foot span{font-size:10px;color:var(--muted);}
 
 /* FIELD INTEL */
-.fw{max-width:760px;margin:0 auto;padding:32px 20px 60px;}
-.fhdr{border-top:4px solid var(--ink);padding-top:22px;margin-bottom:28px;}
-.fey{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.fw{max-width:780px;margin:0 auto;padding:28px 18px 60px;}
+.fhdr{border-top:4px solid var(--ink);padding-top:20px;margin-bottom:24px;}
+.fey{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
 .cbadge{display:inline-flex;align-items:center;gap:4px;background:var(--slack);color:white;font-size:10px;font-weight:600;letter-spacing:.5px;padding:3px 10px;border-radius:20px;}
-.fttl{font-size:26px;font-weight:800;line-height:1.15;margin-bottom:8px;}
+.fttl{font-size:24px;font-weight:800;line-height:1.15;margin-bottom:7px;}
 .fttl em{font-style:italic;color:var(--blue);}
 .fdl{font-size:11px;color:var(--muted);}
 .fdl span{margin-right:10px;}
-.fctx{background:var(--slack-l);border:1px solid #D7BFD9;border-radius:9px;padding:13px 17px;margin-bottom:28px;font-size:12px;line-height:1.55;}
+.fctx{background:var(--slack-l);border:1px solid #D7BFD9;border-radius:9px;padding:12px 16px;margin-bottom:24px;font-size:12px;line-height:1.55;}
 .fctx strong{color:var(--slack);}
-.fsec{margin-bottom:36px;}
-.fch{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--ink);}
-.fcht{font-size:18px;font-weight:700;}
-.sgc{background:var(--white);border:1px solid var(--rule);border-radius:9px;padding:14px 18px;margin-bottom:10px;border-left:4px solid transparent;}
+.fsec{margin-bottom:32px;}
+.fch{display:flex;align-items:center;gap:10px;margin-bottom:13px;padding-bottom:9px;border-bottom:2px solid var(--ink);}
+.fcht{font-size:17px;font-weight:700;}
+.sgc{background:var(--white);border:1px solid var(--rule);border-radius:9px;padding:13px 17px;margin-bottom:10px;border-left:4px solid transparent;}
 .sgc.h{border-left-color:var(--red);}.sgc.m{border-left-color:var(--amber);}.sgc.l{border-left-color:var(--green);}
-.sgm{display:flex;align-items:center;gap:7px;margin-bottom:6px;flex-wrap:wrap;}
+.sgm{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;}
 .vbdg{display:inline-flex;align-items:center;background:var(--tl);color:#166534;font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:20px;}
 .fbdg{display:inline-flex;align-items:center;background:#F3E8FF;color:#5B21B6;font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:20px;}
-.sgh{font-size:14px;font-weight:700;line-height:1.3;margin-bottom:6px;}
+.sgh{font-size:13.5px;font-weight:700;line-height:1.3;margin-bottom:6px;}
 .sgb{font-size:12px;line-height:1.6;color:#3A3530;margin-bottom:7px;}
 .sgb strong{font-weight:600;color:var(--ink);}
 .rq{background:#F3E8FF;border-left:3px solid #7C3AED;border-radius:0 5px 5px 0;padding:8px 11px;font-size:12px;font-style:italic;line-height:1.45;margin-bottom:7px;}
 .rq cite{display:block;margin-top:4px;font-style:normal;font-size:10px;color:var(--muted);font-weight:500;}
-.vb{background:var(--bg2);border-radius:5px;padding:8px 11px;font-size:12px;line-height:1.45;margin-bottom:7px;}
+.vb{background:var(--bg2);border-radius:5px;padding:7px 11px;font-size:12px;line-height:1.45;margin-bottom:7px;}
 .vb::before{content:"\2713 Validated: ";font-weight:700;color:var(--green);}
-.sw{background:var(--blue-l);border-radius:5px;padding:8px 11px;font-size:12px;line-height:1.45;margin-bottom:7px;}
+.sw{background:var(--blue-l);border-radius:5px;padding:7px 11px;font-size:12px;line-height:1.45;margin-bottom:7px;}
 .sw::before{content:"Use in deals: ";font-weight:700;color:var(--blue);}
-.uv{background:#FFFBEB;border:1px solid #FCD34D;border-radius:5px;padding:8px 11px;font-size:11px;line-height:1.45;color:#78350F;margin-bottom:7px;}
+.dns{background:var(--th);border-radius:5px;padding:7px 11px;font-size:12px;line-height:1.45;margin-bottom:7px;}
+.dns::before{content:"\26D4 Do not say: ";font-weight:700;color:var(--red);}
+.uv{background:#FFFBEB;border:1px solid #FCD34D;border-radius:5px;padding:7px 11px;font-size:11px;line-height:1.45;color:#78350F;margin-bottom:7px;}
 .uv::before{content:"\26A0 Not verified: ";font-weight:700;}
 .stbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
-.stbl th{background:var(--ink);color:white;padding:8px 11px;text-align:left;font-size:10px;letter-spacing:.4px;font-weight:500;}
+.stbl th{background:var(--ink);color:white;padding:7px 11px;text-align:left;font-size:10px;letter-spacing:.4px;font-weight:500;}
 .stbl th:first-child{border-radius:5px 0 0 0;}.stbl th:last-child{border-radius:0 5px 0 0;}
 .stbl td{padding:8px 11px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.4;}
 .stbl tr:last-child td{border-bottom:none;}
 .stbl tr:nth-child(even) td{background:var(--bg2);}
-.sclose{background:var(--ink);color:white;border-radius:9px;padding:22px 26px;margin-top:28px;}
-.sclose h3{font-size:17px;font-weight:700;margin-bottom:10px;}
-.al{list-style:none;margin-top:10px;}
-.al li{font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;opacity:.9;align-items:flex-start;line-height:1.45;}
-.al li:last-child{border-bottom:none;}
-.al li::before{content:'\2192';opacity:.4;flex-shrink:0;}
-.sfoot{margin-top:36px;padding-top:14px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-.sfoot span{font-size:10px;color:var(--muted);}
-
-/* KNOWLEDGE GAPS */
-.kg{background:var(--slack-l);border:1px solid #D7BFD9;border-radius:9px;overflow:hidden;margin-top:32px;}
-.kg-hdr{background:var(--slack);padding:12px 17px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.kg{background:var(--slack-l);border:1px solid #D7BFD9;border-radius:9px;overflow:hidden;margin-top:28px;}
+.kg-hdr{background:var(--slack);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .kg-ttl{font-size:13px;font-weight:700;color:white;}
 .kg-sub{font-size:10px;color:rgba(255,255,255,.55);margin-left:auto;}
-.kg-ctx{padding:11px 17px;font-size:12px;color:var(--ink);line-height:1.5;border-bottom:1px solid #D7BFD9;}
-.kg-colhdr{display:grid;grid-template-columns:160px 1fr 140px;background:var(--slack);padding:7px 14px;}
+.kg-ctx{padding:10px 16px;font-size:12px;color:var(--ink);line-height:1.5;border-bottom:1px solid #D7BFD9;}
+.kg-colhdr{display:grid;grid-template-columns:155px 1fr 130px;background:var(--slack);padding:6px 13px;}
 .kg-colhdr div{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.55);}
-.kg-row{display:grid;grid-template-columns:160px 1fr 140px;border-bottom:1px solid #D7BFD9;}
+.kg-row{display:grid;grid-template-columns:155px 1fr 130px;border-bottom:1px solid #D7BFD9;}
 .kg-row:last-child{border-bottom:none;}
-.kg-q{padding:11px 13px;font-size:12px;font-weight:600;color:var(--ink);line-height:1.35;border-right:1px solid #D7BFD9;}
-.kg-a{padding:11px 13px;font-size:12px;color:#3A3530;line-height:1.5;border-right:1px solid #D7BFD9;}
+.kg-q{padding:10px 12px;font-size:12px;font-weight:600;color:var(--ink);line-height:1.35;border-right:1px solid #D7BFD9;}
+.kg-a{padding:10px 12px;font-size:12px;color:#3A3530;line-height:1.5;border-right:1px solid #D7BFD9;}
 .kg-a strong{font-weight:600;color:var(--ink);}
-.kg-s{padding:11px 13px;font-size:11px;color:var(--muted);line-height:1.35;}
+.kg-s{padding:10px 12px;font-size:11px;color:var(--muted);line-height:1.35;}
 .ktag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:20px;margin-bottom:3px;}
 .kt-a{background:var(--tl);color:#166534;}.kt-g{background:var(--th);color:#991B1B;}.kt-p{background:var(--tm);color:#92400E;}
-.kg-foot{padding:10px 17px;font-size:10px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;border-top:1px solid #D7BFD9;}
+.kg-foot{padding:9px 16px;font-size:10px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;border-top:1px solid #D7BFD9;}
+.sclose{background:var(--ink);color:white;border-radius:9px;padding:20px 24px;margin-top:24px;}
+.sclose h3{font-size:16px;font-weight:700;margin-bottom:10px;}
+.al{list-style:none;}
+.al li{font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;opacity:.9;align-items:flex-start;line-height:1.45;}
+.al li:last-child{border-bottom:none;}
+.al li::before{content:"\2192";opacity:.4;flex-shrink:0;}
+.sfoot{margin-top:32px;padding-top:13px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.sfoot span{font-size:10px;color:var(--muted);}
+.dnu-box{background:var(--th);border:1px solid #FCA5A5;border-radius:9px;padding:16px 18px;margin-top:28px;}
+.dnu-box h4{font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px;}
+.dnu-item{font-size:12px;padding:5px 0;border-bottom:1px solid #FCA5A5;display:flex;gap:8px;line-height:1.45;color:#7F1D1D;}
+.dnu-item:last-child{border-bottom:none;}
+.dnu-item::before{content:"\26D4";flex-shrink:0;}
+
+/* BATTLE CARDS */
+.bcw{max-width:860px;margin:0 auto;padding:28px 18px 60px;}
+.bc-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.bc-tab{padding:7px 16px;font-family:"Poppins",sans-serif;font-size:11px;font-weight:600;border:1.5px solid var(--rule);border-radius:20px;background:var(--white);cursor:pointer;transition:all .15s;color:var(--muted);}
+.bc-tab.on{border-color:var(--blue);background:var(--blue-l);color:var(--blue);}
+.bc-panel{display:none;}.bc-panel.on{display:block;}
+.bc-hdr{background:var(--ink);border-radius:9px 9px 0 0;padding:20px 22px;margin-bottom:0;}
+.bc-comp{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:5px;}
+.bc-name{font-size:24px;font-weight:800;color:white;margin-bottom:5px;}
+.bc-sub{font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;}
+.bc-body{background:var(--white);border:1px solid var(--rule);border-radius:0 0 9px 9px;overflow:hidden;margin-bottom:16px;}
+.bc-sec{padding:16px 20px;border-bottom:1px solid var(--rule);}
+.bc-sec:last-child{border-bottom:none;}
+.bc-sec-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.bc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:600px){.bc-grid{grid-template-columns:1fr;}}
+.bc-item{background:var(--bg2);border-radius:7px;padding:11px 13px;}
+.bc-item-lbl{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.bc-item-val{font-size:12px;line-height:1.5;color:var(--ink);}
+.bc-win{background:var(--tl);border-radius:7px;padding:11px 13px;}
+.bc-win .bc-item-lbl{color:#166534;}
+.bc-lose{background:var(--th);border-radius:7px;padding:11px 13px;}
+.bc-lose .bc-item-lbl{color:var(--red);}
+.bc-qa{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--rule);}
+.bc-qa:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.bc-q{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.bc-a{font-size:12px;color:#3A3530;line-height:1.5;}
+.bc-a em{font-style:italic;}
+.esc-box{background:var(--tm);border-radius:7px;padding:11px 13px;}
+.esc-box .bc-item-lbl{color:var(--tmt);}
+.gov-bar{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
+
+/* MANAGER HUDDLE */
+.mhw{max-width:760px;margin:0 auto;padding:28px 18px 60px;}
+.mh-week{background:var(--blue);color:white;border-radius:9px;padding:16px 20px;margin-bottom:20px;}
+.mh-week-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin-bottom:5px;}
+.mh-week-theme{font-size:20px;font-weight:800;line-height:1.2;}
+.mh-week-sub{font-size:12px;opacity:.75;margin-top:4px;line-height:1.4;}
+.hc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+@media(max-width:600px){.hc-grid{grid-template-columns:1fr;}}
+.hc{background:var(--white);border:1px solid var(--rule);border-radius:9px;padding:14px 16px;overflow:hidden;}
+.hc-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.hc-val{font-size:12.5px;line-height:1.55;color:var(--ink);}
+.hc-val strong{font-weight:600;}
+.hc-val em{font-style:italic;color:var(--muted);}
+.hc-full{grid-column:span 2;}
+@media(max-width:600px){.hc-full{grid-column:span 1;}}
+.role-play{background:var(--ink);color:white;border-radius:9px;padding:16px 20px;margin-bottom:14px;}
+.role-play h4{font-size:13px;font-weight:700;margin-bottom:10px;}
+.rp-row{display:flex;gap:10px;margin-bottom:8px;font-size:12px;line-height:1.45;}
+.rp-lbl{font-weight:700;color:rgba(255,255,255,.5);white-space:nowrap;min-width:70px;font-size:10px;padding-top:1px;}
+.rp-val{color:rgba(255,255,255,.9);}
+.inspect-box{background:var(--blue-l);border:1px solid #BFDBFE;border-radius:9px;padding:14px 16px;margin-bottom:14px;}
+.inspect-box h4{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--blue);margin-bottom:10px;}
+.inspect-row{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #BFDBFE;font-size:12px;}
+.inspect-row:last-child{border-bottom:none;}
+.inspect-lbl{font-weight:600;color:var(--blue);min-width:90px;font-size:10px;padding-top:1px;text-transform:uppercase;letter-spacing:.3px;}
+
+/* METRICS */
+.metrics-banner{background:var(--bg2);border:1px solid var(--rule);border-radius:9px;padding:14px 18px;margin-top:18px;}
+.metrics-banner h4{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.met-tile{background:var(--white);border:1px solid var(--rule);border-radius:7px;padding:10px 12px;text-align:center;}
+.met-val{font-size:22px;font-weight:800;line-height:1;}
+.met-lbl{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.3;}
+.met-placeholder{opacity:.4;font-style:italic;}
+
+/* ALPHA BANNER */
+.alpha-bar{background:var(--tm);padding:6px 18px;font-size:11px;font-weight:600;color:var(--tmt);display:flex;align-items:center;gap:8px;}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════ -->
-<!-- AUTH GATE                              -->
-<!-- ══════════════════════════════════════ -->
+<!-- AUTH GATE -->
 <div id="auth-gate">
   <div class="gate-inner">
-    <div class="gate-logo">
-      <div class="gate-dot">S</div>
-      <div class="gate-brand">SpotOn <em>Intelligence</em></div>
-    </div>
+    <div class="gate-logo"><div class="gate-dot">S</div><div class="gate-brand">SpotOn <em>Intelligence</em></div></div>
     <div class="gate-title">Sign in to continue</div>
-    <div class="gate-sub">This dashboard is restricted to<br><strong>@spoton.com</strong> accounts only.</div>
+    <div class="gate-sub">Restricted to <strong>@spoton.com</strong> accounts only.</div>
     <div id="gate-btn-wrap">
-      <!-- Google Sign-In button rendered here -->
-      <div id="g_id_onload"
-        data-client_id="292638130317-02qvn3esrobq08shbdc48b2pr5chm05g.apps.googleusercontent.com"
-        data-callback="handleCredentialResponse"
-        data-auto_prompt="false">
-      </div>
-      <div class="g_id_signin"
-        data-type="standard"
-        data-size="large"
-        data-theme="outline"
-        data-text="sign_in_with"
-        data-shape="rectangular"
-        data-logo_alignment="left">
-      </div>
+      <div id="g_id_onload" data-client_id="292638130317-02qvn3esrobq08shbdc48b2pr5chm05g.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+      <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"></div>
     </div>
-    <div id="gate-error" class="gate-error">
-      &#9888; Access restricted to @spoton.com accounts.<br>Please sign in with your SpotOn Google account.
-    </div>
-    <div class="gate-footer">SpotOn Hospitality Market Intelligence<br>Internal use only · April 2026</div>
+    <div id="gate-error" class="gate-error">&#9888; Access restricted to @spoton.com accounts only.</div>
+    <div class="gate-footer">SpotOn Hospitality Market Intelligence · Internal only · April 2026</div>
   </div>
 </div>
 
-<div id="toast"></div>
-
-<!-- ══════════════════════════════════════ -->
-<!-- DASHBOARD (hidden until auth)         -->
-<!-- ══════════════════════════════════════ -->
 <div id="dashboard" style="display:none;">
+
+<!-- ALPHA BANNER -->
+<div class="alpha-bar">&#9888; Alpha · Internal use only · Content requires PMM, Product, and Sales Leadership review before field distribution</div>
+
+<div id="toast-msg"></div>
 
 <header class="hdr">
   <div class="hdr-top">
-    <div class="brand"><div class="bdot">S</div><div class="bname">SpotOn <em>Intelligence</em></div></div>
-    <div style="display:flex;align-items:center;gap:16px;">
+    <div class="brand">
+      <div class="bdot">S</div>
+      <div class="bname">SpotOn <em>Intelligence</em></div>
+      <span class="bver">V2 Alpha</span>
+    </div>
+    <div class="hdr-right">
       <div id="user-bar">
         <img id="user-avatar" src="" alt="">
         <span id="user-name"></span>
         <button id="sign-out-btn" onclick="signOut()">Sign out</button>
       </div>
-      <div class="hmeta">Hospitality Market Intelligence &middot; April 25, 2026</div>
+      <div class="hmeta">Hospitality · Week of April 28, 2026</div>
       <button class="rpbtn" onclick="runPulse()">&#9654; Run the Pulse</button>
     </div>
   </div>
@@ -316,362 +400,813 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Poppins',sans-se
     <button class="tab on" onclick="show('mp',this)">&#128202; Market Pulse</button>
     <button class="tab" onclick="show('brief',this)">&#9749; Monday Brief</button>
     <button class="tab" onclick="show('fi',this)">&#128233; Field Intel</button>
+    <button class="tab" onclick="show('bc',this)">&#9876;&#65039; Battle Cards</button>
+    <button class="tab" onclick="show('mh',this)">&#128101; Manager Huddle</button>
   </div>
 </header>
 
-<!-- MARKET PULSE -->
+<!-- ═══════ MARKET PULSE ═══════ -->
 <div id="p-mp" class="panel on">
 <div class="mp">
-  <div class="mp-hdr">
-    <div><div class="mp-title">Market <em>Pulse</em></div><div style="font-size:11px;color:var(--muted);margin-top:3px;">April 25, 2026 &middot; Sales</div></div>
-    <div class="mp-meta"><strong>Most Recent Updates</strong>As of April 25, 2026</div>
+  <div class="sec-hdr">
+    <div><div class="sec-title">Market <em>Pulse</em></div><div style="font-size:10px;color:var(--muted);margin-top:2px;">April 28, 2026 · Hospitality Sales Intelligence</div></div>
+    <div class="sec-meta"><strong>Coverage: April 21–27, 2026</strong>Next run: May 5, 2026</div>
   </div>
-  <div class="alert">&#9888;&#65039; <strong>Macro alert:</strong> Iran war &rarr; gas $4+/gal &rarr; OECD inflation raised to 4.2%. Technomic moved to scenario-based forecast at RLC. 50% of Texas operators failed to profit in 2025.</div>
-  <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:11px;">&#9889; Top 5 This Week</div>
+  <div class="macro-alert">&#9888;&#65039; <div><strong>Macro alert:</strong> Iran war → gas $4+/gal → OECD inflation 4.2%. Technomic scenario-based model at RLC. 50% Texas operators unprofitable in 2025. Toast Q1 earnings: May 7. Conference Board Confidence: Apr 28.</div></div>
+
+  <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px;">&#9889; Top 5 This Week</div>
   <div class="t5g">
-    <div class="t5c"><div class="t5n">01</div><div class="t5t"><strong>Toast "Built for Busy"</strong> — Apr 16 national brand repositioning + NYC OOH. Toast IQ as "right hand." Competing for emotional loyalty now, not product specs.</div></div>
-    <div class="t5c"><div class="t5n">02</div><div class="t5t"><strong>OpenTable rebellion live</strong> — LRA (1,400 members) explicitly connected reservation mandate to POS lock-in. WA AG antitrust review confirmed active.</div></div>
-    <div class="t5c"><div class="t5n">03</div><div class="t5t"><strong>PAR + Square launched AI agents</strong> (Apr 10). PAR CEO: contractual ROI guarantees win 2026. Every vendor now has to answer why they won't.</div></div>
-    <div class="t5c"><div class="t5n">04</div><div class="t5t"><strong>Toast confirmed strong:</strong> 24% growth, $608M FCF, $2B cash, 30K new locations. Buy rating. Retire the instability narrative permanently.</div></div>
-    <div class="t5c"><div class="t5n">05</div><div class="t5t"><strong>DoorDash shuttered Zesty</strong> (Apr 17), folded AI discovery into core app. 200+ NYC restaurants bookable. Full-stack convergence confirmed.</div></div>
+    <div class="t5c"><div class="t5n">01</div><div class="t5t"><strong>Toast "Built for Busy"</strong> — National brand repositioning Apr 16. Identity-based selling. Emotional loyalty play. Q1 earnings May 7.</div></div>
+    <div class="t5c"><div class="t5n">02</div><div class="t5t"><strong>OpenTable rebellion live</strong> — LRA POS lock-in quote confirmed. WA AG antitrust review active. 1,400-member association on record.</div></div>
+    <div class="t5c"><div class="t5n">03</div><div class="t5t"><strong>PAR + Square AI agents live</strong> — PAR Intelligence + Square Managerbot launched Apr 10. Contractual ROI language from PAR CEO changes the proof bar.</div></div>
+    <div class="t5c"><div class="t5n">04</div><div class="t5t"><strong>Toast confirmed strong:</strong> 24% growth, $2B cash, Buy rating. 30K new locations. Retire the instability narrative permanently.</div></div>
+    <div class="t5c"><div class="t5n">05</div><div class="t5t"><strong>Shift4 fee stack documented:</strong> RAF $325/device + Annual $99/device = ~$1,299/yr before processing. Use in every SkyTab TCO conversation.</div></div>
   </div>
+
   <div class="dgrid">
-    <div class="ds"><div class="dsh"><div class="si ic">&#127942;</div><div class="dst">Competitor Insights</div></div>
-      <div class="di h"><div class="dih">Toast "Built for Busy" — National Brand Repositioning</div><div class="dib">Arnold agency, NYC OOH, Toast IQ as "right hand." 164K+ businesses. Identity-based selling now, not feature-based.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">Business Wire · Apr 16</span> &nbsp;<a href="https://pos.toasttab.com/news/toast-built-for-busy-nyc-windows-to-success" target="_blank">&#8599;</a></div></div></div>
-      <div class="di h"><div class="dih">Toast: 24% Revenue Growth, $2B Cash — Buy Rating</div><div class="dib">Seeking Alpha Apr 23: strong POS+payments+payroll fundamentals. Ike's (100 locations), Teriyaki Madness (200+). Q1 earnings est. May 7.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">Seeking Alpha · Apr 23</span> &nbsp;<a href="https://seekingalpha.com/article/4893290-toast-stock-more-than-just-a-pos" target="_blank">&#8599;</a></div></div></div>
-      <div class="di h"><div class="dih">OpenTable Rebellion — LRA Flags POS Lock-In, WA AG Active</div><div class="dib">"Annual contracts could lock operators into specific POS systems." KYU moving to DoorDash exclusively in Miami. No enforcement yet.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">Restaurant Dive · Apr 21</span> &nbsp;<a href="https://www.restaurantdive.com/news/restaurants-respond-opentable-client-agreement-updates-concerns/817594/" target="_blank">&#8599;</a></div></div></div>
-      <div class="di m"><div class="dih">DoorDash Shuts Zesty — AI Discovery Into Core App</div><div class="dib">Discovery + reservations + transactions converging. 200+ NYC restaurants bookable with exclusive inventory. Full-stack ambition real.</div><div class="dif"><span class="pill pm">Medium</span><div><span class="dis">Restaurant Tech News · Apr 17</span> &nbsp;<a href="https://restauranttechnologynews.com/2026/04/doordash-shuts-down-zesty-and-brings-restaurant-ai-discovery-into-core-app/" target="_blank">&#8599;</a></div></div></div>
-      <div class="di m"><div class="dih">Shift4 Leadership Shakeup — BMO Market Perform</div><div class="dib">New President International eff. Apr 1. BMO flags softer SMB same-store sales + Global Blue synergy risk pushed to 2027.</div><div class="dif"><span class="pill pm">Medium</span><div><span class="dis">BMO · Apr 2026</span></div></div></div>
+    <div class="ds"><div class="dsh"><div class="si ic">&#127942;</div><div class="dst">Competitor Signals</div></div>
+      <div class="di h">
+        <div class="dih">Toast "Built for Busy" — National Brand Repositioning</div>
+        <div class="dib">Arnold agency, NYC OOH, Toast IQ as "right hand." Competing for emotional loyalty — not product specs. Q1 earnings May 7.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill ph">High</span><span class="gov gov-sell">Seller Ready</span></div><div><span class="dis">Business Wire · Apr 16</span>&nbsp;<a href="https://pos.toasttab.com/news/toast-built-for-busy-nyc-windows-to-success" target="_blank">&#8599;</a></div></div>
+        <div class="sig-action">Counter emotionally, not with feature lists. Get SpotOn hospitality operator stories into your pipeline before May 7 earnings reset the narrative.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-capture">&#128269; Capture — probe for emotional attachment drivers</span></div>
+      </div>
+      <div class="di h">
+        <div class="dih">OpenTable — LRA Flags POS Lock-In, WA AG Active</div>
+        <div class="dib">LRA CEO: "annual contracts could lock operators into specific POS systems." KYU moving to DoorDash in Miami. No enforcement yet — but statement is on record.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill ph">High</span><span class="gov gov-sell">Seller Ready</span></div><div><span class="dis">Restaurant Dive · Apr 21</span>&nbsp;<a href="https://www.restaurantdive.com/news/restaurants-respond-opentable-client-agreement-updates-concerns/817594/" target="_blank">&#8599;</a></div></div>
+        <div class="sig-action">Use LRA quote verbatim in FSR and multi-concept deals. Let the operator make the POS lock-in connection — don't force it.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-align">&#128073; Align — trigger event for walk-in outreach</span></div>
+      </div>
+      <div class="di m">
+        <div class="dih">Shift4 Three-Layer Fee Stack — ~$1,299/Year Before Processing</div>
+        <div class="dib">RAF $325/device + Annual Program $99/device + Month-End 0.05%. Fully documented. Third fee added Mar 2026.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill pm">Medium</span><span class="gov gov-sell">Seller Ready</span></div><div><span class="dis">Merchant Cost Consulting · Apr 2026</span>&nbsp;<a href="https://merchantcostconsulting.com/lower-credit-card-processing-fees/shift4-rate-increases-fees-updates/" target="_blank">&#8599;</a></div></div>
+        <div class="sig-action">Build a SkyTab TCO comparison for every competitive deal. Put ~$1,299/year in writing — the number does the work.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-demo">&#128196; Demo — show TCO contrast in proposal</span></div>
+      </div>
     </div>
-    <div class="ds"><div class="dsh"><div class="si ii">&#127869;&#65039;</div><div class="dst">Industry Trends</div></div>
-      <div class="di h"><div class="dih">Technomic Downgrades 2026 — Scenario-Based Model</div><div class="dib">Iran war + gas $4/gal + OECD 4.2% triggered rare forecast downgrade. Nominal growth: 4.3% LSR / 2.1% FSR. Traffic flat March.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">NRN · Apr 21</span> &nbsp;<a href="https://www.nrn.com/restaurant-insights/the-trends-shaping-restaurants-in-2026" target="_blank">&#8599;</a></div></div></div>
-      <div class="di h"><div class="dih">50% of Texas Operators Failed to Profit in 2025</div><div class="dib">Food costs +35% since pandemic. Swipe fees now third-largest cost. TRA: processors commonly earn more from a tab than the restaurant.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">Houston Public Media · Apr 9-10</span> &nbsp;<a href="https://www.houstonpublicmedia.org/articles/news/business/2026/04/09/548641/rising-costs-for-food-labor-credit-card-swipe-fees-threaten-texas-restaurants/" target="_blank">&#8599;</a></div></div></div>
-      <div class="di m"><div class="dih">Service-Quality Brands Grew 8x Faster in 2025</div><div class="dib">Technomic at RLC: digital ordering satisfaction only 50% vs 54% in-person. Chili's + Wendy's outpaced market by investing in operations.</div><div class="dif"><span class="pill pm">Medium</span><div><span class="dis">Technomic · Apr 21</span> &nbsp;<a href="https://www.nrn.com/restaurant-insights/the-trends-shaping-restaurants-in-2026" target="_blank">&#8599;</a></div></div></div>
+
+    <div class="ds"><div class="dsh"><div class="si ii">&#127869;&#65039;</div><div class="dst">Industry Signals</div></div>
+      <div class="di h">
+        <div class="dih">Technomic Downgrades 2026 — Scenario-Based Model</div>
+        <div class="dib">Iran war + gas $4/gal + OECD 4.2% = rare forecast downgrade. Nominal growth: 4.3% LSR / 2.1% FSR. Traffic flat March. Service-quality brands grew 8x faster.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill ph">High</span><span class="gov gov-sell">Seller Ready</span></div><div><span class="dis">NRN · Apr 21</span>&nbsp;<a href="https://www.nrn.com/restaurant-insights/the-trends-shaping-restaurants-in-2026" target="_blank">&#8599;</a></div></div>
+        <div class="sig-action">Lead with margin defense and cost protection — not growth. Operators are in short-horizon mode. Pair with Shift4 fee stack for maximum impact.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-capture">&#128269; Capture — expose cost of inaction</span></div>
+      </div>
+      <div class="di h">
+        <div class="dih">50% of Texas Operators Failed to Profit in 2025</div>
+        <div class="dib">Food costs +35% since pandemic. Swipe fees now third-largest cost category. TRA: processors commonly earn more from a tab than the restaurant.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill ph">High</span><span class="gov gov-sell">Seller Ready</span></div><div><span class="dis">Houston Public Media · Apr 9</span>&nbsp;<a href="https://www.houstonpublicmedia.org/articles/news/business/2026/04/09/548641/rising-costs-for-food-labor-credit-card-swipe-fees-threaten-texas-restaurants/" target="_blank">&#8599;</a></div></div>
+        <div class="sig-action">Use Texas data to open urgency in Payments conversations. Pair with interchange-plus positioning vs. SkyTab's opaque pricing.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-capture">&#128269; Capture — urgency: delay cost</span></div>
+      </div>
     </div>
-    <div class="ds"><div class="dsh"><div class="si ip">&#128179;</div><div class="dst">Payments</div></div>
-      <div class="di h"><div class="dih">OECD 4.2% Inflation — Every Menu Hike Also Raises Swipe Fees</div><div class="dib">Percentage-based card fees compound on every price increase. CCCA reintroduced Jan 2026, NRA-endorsed, still active.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">Restaurant Business · Apr 21</span> &nbsp;<a href="https://www.restaurantbusinessonline.com/operations/6-forces-shaping-restaurant-industry-right-now" target="_blank">&#8599;</a></div></div></div>
-      <div class="di m"><div class="dih">Shift4 Three-Layer Fee Stack — ~$1,299/Year Before Processing</div><div class="dib">RAF $325/device + Annual Program $99/device + Month-End 0.05% (Mar 2026). Fully documented. Use in every SkyTab TCO comparison.</div><div class="dif"><span class="pill pm">Medium</span><div><span class="dis">Merchant Cost Consulting · Apr 2026</span> &nbsp;<a href="https://merchantcostconsulting.com/lower-credit-card-processing-fees/shift4-rate-increases-fees-updates/" target="_blank">&#8599;</a></div></div></div>
+
+    <div class="ds"><div class="dsh"><div class="si it">&#129302;</div><div class="dst">Tech &amp; AI Signals</div></div>
+      <div class="di h">
+        <div class="dih">PAR CEO: "Contractual ROI Guarantees" Define Who Wins 2026</div>
+        <div class="dib">65% confidence one platform makes contractual performance commitments and wins because of it. Every vendor now must answer why they won't.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill ph">High</span><span class="gov gov-pmm">Needs PMM Review</span></div><div><span class="dis">QSR Magazine · Apr 22</span>&nbsp;<a href="https://www.qsrmagazine.com/story/5-bold-measurable-predictions-for-restaurant-tech/" target="_blank">&#8599;</a></div></div>
+        <div class="sig-action">Proof Assist is SpotOn's documented outcome story (4.3% avg cost savings). Use it. Begin building outcome-based language before Q3 prospect demand catches you off guard.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-trade">&#129309; Trade — anchor to documented outcomes</span></div>
+      </div>
+      <div class="di m">
+        <div class="dih">Square Managerbot + PAR Intelligence Live — Multi-Vendor AI Race</div>
+        <div class="dib">Both launched Apr 10. Toast + Thanx already in market. SpotOn's answer: Profit Assist — AI P&L analysis, 4.3% avg cost savings, live today.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill pm">Medium</span><span class="gov gov-sell">Seller Ready</span></div><div><span class="dis">NRN · Apr 10</span>&nbsp;<a href="https://www.nrn.com/restaurant-technology/the-hot-new-restaurant-tech-trend-ai-agents" target="_blank">&#8599;</a></div></div>
+        <div class="sig-action">Name Profit Assist explicitly in AI conversations. "While competitors are launching AI agents, SpotOn's Profit Assist is delivering 4.3% avg cost savings today." Talk tracks in Confluence.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-demo">&#128196; Demo — show Profit Assist as the counter</span></div>
+      </div>
     </div>
-    <div class="ds"><div class="dsh"><div class="si il">&#128119;</div><div class="dst">Labor &amp; Workforce</div></div>
-      <div class="di h"><div class="dih">GLP-1 + Cannabis + Labor Shrinkage — Three Structural Hits to Bar/Nightlife</div><div class="dib">1 in 8 adults on GLP-1 (reduces alcohol demand). 57% replace alcohol with cannabis monthly. Structural pool shrinkage confirmed.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">Technomic · Apr 21</span> &nbsp;<a href="https://www.nrn.com/restaurant-insights/the-trends-shaping-restaurants-in-2026" target="_blank">&#8599;</a></div></div></div>
-      <div class="di m"><div class="dih">AI Agents Now Table Stakes — PAR + Square Launched Apr 10</div><div class="dib">PAR Intelligence + Square Managerbot both live. Toast + Thanx already in market. SpotOn counter: Profit Assist — 4.3% avg cost savings.</div><div class="dif"><span class="pill pm">Medium</span><div><span class="dis">NRN · Apr 10</span> &nbsp;<a href="https://www.nrn.com/restaurant-technology/the-hot-new-restaurant-tech-trend-ai-agents" target="_blank">&#8599;</a></div></div></div>
-    </div>
-    <div class="ds"><div class="dsh"><div class="si ig">&#127903;&#65039;</div><div class="dst">Guest Experience</div></div>
-      <div class="di h"><div class="dih">OpenTable — LRA Connects Mandate Directly to POS Lock-In</div><div class="dib">LRA CEO Lilly Rocha: annual contracts "could lock in restaurants to certain contracts and products, like point-of-sales systems." WA AG review active.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">Restaurant Dive · Apr 21</span> &nbsp;<a href="https://www.restaurantdive.com/news/restaurants-respond-opentable-client-agreement-updates-concerns/817594/" target="_blank">&#8599;</a></div></div></div>
-      <div class="di m"><div class="dih">DoorDash: 200+ NYC Restaurants Bookable with Exclusive Inventory</div><div class="dib">Zesty shutdown embeds AI discovery into transaction layer. First-party guest data becoming a structural DoorDash advantage.</div><div class="dif"><span class="pill pm">Medium</span><div><span class="dis">Restaurant Tech News · Apr 2026</span> &nbsp;<a href="https://restauranttechnologynews.com/2026/04/doordash-shuts-down-zesty-and-brings-restaurant-ai-discovery-into-core-app/" target="_blank">&#8599;</a></div></div></div>
-    </div>
-    <div class="ds"><div class="dsh"><div class="si it">&#129302;</div><div class="dst">Technology &amp; AI</div></div>
-      <div class="di h"><div class="dih">PAR CEO: "Contractual ROI Guarantees" Define Who Wins 2026</div><div class="dib">QSR Mag Apr 22: 65% confidence one platform makes contractual performance commitments and wins because of it. Every vendor must answer.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">QSR Magazine · Apr 22</span> &nbsp;<a href="https://www.qsrmagazine.com/story/5-bold-measurable-predictions-for-restaurant-tech/" target="_blank">&#8599;</a></div></div></div>
-      <div class="di h"><div class="dih">Toast Drive-Thru — Launched Apr 14, Unproven at Scale</div><div class="dib">Hardware + AI voice (Incept AI) + SoS reporting. 15+ location minimum. First drive-thru product from Toast. No reliability track record yet.</div><div class="dif"><span class="pill ph">High</span><div><span class="dis">Restaurant Business · Apr 14</span> &nbsp;<a href="https://www.nrn.com/restaurant-technology/toast-launches-an-all-in-one-drive-thru-system" target="_blank">&#8599;</a></div></div></div>
-      <div class="di m"><div class="dih">AI Agents Multi-Vendor — SpotOn's Answer Is Profit Assist</div><div class="dib">Toast, PAR, Square, Thanx all have named products. SpotOn's answer: Profit Assist — AI P&L analysis, 4.3% avg cost savings, live today.</div><div class="dif"><span class="pill pm">Medium</span><div><span class="dis">NRN · Apr 10</span> &nbsp;<a href="https://www.nrn.com/restaurant-technology/the-hot-new-restaurant-tech-trend-ai-agents" target="_blank">&#8599;</a></div></div></div>
+
+    <div class="ds"><div class="dsh"><div class="si ip">&#128179;</div><div class="dst">Payments &amp; Labor</div></div>
+      <div class="di h">
+        <div class="dih">OECD 4.2% Inflation — Every Menu Price Hike Raises Swipe Fees</div>
+        <div class="dib">Percentage-based processing fees compound on every price increase. CCCA reintroduced Jan 2026, NRA-endorsed. Structural payment cost pressure ongoing.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill ph">High</span><span class="gov gov-sell">Seller Ready</span></div><div><span class="dis">Restaurant Business · Apr 21</span>&nbsp;<a href="https://www.restaurantbusinessonline.com/operations/6-forces-shaping-restaurant-industry-right-now" target="_blank">&#8599;</a></div></div>
+        <div class="sig-action">Lead Payments conversations with inflation math: every $1 menu increase adds to card fee exposure. Position SpotOn's interchange-plus transparency as the structural answer.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-capture">&#128269; Capture — tie to impact</span></div>
+      </div>
+      <div class="di m">
+        <div class="dih">GLP-1 + Cannabis + Labor Shrinkage — Three Structural Hits to Bar/Nightlife</div>
+        <div class="dib">1 in 8 adults on GLP-1 (reduces alcohol demand). 57% replace alcohol with cannabis monthly. Structural labor pool shrinkage across hospitality.</div>
+        <div class="dif"><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="pill pm">Medium</span><span class="gov gov-sell">Seller Ready</span></div><div><span class="dis">Technomic · Apr 21</span></div></div>
+        <div class="sig-action">For bar/nightlife accounts: frame SpotOn's labor tools (scheduling, reporting, Profit Assist) as structural protection against a shrinking revenue and labor environment.</div>
+        <div style="margin-top:6px;"><span class="ss-badge ss-capture">&#128269; Capture — probe labor workflow pain</span></div>
+      </div>
     </div>
   </div>
-  <div style="margin-top:18px;">
+
+  <!-- COMPETITOR ATTACK MAP -->
+  <div class="attack-map">
+    <h3>&#128481;&#65039; Competitor Attack Map — What They're Saying This Week</h3>
+    <div class="am-grid">
+      <div class="am-card">
+        <div class="am-comp">&#127859; Toast</div>
+        <div class="am-row"><strong>Attack:</strong> "164K restaurants can't be wrong. We're the industry standard."</div>
+        <div class="am-row"><strong>Why it lands:</strong> Social proof + brand recognition. "Built for Busy" makes operators feel seen.</div>
+        <div class="am-row"><strong>SpotOn counter:</strong> Toast's QSR enterprise push leaves FSR, bars, and nightlife gaps SpotOn is built for. Ask what "industry standard" is actually doing for their specific operation.</div>
+        <div class="am-q">"What's the hardest thing about running your operation that Toast hasn't solved for you yet?"</div>
+      </div>
+      <div class="am-card">
+        <div class="am-comp">&#128179; Shift4 / SkyTab</div>
+        <div class="am-row"><strong>Attack:</strong> "SimpleChange pricing — one flat rate, no surprises."</div>
+        <div class="am-row"><strong>Why it lands:</strong> Operators want pricing clarity. Flat-rate messaging sounds transparent.</div>
+        <div class="am-row"><strong>SpotOn counter:</strong> SimpleChange bundles margin inside the rate. The RAF + Annual + Month-End fees ($1,299/yr) are separate. Interchange-plus with SpotOn shows actual cost.</div>
+        <div class="am-q">"Can you pull a recent statement? I want to show you exactly what you're paying in fees versus what the card actually costs."</div>
+      </div>
+      <div class="am-card">
+        <div class="am-comp">&#9642;&#65038; Square</div>
+        <div class="am-row"><strong>Attack:</strong> "Now with Managerbot AI — we're the complete restaurant OS."</div>
+        <div class="am-row"><strong>Why it lands:</strong> AI is a hot category. Sysco partnership gives Square field reach it didn't have before.</div>
+        <div class="am-row"><strong>SpotOn counter:</strong> Square's FSR product still has coursing, check management, and table map gaps. Managerbot is new — unproven at FSR scale. Profit Assist has documented outcomes today.</div>
+        <div class="am-q">"When you think about what AI should actually do for your operation — reduce costs, catch problems, save labor — what specific outcome matters most to you?"</div>
+      </div>
+      <div class="am-card">
+        <div class="am-comp">&#127808; Clover</div>
+        <div class="am-row"><strong>Attack:</strong> "Already installed. Familiar. Why switch?"</div>
+        <div class="am-row"><strong>Why it lands:</strong> Switching cost is real. Operators default to status quo unless disruption is clearly worth it.</div>
+        <div class="am-row"><strong>SpotOn counter:</strong> Clover's app marketplace model stacks fees on every add-on. EOL notices are shifting the switching cost calculation. New legal entity = contract null.</div>
+        <div class="am-q">"If you add up your Clover monthly fee, online ordering app, loyalty app, and reservations — what does that total come to each month?"</div>
+      </div>
+      <div class="am-card">
+        <div class="am-comp">&#128278; OpenTable</div>
+        <div class="am-row"><strong>Attack:</strong> "We're the network. Every restaurant needs to be here."</div>
+        <div class="am-row"><strong>Why it lands:</strong> Network effects are real. Operators fear missing covers if they leave.</div>
+        <div class="am-row"><strong>SpotOn counter:</strong> LRA and WA AG have put the lock-in argument on record. Platform dependency on guest data is the strategic risk SpotOn's first-party tools solve.</div>
+        <div class="am-q">"If OpenTable required you to use a specific POS as part of their new annual agreement, how would that affect your current setup?"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPOTON TECH STACK POSITIONING MAP -->
+  <div class="stack-map">
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:10px;margin-top:20px;">&#127919; SpotOn Tech Stack Positioning Map</h3>
     <div class="ds">
-      <div class="dsh" style="background:var(--blue-l);"><div class="si is">&#127919;</div><div class="dst" style="color:var(--blue);">SpotOn Relevance — Action for Reps</div></div>
       <table class="rtbl">
-        <thead><tr><th>Signal</th><th>Relevance</th><th>Action</th></tr></thead>
+        <thead><tr><th>Operator Pain</th><th>Competitor Angle</th><th>SpotOn Solution</th><th>Best Attach</th><th>SS Stage</th></tr></thead>
         <tbody>
-          <tr><td><strong>Toast "Built for Busy"</strong></td><td>Emotional brand shift — not a campaign</td><td>Counter with hospitality-native depth + operator success stories. Toast's QSR push creates gaps in bars, fine dining, nightlife. Know your contrast before May 7.</td></tr>
-          <tr><td><strong>OpenTable + LRA POS quote</strong></td><td>POS lock-in conversation live</td><td>Use LRA quote verbatim in FSR/multi-concept: "annual contracts and platform mandates limit the POS systems operators can use." Keep outreach active through May.</td></tr>
-          <tr><td><strong>PAR contractual ROI challenge</strong></td><td>Proof bar rising industry-wide</td><td>Build an outcome-based commitment framework before Q3. If PAR executes, every prospect will ask you the same question reactively.</td></tr>
-          <tr><td><strong>Shift4 $1,299 fee stack</strong></td><td>Documented junk fees</td><td>Build a TCO page for every SkyTab deal. RAF + Annual Program + Month-End Billing in writing. The dollar amount closes deals.</td></tr>
-          <tr><td><strong>AI agents multi-vendor</strong></td><td>SpotOn has the answer: Profit Assist</td><td>"While PAR and Square launch AI agents, SpotOn's Profit Assist is already delivering 4.3% avg cost savings — AI that analyzes your P&L automatically." Talk tracks in Confluence.</td></tr>
-          <tr><td><strong>50% Texas operators unprofitable</strong></td><td>Cost protection is dominant buyer mode</td><td>Lead with margin defense, not growth. Pair Texas data with Shift4 fee documentation for maximum impact in competitive deals.</td></tr>
+          <tr><td>Processing fees compounding with inflation</td><td>Shift4 SimpleChange bundled pricing hides true cost</td><td>Interchange-plus pricing; transparent statement; Profit Assist ROI tracking</td><td>Payments + Profit Assist</td><td><span class="ss-badge ss-capture">Capture</span></td></tr>
+          <tr><td>No AI story to show investors / ownership</td><td>PAR, Square, Toast all have named AI agents</td><td>Profit Assist — 4.3% avg cost savings, P&L analysis, anomaly detection, live today</td><td>Profit Assist upsell</td><td><span class="ss-badge ss-demo">Demo</span></td></tr>
+          <tr><td>Platform dependency / losing guest data to OTA</td><td>OpenTable mandate + DoorDash full-stack ambition</td><td>SpotOn's first-party marketing + loyalty tools; guest data owned by operator</td><td>Loyalty + Online Ordering</td><td><span class="ss-badge ss-capture">Capture</span></td></tr>
+          <tr><td>Labor cost pressure, scheduling complexity</td><td>Square Managerbot + Sysco field push to mid-market</td><td>SpotOn labor tools; Profit Assist labor benchmarking; FSR depth Square lacks</td><td>Labor + Profit Assist</td><td><span class="ss-badge ss-demo">Demo</span></td></tr>
+          <tr><td>Spanish-speaking operator support after hours</td><td>Toast multilingual = chat only; no phone support</td><td>SpotOn Mexico bilingual call center — live phone in Spanish</td><td>Support narrative in proposal</td><td><span class="ss-badge ss-trade">Trade</span></td></tr>
+          <tr><td>Clover EOL hardware notice / NRO contract null</td><td>Clover app marketplace fees + EOL uncertainty</td><td>SpotOn integrated stack; no app fees; RPOS or Express based on concept</td><td>Full stack proposal</td><td><span class="ss-badge ss-align">Align</span></td></tr>
         </tbody>
       </table>
     </div>
   </div>
+
+  <!-- WATCH LIST -->
   <div class="cc">
     <h3>&#128065;&#65039; Watch List</h3>
     <ul class="wl">
-      <li><strong>Conference Board Consumer Confidence — Apr 28</strong> — First demand signal post-Iran war shock. March: 91.8. A miss reshapes Q2 sales conversations.</li>
-      <li><strong>Toast Q1 earnings — est. May 7</strong> — Watch: Drive-Thru revenue, "Built for Busy" ROI claims, guidance, AI agent language. Brief team before the call.</li>
-      <li><strong>OpenTable enforcement</strong> — First confirmed action defines whether the mandate is real or theater. Either outcome opens a conversation.</li>
-      <li><strong>PAR contractual ROI</strong> — Any deal activating Singh's prediction. First mover wins the 2026 AI narrative.</li>
-      <li><strong>Iran war / gas trajectory</strong> — Technomic's downgrade predicated on $4/gal+ through Q2. De-escalation changes the macro outlook materially.</li>
+      <li><strong>Conference Board Consumer Confidence — Apr 28</strong> — First demand signal post-Iran war. March: 91.8. A miss reshapes Q2 urgency conversations.</li>
+      <li><strong>Toast Q1 Earnings — May 7</strong> — Biggest competitive event of Q2. Watch: Drive-Thru revenue, "Built for Busy" ROI, guidance, AI language. Brief team before call.</li>
+      <li><strong>OpenTable Enforcement</strong> — First confirmed action defines whether the mandate is real. Either outcome creates a conversation.</li>
+      <li><strong>PAR Contractual ROI Execution</strong> — First platform to make outcome guarantees wins the 2026 AI narrative. Monitor before a prospect cites it.</li>
+      <li><strong>Square Sysco Field Push</strong> — Expect better-funded Square reps in Sysco-adjacent markets Q2. Know your FSR contrast before they arrive.</li>
     </ul>
+  </div>
+
+  <div class="metrics-banner">
+    <h4>&#128202; Alpha Measurement — Placeholders (tracking not yet active)</h4>
+    <div class="metrics-grid">
+      <div class="met-tile"><div class="met-val met-placeholder">—</div><div class="met-lbl">Weekly views</div></div>
+      <div class="met-tile"><div class="met-val met-placeholder">—</div><div class="met-lbl">Most viewed competitor</div></div>
+      <div class="met-tile"><div class="met-val met-placeholder">—</div><div class="met-lbl">Talk tracks copied</div></div>
+      <div class="met-tile"><div class="met-val met-placeholder">—</div><div class="met-lbl">ASM huddle usage</div></div>
+      <div class="met-tile"><div class="met-val met-placeholder">—</div><div class="met-lbl">Field feedback score</div></div>
+      <div class="met-tile"><div class="met-val met-placeholder">—</div><div class="met-lbl">Top unanswered question</div></div>
+    </div>
   </div>
 </div>
 </div>
 
-<!-- MONDAY BRIEF -->
+<!-- ═══════ MONDAY BRIEF ═══════ -->
 <div id="p-brief" class="panel">
 <div class="bw">
   <div class="np">
     <div class="np-lbl">SpotOn Market Intelligence</div>
     <div class="np-ttl">The Monday<br><em>Hospitality Brief</em></div>
-    <div class="np-dek">Everything that moved in competitive intel last week — filtered for SpotOn sales. Read in 5 minutes, use all week.</div>
+    <div class="np-dek">5-minute read. Use all week. Every story has a rep action mapped to the Service Standards sales motion.</div>
     <div class="np-meta">
-      <span><div class="mdot"></div>Week of April 21–25, 2026</span>
-      <span><div class="mdot"></div>Coverage: April 18–24</span>
-      <span><div class="mdot"></div>Next: May 2</span>
+      <span><div class="mdot"></div>Week of April 28, 2026</span>
+      <span><div class="mdot"></div>Coverage: April 21–27</span>
+      <span><div class="mdot"></div>Next: May 5</span>
+      <span class="gov gov-int">Internal only</span>
     </div>
   </div>
+
   <div class="lede">
     <div class="lede-ey">This week's headline</div>
-    <div class="lede-tx">Toast stopped selling software and started selling <strong>identity.</strong> Your prospects are losing sleep over inflation, a gas shock, and a reservation platform that may be locking them into a POS they didn't choose. PAR challenged every vendor to put ROI in writing — or lose. Here's what it means and what to do about it.</div>
+    <div class="lede-tx">Toast stopped selling software and started selling <strong>identity.</strong> Your prospects are losing sleep over inflation, a gas shock, and a reservation platform that may be locking them into a POS they didn't choose. PAR challenged every vendor to put ROI in writing — or lose. Here's what to do about each one before Friday.</div>
   </div>
+
+  <!-- STORY 1 -->
   <div class="story">
-    <div class="s-ey"><span class="s-topic">Competitor</span><span class="s-div"></span><span class="s-heat sh">&#128308; High</span></div>
+    <div class="s-ey"><span class="s-topic">Competitor</span><span class="s-div"></span><span class="s-heat sh">&#128308; High</span><span class="ss-badge ss-capture">Capture</span></div>
     <h2>Toast is no longer selling features. It's selling a feeling.</h2>
-    <div class="byline">Toast · Built for Busy · April 16, 2026</div>
-    <p>On April 16, Toast launched its biggest brand move since its IPO: "Built for Busy," a national omnichannel campaign built with Arnold agency. Storefront takeovers across NYC, national OOH and radio, influencer partnerships. The hook: being busy means your restaurant is working, and Toast is what makes that possible. Toast IQ is positioned as the operator's "right hand." Carmine's — 3,000 guests a day — is the marquee partner. Toast claims 164,000+ businesses, $2B cash, and Q1 earnings on May 7.</p>
-    <p>Emotional attachment is harder to break than rational preference. An operator who feels seen by "Built for Busy" doesn't switch when you show a feature comparison. They switch when you show them something Toast can't do for their specific business, or when your relationship runs deeper than their Toast rep's.</p>
-    <div class="move">Counter emotionally. Get hospitality-native operator success stories into the field before May 7. Toast's QSR enterprise push (Drive-Thru, 15+ location minimum) creates gaps in bars, fine dining, and nightlife. Know your contrast before the earnings call resets the narrative.</div>
-    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://pos.toasttab.com/news/toast-built-for-busy-nyc-windows-to-success" target="_blank">&#8599; Toast Press Release</a><a class="lnk" href="https://seekingalpha.com/article/4893290-toast-stock-more-than-just-a-pos" target="_blank">&#8599; Toast Financials</a></div>
+    <div class="byline">Toast · Built for Busy · April 16, 2026 · <span class="gov gov-sell">Seller Ready</span></div>
+    <p><strong>Operator problem:</strong> Operators who feel emotionally attached to a platform don't switch when you show a feature comparison. They switch when you show them what their current system can't do for their specific business.</p>
+    <p>On April 16, Toast launched "Built for Busy" with Arnold agency — national OOH, NYC storefront takeovers, influencer push. Toast IQ as the operator's "right hand." Carmine's (3,000 guests/day) as the marquee partner. Toast claims 164K+ businesses, $2B cash, Q1 earnings May 7.</p>
+    <p><strong>SpotOn angle:</strong> Toast's QSR enterprise push (Drive-Thru, 15+ location minimum) creates structural gaps in bars, fine dining, and nightlife. The brand campaign signals Toast is chasing larger deals, not your FSR, bar, and independent restaurant accounts.</p>
+    <div class="move">Get SpotOn hospitality-native operator success stories into your pipeline before May 7. Toast's earnings call will reset the competitive narrative — know your contrast before then.</div>
+    <div class="disc-q">"What's the hardest part of running your operation that your current POS hasn't solved for you yet?"</div>
+    <div class="talk">"While Toast is repositioning itself as the restaurant industry's brand — and they're doing it well — what they're not doing is going deeper on FSR, bars, and the hospitality complexity you're dealing with every night. That's where SpotOn actually lives."</div>
+    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://pos.toasttab.com/news/toast-built-for-busy-nyc-windows-to-success" target="_blank">&#8599; Toast Press Release</a><a class="lnk" href="https://seekingalpha.com/article/4893290-toast-stock-more-than-just-a-pos" target="_blank">&#8599; Financials</a></div>
   </div>
+
+  <!-- STORY 2 -->
   <div class="story">
-    <div class="s-ey"><span class="s-topic">Competitor + Guest Data</span><span class="s-div"></span><span class="s-heat sh">&#128308; High</span></div>
+    <div class="s-ey"><span class="s-topic">Competitor + Guest Data</span><span class="s-div"></span><span class="s-heat sh">&#128308; High</span><span class="ss-badge ss-align">Align</span></div>
     <h2>OpenTable told operators to make it their primary system. Operators said no.</h2>
-    <div class="byline">Restaurant Dive · WebProNews · April 21–23, 2026</div>
-    <p>On April 16, OpenTable extended "system of record" language to all clients — mandating it serve as the single source for reservations and guest data, with annual contracts replacing month-to-month. Altamarea Group VP: <em>"We want to have options and multiple partners."</em> Latino Restaurant Association CEO Lilly Rocha went further, flagging that the mandate <em>"could lock in restaurants to certain contracts and products, like point-of-sales systems."</em> KYU is moving exclusively to DoorDash in Miami. The WA AG antitrust division confirmed it's reviewing the changes.</p>
-    <div class="fc">Reps are actively using the LRA quote in FSR conversations and seeing it land. Operators make the POS lock-in connection themselves — you don't have to make it for them.</div>
-    <div class="move">Use Lilly Rocha's quote verbatim: "annual contracts and platform mandates limit the services and point-of-sales systems operators can use." Then ask: "What does your setup look like if your reservation platform required a specific POS?" Keep outreach active through May.</div>
-    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://www.restaurantdive.com/news/restaurants-respond-opentable-client-agreement-updates-concerns/817594/" target="_blank">&#8599; Restaurant Dive</a><a class="lnk" href="https://www.webpronews.com/opentables-grip-tightens-restaurants-rebel-against-primary-system-mandate/" target="_blank">&#8599; WebProNews</a></div>
+    <div class="byline">Restaurant Dive · April 21, 2026 · <span class="gov gov-sell">Seller Ready</span></div>
+    <p><strong>Operator problem:</strong> Platform dependency is the new contract risk. Operators who gave OpenTable their guest data are now being told they may need to change their POS to keep using it.</p>
+    <p>LRA CEO Lilly Rocha: annual contracts "could lock in restaurants to certain contracts and products, like point-of-sales systems." WA AG antitrust division confirmed active review. KYU is moving exclusively to DoorDash in Miami.</p>
+    <p><strong>SpotOn angle:</strong> SpotOn's first-party marketing and loyalty tools give operators guest data they own outright — no platform dependency, no lock-in risk.</p>
+    <div class="move">Use Lilly Rocha's quote verbatim in FSR conversations. Then ask the operator what their current setup looks like if their reservation platform required a specific POS. Keep outreach active through May.</div>
+    <div class="disc-q">"If the platform that manages your reservations and guest data required you to switch POS systems to keep using it — how would that affect your operation?"</div>
+    <div class="talk">"The LRA — 1,400 restaurant members — just put it in writing that OpenTable's new contract language could lock operators into specific POS systems. That's a platform dependency risk. The operators who come to us aren't just switching POS — they're buying back control of their guest relationship."</div>
+    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://www.restaurantdive.com/news/restaurants-respond-opentable-client-agreement-updates-concerns/817594/" target="_blank">&#8599; Restaurant Dive</a></div>
   </div>
+
+  <!-- STORY 3 -->
   <div class="story">
-    <div class="s-ey"><span class="s-topic">Macro + Industry</span><span class="s-div"></span><span class="s-heat sh">&#128308; High</span></div>
-    <h2>The industry just got a gut punch from geopolitics. Here's what Technomic said at RLC.</h2>
-    <div class="byline">NRN · Restaurant Business · April 21, 2026</div>
-    <p>At the Restaurant Leadership Conference, Technomic moved to a scenario-based forecast model — something it rarely does — because standard prediction doesn't work right now. The Iran war drove gas past $4/gallon. The OECD raised U.S. inflation from 3.2% to 4.2%. Traffic was strong in January and February, then slowed to flat in March. Six forces flagged: gas shock, inflation, GLP-1 drugs (1 in 8 adults, reducing alcohol + food consumption), cannabis replacing alcohol for 57% of consumers monthly, structural labor shrinkage, and a new USDA food pyramid. One bright spot: chains that invested in service quality and operations grew 8x faster in 2025.</p>
+    <div class="s-ey"><span class="s-topic">Macro + Industry</span><span class="s-div"></span><span class="s-heat sh">&#128308; High</span><span class="ss-badge ss-capture">Capture</span></div>
+    <h2>The macro just got harder. Here's how to use it in your pipeline.</h2>
+    <div class="byline">NRN · Restaurant Business · April 21, 2026 · <span class="gov gov-sell">Seller Ready</span></div>
+    <p>Technomic moved to scenario-based forecasting at RLC — rare. Iran war → gas $4/gal → OECD inflation 4.2% → traffic flat in March. 50% of Texas operators failed to profit in 2025. Swipe fees are now the third-largest operator cost category.</p>
     <div class="nums">
-      <div class="ntile"><div class="nbig">4.2%</div><div class="nlbl">OECD U.S. inflation projection (up from 3.2%)</div></div>
-      <div class="ntile"><div class="nbig">50%</div><div class="nlbl">Texas operators who failed to profit in 2025</div></div>
-      <div class="ntile"><div class="nbig">8×</div><div class="nlbl">Faster growth for service-quality brands in 2025</div></div>
+      <div class="ntile"><div class="nbig">4.2%</div><div class="nlbl">OECD U.S. inflation (up from 3.2%)</div></div>
+      <div class="ntile"><div class="nbig">50%</div><div class="nlbl">TX operators unprofitable in 2025</div></div>
+      <div class="ntile"><div class="nbig">8×</div><div class="nlbl">Faster growth for service-quality brands</div></div>
     </div>
-    <div class="move">Lead with cost protection and margin defense — not growth. Operators are making tech decisions with shorter time horizons. Pair Texas profitability data with Shift4's documented fee stack in competitive deals. Those two sources together make the financial case without editorializing.</div>
-    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://www.nrn.com/restaurant-insights/the-trends-shaping-restaurants-in-2026" target="_blank">&#8599; NRN: Technomic at RLC</a><a class="lnk" href="https://www.houstonpublicmedia.org/articles/news/business/2026/04/09/548641/rising-costs-for-food-labor-credit-card-swipe-fees-threaten-texas-restaurants/" target="_blank">&#8599; Texas Operators</a></div>
+    <div class="move">Lead with cost protection — not growth. Operators are making tech decisions with a 6-month horizon right now. Pair the Texas data with the Shift4 fee stack documentation in every competitive deal this week.</div>
+    <div class="disc-q">"With gas prices and inflation where they are, what's your biggest cost pressure heading into the summer — and what's your current system doing about it?"</div>
+    <div class="talk">"Technomic rarely moves to scenario-based forecasting — they did it this week because the macro environment is that uncertain. What I'm seeing in my best accounts is operators who locked in their cost structure early are in a much better position. That's what I want to help you do."</div>
   </div>
+
+  <!-- STORY 4 -->
   <div class="story">
-    <div class="s-ey"><span class="s-topic">Tech + AI</span><span class="s-div"></span><span class="s-heat sh">&#128308; High</span></div>
-    <h2>PAR challenged every vendor to put outcomes in the contract. SpotOn already has an answer.</h2>
-    <div class="byline">QSR Magazine · NRN · April 10–22, 2026</div>
-    <p>PAR CEO Savneet Singh published five predictions in QSR Magazine: 65% confidence that one major platform makes a contractual performance commitment ("our system reduces your waste by 12%, guaranteed") and wins business because of it. Every other vendor will have to explain why they won't. PAR and Square also launched AI agents the week of April 10 — PAR Intelligence and Square's Managerbot autonomously draft schedules, run campaigns, and surface insights. Toast and Thanx were already in market.</p>
-    <p><strong>SpotOn's answer is Profit Assist</strong> — AI-powered P&L analysis averaging 4.3% cost savings, connecting to QuickBooks, Xero, and Restaurant365, with anomaly detection and multi-location benchmarking. The gap isn't product. It's that reps aren't using it as the counter in competitive conversations yet.</p>
-    <div class="fc">Reps are being asked about SpotOn's AI story in deals against Square and Toast. The answer exists. It needs to be activated in the field.</div>
-    <div class="move">Start using Profit Assist as SpotOn's named AI story now: "While PAR and Square launch AI agents, SpotOn's Profit Assist is already putting money back in operators' pockets — 4.3% average cost savings, automatically, connected to their accounting software." Talk tracks are in Confluence. Also start building your answer to "what outcomes do you guarantee?" before Q3 deals demand it.</div>
-    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://www.qsrmagazine.com/story/5-bold-measurable-predictions-for-restaurant-tech/" target="_blank">&#8599; QSR Magazine</a><a class="lnk" href="https://www.nrn.com/restaurant-technology/the-hot-new-restaurant-tech-trend-ai-agents" target="_blank">&#8599; NRN: AI Agents</a></div>
+    <div class="s-ey"><span class="s-topic">Tech + AI</span><span class="s-div"></span><span class="s-heat sh">&#128308; High</span><span class="ss-badge ss-demo">Demo</span></div>
+    <h2>PAR raised the proof bar for every vendor. SpotOn already has an answer.</h2>
+    <div class="byline">QSR Magazine · NRN · April 10–22, 2026 · <span class="gov gov-pmm">Needs PMM Review</span></div>
+    <p>PAR CEO Singh: 65% confidence one platform makes contractual performance commitments ("our system reduces waste 12%, guaranteed") and wins because of it. PAR + Square both launched AI agents the week of Apr 10. Toast and Thanx already in market.</p>
+    <p><strong>SpotOn's answer is Profit Assist</strong> — AI-powered P&L analysis averaging 4.3% cost savings, connecting to QuickBooks, Xero, and Restaurant365. The gap isn't product. It's activation.</p>
+    <div class="move">Start using Profit Assist as SpotOn's named AI story in every competitive conversation: "SpotOn's Profit Assist is already delivering 4.3% avg cost savings — AI that analyzes your P&L automatically, connected to your accounting software." Talk tracks in Confluence.</div>
+    <div class="disc-q">"When you think about what AI should actually do for your business — not what it promises, but what it actually delivers — what specific outcome matters most to you?"</div>
+    <div class="talk">"Every vendor is launching AI agents right now. What makes Profit Assist different is that it's connected to your actual P&L — not just generating schedules or suggestions, but identifying where your costs are running above benchmark and telling you specifically what to do about it. We have documented outcomes: 4.3% average cost savings. That's a number, not a promise."</div>
+    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://www.qsrmagazine.com/story/5-bold-measurable-predictions-for-restaurant-tech/" target="_blank">&#8599; QSR Magazine</a></div>
   </div>
+
+  <!-- STORY 5 -->
   <div class="story">
-    <div class="s-ey"><span class="s-topic">Competitor</span><span class="s-div"></span><span class="s-heat sm">&#128992; Medium</span></div>
-    <h2>DoorDash killed its own AI app and made it the product.</h2>
-    <div class="byline">Restaurant Technology News · April 17, 2026</div>
-    <p>DoorDash shut Zesty on April 17 and integrated its AI recommendation engine directly into the core app. Combined with SevenRooms (acquired June 2025), DoorDash now spans discovery, reservation, ordering, delivery, and marketing automation — 50M+ monthly active users, 200+ NYC restaurants bookable with exclusive inventory. It's not a retreat; it's consolidation into a single platform that owns the full guest relationship.</p>
-    <div class="move">For FSR and hotel F&B accounts: the question is no longer "should we be on DoorDash" but "how much of our guest relationship are we willing to let them own?" SpotOn's first-party guest data tools are more strategically important this week than last week. Make that argument explicitly in your next renewal conversation.</div>
-    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://restauranttechnologynews.com/2026/04/doordash-shuts-down-zesty-and-brings-restaurant-ai-discovery-into-core-app/" target="_blank">&#8599; Restaurant Technology News</a></div>
+    <div class="s-ey"><span class="s-topic">Competitor</span><span class="s-div"></span><span class="s-heat sm">&#128992; Medium</span><span class="ss-badge ss-capture">Capture</span></div>
+    <h2>DoorDash consolidated. The question is how much of your guest relationship they own.</h2>
+    <div class="byline">Restaurant Technology News · April 17, 2026 · <span class="gov gov-sell">Seller Ready</span></div>
+    <p>DoorDash shut Zesty on Apr 17 and embedded AI recommendation into the core app. Combined with SevenRooms (acquired June 2025), DoorDash now spans discovery, reservation, ordering, delivery, and marketing — 50M+ MAU, 200+ NYC restaurants bookable with exclusive inventory.</p>
+    <div class="move">For FSR and hotel F&B accounts: ask how much of their guest relationship they're willing to let DoorDash own. SpotOn's first-party guest data tools are more strategically important this week than last week.</div>
+    <div class="disc-q">"Today, when a guest books through DoorDash or a third party — who owns that guest relationship? Does it come back to you or does it stay with the platform?"</div>
+    <div class="talk">"DoorDash now spans everything from discovery to the reservation to the delivery — with 50 million monthly users. That's a lot of leverage over your guest relationships. The operators we work with who have the best retention are the ones who own their guest data directly through their own loyalty and marketing tools."</div>
+    <div class="byline" style="margin-top:10px;"><a class="lnk" href="https://restauranttechnologynews.com/2026/04/doordash-shuts-down-zesty-and-brings-restaurant-ai-discovery-into-core-app/" target="_blank">&#8599; Restaurant Tech News</a></div>
   </div>
+
   <div class="watch-sec">
     <h3>&#128337; What to Watch</h3>
-    <div class="wi"><div class="wd">Apr 28</div><div class="wt"><strong>Conference Board Consumer Confidence</strong> — First demand signal post-Iran war. March: 91.8. A miss reshapes Q2.</div></div>
-    <div class="wi"><div class="wd">May 7</div><div class="wt"><strong>Toast Q1 Earnings</strong> — Biggest competitive event of Q2. Watch for Drive-Thru revenue, guidance, "Built for Busy" ROI, AI agent language. Brief team before the call.</div></div>
-    <div class="wi"><div class="wd">Ongoing</div><div class="wt"><strong>OpenTable enforcement</strong> — First confirmed action defines whether the mandate is real. Either outcome creates a sales conversation.</div></div>
-    <div class="wi"><div class="wd">Ongoing</div><div class="wt"><strong>PAR contractual ROI</strong> — First mover in outcome-based guarantees wins the 2026 AI narrative. Watch for it before a prospect cites it.</div></div>
-    <div class="wi"><div class="wd">Ongoing</div><div class="wt"><strong>Iran war / gas</strong> — Technomic's downgrade predicated on $4/gal+ through Q2. De-escalation changes the forecast materially.</div></div>
+    <div class="wi"><div class="wd">Apr 28</div><div class="wt"><strong>Conference Board Consumer Confidence</strong> — First demand read post-Iran war. March: 91.8. A miss reshapes Q2 urgency.</div></div>
+    <div class="wi"><div class="wd">May 7</div><div class="wt"><strong>Toast Q1 Earnings</strong> — Biggest competitive event of Q2. Watch AI language, Drive-Thru revenue, guidance. Brief team before call.</div></div>
+    <div class="wi"><div class="wd">Ongoing</div><div class="wt"><strong>OpenTable enforcement</strong> — First confirmed action either validates or deflates the mandate. Either outcome is a conversation starter.</div></div>
+    <div class="wi"><div class="wd">Ongoing</div><div class="wt"><strong>Square Sysco push</strong> — Better-funded Square reps incoming in mid-market. Know your FSR contrast before they show up in your accounts.</div></div>
   </div>
+
   <div class="b-foot">
-    <span>SpotOn Intelligence · The Monday Hospitality Brief · April 25, 2026</span>
-    <span>Coverage: April 18–24, 2026 · Next: May 2, 2026</span>
+    <span>SpotOn Intelligence · Monday Hospitality Brief · April 28, 2026</span>
+    <span>Coverage: April 21–27 · Next: May 5, 2026</span>
   </div>
 </div>
 </div>
 
-<!-- FIELD INTEL -->
+<!-- ═══════ FIELD INTEL ═══════ -->
 <div id="p-fi" class="panel">
 <div class="fw">
   <div class="fhdr">
-    <div class="fey"><span class="cbadge"># Slack Field Intel</span><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">April 18–24, 2026</span></div>
+    <div class="fey"><span class="cbadge"># Slack Field Intel</span><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">April 21–27, 2026</span><span class="gov gov-int">Internal only</span></div>
     <div class="fttl">SpotOn <em>Field Intelligence</em></div>
     <div class="fdl"><span>#beat-toast</span><span>#beat-skytab</span><span>#beat-square</span><span>#beat-clover</span><span>#sales-support</span></div>
   </div>
-  <div class="fctx"><strong>How to read:</strong> <strong style="color:#166534;">&#10003; Validated</strong> = public source confirmed. <strong style="color:#5B21B6;">Field Only</strong> = rep observation, pattern-spotting only. <strong style="color:#92400E;">&#9888; Unverified</strong> = single source — do not use externally without confirmation.</div>
+  <div class="fctx">
+    <strong>Source confidence hierarchy:</strong>
+    <strong style="color:#166534;">&#10003; Validated</strong> = confirmed against public source (competitor docs, news, analyst reports).
+    <strong style="color:#5B21B6;">Field Only</strong> = rep observation, pattern not yet verified.
+    <strong style="color:#92400E;">&#9888; Unverified</strong> = single source — do not use externally.
+    <br><br><strong>Field use status options:</strong> <span class="gov gov-sell">Use Externally</span> <span class="gov gov-int">Internal Only</span> <span class="gov gov-mgr">Manager Coaching</span> <span class="gov gov-pmm">Needs PMM Review</span> <span class="gov gov-prod">Needs Product Review</span> <span class="gov gov-dnu">Do Not Use Yet</span>
+  </div>
+
+  <!-- TOAST SIGNALS -->
   <div class="fsec">
     <div class="fch"><span class="cbadge"># beat-toast</span><div class="fcht">Toast</div></div>
+
     <div class="sgc h">
-      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="src">Mark Black · Apr 23 | Toast Docs Mar 25, 2026</span></div>
-      <div class="sgh">Spanish/Chinese Support = Chat Only — SpotOn Mexico Call Center = Phone Differentiator</div>
-      <div class="sgb">Toast's multilingual support (7 languages) is <strong>chat only</strong> — accessed by changing browser language settings. Phone support remains English-only. SpotOn's bilingual call center in Mexico offers live phone support in Spanish.</div>
-      <div class="vb">Confirmed via Toast Support Center, updated March 25, 2026.</div>
-      <div class="sw">On a Saturday night emergency, chat isn't the same as a bilingual person picking up. Lead with this distinction for Spanish-speaking operators.</div>
+      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="gov gov-sell">Use Externally</span><span class="src">Mark Black · Apr 23 | Toast Docs Mar 25, 2026</span></div>
+      <div class="sgh">Spanish/Chinese Support = Chat Only — SpotOn Mexico = Phone</div>
+      <div class="sgb">Toast's multilingual support (7 languages) is <strong>chat only</strong> — browser language change required. Phone support is English-only. SpotOn's Mexico call center = bilingual phone.</div>
+      <div class="vb">Confirmed via Toast Support Center updated March 25, 2026.</div>
+      <div class="sw">Lead with this for Spanish-speaking operators. On a Saturday night emergency, chat is not the same as a bilingual person picking up the phone.</div>
+      <div class="dns">Don't say Toast has no multilingual support — they do. The gap is phone vs. chat only.</div>
+      <div style="margin-top:8px;">
+        <div class="ss-map">
+          <div class="ss-map-hdr demo-bg"><span class="ss-badge ss-demo">Demo — position the support contrast</span><span class="ss-map-title" style="color:var(--ss-demo);">Service Standards Behavior Map</span></div>
+          <div class="ss-map-body">
+            <div class="ss-field"><div class="ss-field-lbl">Discovery question</div><div class="ss-field-val">"If something breaks during dinner service on a Saturday — who do you call, and what's the response time?"</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Talk track</div><div class="ss-field-val"><em>"Toast's multilingual support is chat-only — you change a browser setting to access it. SpotOn's Mexico call center picks up the phone in Spanish. For an operator with Spanish-speaking staff, that's the difference between a 2-minute fix and a 45-minute chat thread."</em></div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Attach motion</div><div class="ss-field-val">Support narrative → strengthens proposal value section in Trade stage</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Manager coaching</div><div class="ss-field-val">Observe: did the rep surface this before or after the support objection? It should come up in Demo, not as a reactive defense in Trade.</div></div>
+          </div>
+        </div>
+      </div>
       <a class="lnk" href="https://support.toasttab.com/en/article/Start-a-Support-Chat-in-Spanish-or-Chinese" target="_blank">&#8599; Toast Support Docs</a>
     </div>
+
     <div class="sgc h">
-      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="src">Bill Dominick · Jun 4 | Toast Merchant Agreement</span></div>
+      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="gov gov-sell">Use Externally</span><span class="src">Bill Dominick | Toast Merchant Agreement</span></div>
       <div class="sgh">Toast Charges CNP Rates on OLO, QR, Handheld &amp; Offline — SpotOn Does Not</div>
-      <div class="sgb">Toast applies card-not-present rates for online ordering, QR, handheld, and offline transactions. SpotOn does not. For restaurants with strong digital mix this is a verifiable, dollar-quantifiable TCO gap.</div>
+      <div class="sgb">Toast applies card-not-present rates for online ordering, QR, handheld, and offline transactions. SpotOn does not. Verifiable, dollar-quantifiable TCO gap for any account with digital volume.</div>
       <div class="vb">Consistent with Toast's published Merchant Agreement fee structure.</div>
-      <div class="sw">For a restaurant with 30% digital ordering volume, the CNP delta is a real number. Build it into the proposal. More digital = bigger gap.</div>
+      <div class="sw">For a restaurant with 30%+ digital ordering: the CNP delta is a real, calculable number. Build it into every Toast competitive proposal.</div>
+      <div class="dns">Don't say Toast "hides" CNP fees — it's in their published agreement. The gap is that SpotOn doesn't charge them.</div>
+      <div style="margin-top:8px;">
+        <div class="ss-map">
+          <div class="ss-map-hdr capture-bg"><span class="ss-badge ss-capture">Capture — probe digital ordering volume</span><span class="ss-map-title" style="color:var(--ss-capture);">Service Standards Behavior Map</span></div>
+          <div class="ss-map-body">
+            <div class="ss-field"><div class="ss-field-lbl">Discovery question</div><div class="ss-field-val">"What percentage of your orders come in through online ordering, QR, or handheld — versus counter?"</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Follow-up</div><div class="ss-field-val">"Are you aware that Toast charges a higher card rate on all of those digital channels? What's that costing you in a typical month?"</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Manager coaching prompt</div><div class="ss-field-val">Ask the rep in deal review: "Did they calculate the CNP delta? Is it in the proposal as a dollar figure?"</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Deal inspection question</div><div class="ss-field-val">"What's the digital ordering mix at this account, and have we quantified the CNP fee savings?"</div></div>
+          </div>
+        </div>
+      </div>
       <a class="lnk" href="https://pos.toasttab.com/merchant-agreement" target="_blank">&#8599; Toast Merchant Agreement</a>
     </div>
+
     <div class="sgc m">
-      <div class="sgm"><span class="pill pm">Medium</span><span class="vbdg">&#10003; Validated</span><span class="src">Jessie Fausnaugh · May 8</span></div>
-      <div class="sgh">Toast Timed Send Can't Add Items Mid-Course Without Firing the Whole Tab</div>
-      <div class="sgb">Toast's Timed Send prevents adding items to a tab mid-course without sending the full ticket. SpotOn allows independent item sends without triggering held items.</div>
-      <div class="sw">Show this live in FSR demos. When a prospect cites Timed Send, demonstrate SpotOn's flexibility in real time. Demonstrable beats describable.</div>
-    </div>
-    <div class="sgc m">
-      <div class="sgm"><span class="pill pm">Medium</span><span class="fbdg">Field Only</span><span class="src">Brian Heavens · May 30</span></div>
+      <div class="sgm"><span class="pill pm">Medium</span><span class="fbdg">Field Only</span><span class="gov gov-int">Internal Only</span><span class="src">Brian Heavens · May 30</span></div>
       <div class="sgh">US Foods Reps Claiming US Foods "Pays for" Toast Equipment</div>
-      <div class="sgb">Reps reporting US Foods jointly pitching Toast with claims that US Foods covers hardware costs. Appears to be a framing of bundled financing, not a genuine subsidy.</div>
-      <div class="uv">Not independently confirmed. Ask prospects to show the actual contract terms before citing.</div>
-      <div class="sw">Ask to see what they signed. Hidden financing vs. genuine subsidy is a very different TCO conversation.</div>
+      <div class="sgb">Reps reporting US Foods jointly pitching Toast with claims that US Foods covers hardware costs. Appears to be framing of bundled financing, not a genuine subsidy.</div>
+      <div class="uv">Not independently confirmed. Ask prospects to show the actual contract terms before citing. Do not use this claim externally.</div>
+      <div class="sw">Ask to see what they signed. Hidden financing vs. genuine subsidy is a very different TCO conversation at Trade stage.</div>
+      <div class="dns">Do not claim US Foods is subsidizing Toast hardware — characterize it as "bundled financing that needs review."</div>
     </div>
   </div>
+
+  <!-- SKYTAB SIGNALS -->
   <div class="fsec">
     <div class="fch"><span class="cbadge"># beat-skytab</span><div class="fcht">Shift4 / SkyTab</div></div>
+
     <div class="sgc h">
-      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="src">Jordan Springs · Nov 14 | Merchant Cost Consulting, Dec 2025</span></div>
-      <div class="sgh">Shift4 Three-Layer Fee Stack — ~$1,299/Year in Annual Fees Before Processing</div>
-      <div class="sgb">RAF <strong>$325/device (max $975/year)</strong> since Dec 1, 2025 — on top of $99/device Annual Program Fee. RAF jumped from $189.99 to $325 within the same year (70%+). March 2026 added a third layer: Month-End Billing increased 0.02% → 0.05%.</div>
+      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="gov gov-sell">Use Externally</span><span class="src">Jordan Springs | Merchant Cost Consulting Dec 2025</span></div>
+      <div class="sgh">Shift4 Three-Layer Fee Stack — ~$1,299/Year Before Processing</div>
+      <div class="sgb">RAF <strong>$325/device (max $975/yr)</strong> since Dec 1, 2025 + Annual Program $99/device + Month-End 0.05% (added Mar 2026). RAF jumped 70% in one year.</div>
       <div class="rq">"Shift4: the latest 'Regulatory Assurance Fee' (RAF) rolling out December 1, 2025 — $325 per Device."<cite>— Jordan Springs, #beat-skytab</cite></div>
       <div class="vb">Confirmed: Merchant Cost Consulting (Jan 2026), Shift4 Zendesk, multiple independent analysts.</div>
-      <div class="sw">Stack all three layers in every SkyTab TCO comparison. ~$1,299/year in fees a prospect isn't paying SpotOn. Put that number in writing.</div>
+      <div class="sw">Stack all three layers in every SkyTab TCO comparison. ~$1,299/year in fees the prospect isn't paying SpotOn. Put the number in the proposal.</div>
+      <div class="dns">Don't call these "hidden fees" — they're documented. Call them "additional program fees that add up to $1,299/year before processing."</div>
+      <div style="margin-top:8px;">
+        <div class="ss-map">
+          <div class="ss-map-hdr trade-bg"><span class="ss-badge ss-trade">Trade — anchor to documented fee savings</span><span class="ss-map-title" style="color:var(--ss-trade);">Service Standards Behavior Map</span></div>
+          <div class="ss-map-body">
+            <div class="ss-field"><div class="ss-field-lbl">Discovery question</div><div class="ss-field-val">"Can you pull a recent SkyTab statement? I want to walk through the RAF, Annual Program Fee, and the Month-End Billing charge — they add up to about $1,299/year per terminal before processing."</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Talk track</div><div class="ss-field-val"><em>"Shift4 added three layers of program fees since December 2025: a $325 RAF per device, a $99 Annual Program Fee, and a month-end billing increase. For a 3-terminal restaurant, that's nearly $4,000 a year before you've processed a single card. SpotOn doesn't charge any of those."</em></div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Manager coaching</div><div class="ss-field-val">Deal inspection: "Is the $1,299 figure in the proposal with a source link? Does the prospect have their current statement?"</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Attach motion</div><div class="ss-field-val">Payments TCO savings → anchor to Profit Assist integration for ongoing visibility</div></div>
+          </div>
+        </div>
+      </div>
       <a class="lnk" href="https://merchantcostconsulting.com/lower-credit-card-processing-fees/shift4-regulatory-assurance-fee-raf/" target="_blank">&#8599; MCC: RAF</a>
       <a class="lnk" href="https://merchantcostconsulting.com/lower-credit-card-processing-fees/shift4-rate-increases-fees-updates/" target="_blank">&#8599; MCC: Fee Timeline</a>
     </div>
+
     <div class="sgc h">
-      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Field doc</span><span class="src">Carley Thomas / James Clayton · Nov 10</span></div>
-      <div class="sgh">Documented SkyTab Cancellation Letter: 10 Product Gaps Including No Check Splits on Handhelds, No Coursing</div>
-      <div class="sgb">A restaurant that tried SkyTab before choosing SpotOn formally documented 10 complaints: no check splits on handhelds, no coursing, no seating charts on Airs, KDS mirroring limitations, 3rd-party vendors excluded from net sales reports, support far below advertised — and their own techs "bad-mouthing the company."</div>
-      <div class="vb">Product gaps (no handheld check splits, no coursing) consistent with known SkyTab platform constraints.</div>
-      <div class="sw">Use in FSR accounts considering SkyTab. Ask how critical check splitting and coursing are — then share what a real operator documented.</div>
-    </div>
-    <div class="sgc m">
-      <div class="sgm"><span class="pill pm">Medium</span><span class="fbdg">Field Only</span><span class="src">Bill Dominick · Sep 3</span></div>
-      <div class="sgh">SkyTab Support Phone Tree Fragmented Across Three Brands — 20+ Min Holds Reported</div>
-      <div class="sgb">Merchant reported Shift4's support line requires selecting SkyTab (1), Shift4 (2), or TouchBistro (3). Wrong selection = transfer after 20+ min hold.</div>
-      <div class="uv">Single merchant report — not confirmed. Structurally plausible given Shift4's multi-brand acquisitions.</div>
-      <div class="sw">Ask SkyTab prospects: "When you call support at 8pm Saturday, which number do you call and who picks up?" The question is more powerful than the answer.</div>
+      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Field doc</span><span class="gov gov-sell">Use Externally</span><span class="src">Carley Thomas / James Clayton</span></div>
+      <div class="sgh">Documented SkyTab Cancellation Letter: 10 Gaps Including No Check Splits, No Coursing</div>
+      <div class="sgb">Restaurant formally documented 10 SkyTab complaints: no check splits on handhelds, no coursing, no seating charts on Airs, KDS limitations, 3rd-party vendors excluded from net sales reports, support failures.</div>
+      <div class="vb">Product gaps consistent with known SkyTab platform constraints.</div>
+      <div class="sw">Use in FSR accounts evaluating SkyTab. Ask how critical check splitting and coursing are — then reference what a real operator documented.</div>
+      <div class="dns">Don't read the cancellation letter verbatim or name the restaurant. Reference it as "a customer who documented their experience in writing before switching."</div>
     </div>
   </div>
+
+  <!-- SQUARE SIGNALS -->
   <div class="fsec">
     <div class="fch"><span class="cbadge"># beat-square</span><div class="fcht">Square</div></div>
+
     <div class="sgc h">
-      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="src">Bryce Adams · Aug 21 | Block investor disclosures</span></div>
-      <div class="sgh">Square + Sysco Nationwide Deal — Going Door-to-Door for Mid-Market Aggressively</div>
-      <div class="sgb">Square signed nationwide distribution with Sysco, shifting to a 50/50 self-serve/field split (from 80% self-serve). Block confirmed field sales "bringing larger clients." Managerbot AI agent + MarketMan inventory AI both launched April 2026 alongside this push.</div>
-      <div class="vb">Block investor disclosures. Managerbot (NRN, Apr 10) and MarketMan (Square press release, Apr 2) confirmed live.</div>
-      <div class="sw">In Sysco-adjacent markets, expect better-funded Square reps. Differentiate with SpotOn's FSR depth — coursing, check management, table management that Square still hasn't closed.</div>
-    </div>
-    <div class="sgc h">
-      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="src">Multiple reps | NRN, April 10, 2026</span></div>
-      <div class="sgh">Square Managerbot AI Agent Live — SpotOn's Counter Is Profit Assist (4.3% Avg Cost Savings)</div>
-      <div class="sgb">Square's Managerbot proactively drafts schedules, runs campaigns, generates purchase orders. Square Restaurant Inventory by MarketMan adds AI-driven ingredient management natively.</div>
-      <div class="vb">Confirmed by NRN (Apr 10) and Square press release (Apr 2).</div>
-      <div class="sw">SpotOn's answer: Profit Assist — AI P&L analysis, anomaly detection, benchmarking, averaging 4.3% cost savings. Talk tracks in Confluence → "Profit Assist Expansion." Use it as the named counter in every AI conversation.</div>
-      <a class="lnk" href="https://www.nrn.com/restaurant-technology/the-hot-new-restaurant-tech-trend-ai-agents" target="_blank">&#8599; NRN: AI Agents</a>
-    </div>
-    <div class="sgc m">
-      <div class="sgm"><span class="pill pm">Medium</span><span class="vbdg">&#10003; Validated</span><span class="src">Nelly Ramos · Oct 8, 2025 | Digital Transactions</span></div>
-      <div class="sgh">Square Accepts Bitcoin — No Fees Through 2026, Then 1% from Jan 2027</div>
-      <div class="sgb">Square Bitcoin live since Oct 2025. SpotOn's current approach is a stop-gap custom payment type — not a native feature.</div>
-      <div class="sw">Low priority for most FSR accounts. Relevant for QSR, coffee, tech-forward independents. Flag for product roadmap if asked.</div>
-    </div>
-    <div class="sgc m">
-      <div class="sgm"><span class="pill pm">Medium</span><span class="fbdg">Field Only</span><span class="src">Harold Smith · Dec 20, 2025</span></div>
-      <div class="sgh">Square Showing Its Own Credit Card Ads on Guest-Facing Handheld Screens</div>
-      <div class="sgb">Reddit post (shared by rep): Square displaying credit card ads on guest payment handhelds at checkout — operator's guest experience used as Square's acquisition channel.</div>
-      <div class="uv">Reddit-sourced via one rep — not confirmed. Do not cite as fact.</div>
-      <div class="sw">Even unverified, the principle lands: SpotOn doesn't monetize the operator's guest relationship for its own product promotion.</div>
+      <div class="sgm"><span class="pill ph">High</span><span class="vbdg">&#10003; Validated</span><span class="gov gov-sell">Use Externally</span><span class="src">Block investor disclosures · NRN Apr 10</span></div>
+      <div class="sgh">Square + Sysco Nationwide Deal — Mid-Market Field Push Active</div>
+      <div class="sgb">Square shifted from 80% self-serve to 50/50 field split. Sysco field reps co-selling nationwide. Managerbot AI + MarketMan inventory AI both live Apr 2026.</div>
+      <div class="vb">Block investor disclosures confirmed. Managerbot and MarketMan confirmed by NRN (Apr 10) and Square press release (Apr 2).</div>
+      <div class="sw">Expect funded Square reps in Sysco-adjacent markets. Counter with FSR depth: coursing, check management, table management gaps Square hasn't closed.</div>
+      <div class="dns">Don't call Square's AI "unproven" without qualification — it's launched. Say it's "new and unvalidated at FSR scale" and contrast with Profit Assist's documented outcomes.</div>
+      <div style="margin-top:8px;">
+        <div class="ss-map">
+          <div class="ss-map-hdr demo-bg"><span class="ss-badge ss-demo">Demo — show FSR depth contrast</span><span class="ss-map-title" style="color:var(--ss-demo);">Service Standards Behavior Map</span></div>
+          <div class="ss-map-body">
+            <div class="ss-field"><div class="ss-field-lbl">Discovery question</div><div class="ss-field-val">"Has your Sysco rep mentioned Square? What did they show you, and what part of your operation were they focused on?"</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Talk track</div><div class="ss-field-val"><em>"Square's new Sysco partnership means you're going to see them more in the field. What Sysco reps typically show is the front-end — what they're not showing is the coursing, check management, and table map complexity you're dealing with every service. That's where we're built differently."</em></div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Manager coaching</div><div class="ss-field-val">Inspect: "Did the rep demo coursing and check management specifically — or just run the standard flow? Square is coming in with an FSR story now."</div></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- CLOVER SIGNALS -->
   <div class="fsec">
     <div class="fch"><span class="cbadge"># beat-clover</span><div class="fcht">Clover</div></div>
     <div class="sgc m">
-      <div class="sgm"><span class="pill pm">Medium</span><span class="vbdg">&#10003; Validated</span><span class="src">Nick Arnoni · Apr 22 | Confirmed: Bryce Adams; contract law</span></div>
+      <div class="sgm"><span class="pill pm">Medium</span><span class="vbdg">&#10003; Validated</span><span class="gov gov-sell">Use Externally</span><span class="src">Nick Arnoni · Apr 22 | Contract law</span></div>
       <div class="sgh">New Owner + New Legal Entity = Clover Contract Is Null</div>
-      <div class="sgb">When a restaurant is sold with a new legal entity and business name, Clover's existing contract does not transfer — it's null. Bryce Adams confirmed: "That contract is null unless they did a transfer within the sale."</div>
+      <div class="sgb">When a restaurant is sold with a new legal entity, Clover's existing contract does not transfer — it's null. Bryce Adams confirmed: "That contract is null unless they did a transfer within the sale."</div>
       <div class="vb">Consistent with standard merchant services contract law. Agreements are tied to the legal entity, not the physical location.</div>
-      <div class="sw">In your NRO pipeline, ask every new owner if they're inheriting a Clover contract. New legal entity = contract null. Move fast before Clover resigns them.</div>
-    </div>
-    <div class="sgc m">
-      <div class="sgm"><span class="pill pm">Medium</span><span class="fbdg">Field Only</span><span class="src">Evan Reigle · May 21</span></div>
-      <div class="sgh">Clover Sending Hardware EOL Notices — No Firm Date Given</div>
-      <div class="sgb">Clover notifying merchants that specific hardware is being EOL'd — upgrade required for future software updates. Support couldn't provide a firm date when merchants called.</div>
-      <div class="uv">Specific hardware list and dates not publicly confirmed. Ask prospects to show the actual notice.</div>
-      <div class="sw">EOL notices change the switching cost calculation: "You're already being told to invest in new hardware — make sure that goes toward a system purpose-built for restaurants."</div>
-    </div>
-    <div class="sgc l">
-      <div class="sgm"><span class="pill pl">Ongoing</span><span class="vbdg">&#10003; Validated</span><span class="src">Multiple reps | Clover App Marketplace</span></div>
-      <div class="sgh">Clover's App Marketplace Stacks Monthly Fees on Top of SaaS</div>
-      <div class="sgb">Online ordering (~$100/month), loyalty, and reservations are all separate paid apps — inconsistent support, fragmented integrations. Clover's model is hardware + app store; SpotOn's is integrated by design.</div>
-      <div class="vb">Clover App Market is publicly documented and central to their model.</div>
-      <div class="sw">Ask Clover prospects to add up their monthly app costs. Online ordering + loyalty + reservations often equals or exceeds SpotOn's all-in price — with worse integration and split support.</div>
+      <div class="sw">Ask every NRO prospect if they're inheriting a Clover contract. New legal entity = contract null. Move fast before Clover resigns them.</div>
+      <div class="dns">Don't tell the operator their contract is null as a legal conclusion — say "typically in these situations the contract doesn't transfer automatically, which is worth verifying before you sign anything new."</div>
+      <div style="margin-top:8px;">
+        <div class="ss-map">
+          <div class="ss-map-hdr align-bg"><span class="ss-badge ss-align">Align — trigger event for NRO outreach</span><span class="ss-map-title" style="color:var(--ss-align);">Service Standards Behavior Map</span></div>
+          <div class="ss-map-body">
+            <div class="ss-field"><div class="ss-field-lbl">Opening line</div><div class="ss-field-val">"I work with new restaurant owners specifically — there's actually a window right now to make sure you're not automatically locked into the previous owner's contracts."</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Discovery question</div><div class="ss-field-val">"Did the previous owner have a POS contract with Clover? When the sale closed, did anyone verify whether that contract transferred to you or went away with the old entity?"</div></div>
+            <div class="ss-field"><div class="ss-field-lbl">Manager coaching</div><div class="ss-field-val">Inspect the NRO pipeline weekly: "How many accounts have an inherited Clover contract? Has the rep confirmed entity change?"</div></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- KNOWLEDGE GAPS -->
   <div class="kg">
     <div class="kg-hdr">
       <span class="cbadge"># sales-support</span>
       <div class="kg-ttl">Field Knowledge Gaps — Rovo Miss Log</div>
-      <div class="kg-sub">April 18–24 · Competitive &amp; feature questions reps couldn't get clean answers to</div>
+      <div class="kg-sub">April 21–27 · Competitive &amp; feature questions reps couldn't get clean answers to</div>
     </div>
-    <div class="kg-ctx"><strong>What this is:</strong> Competitive and feature parity questions from <strong>#sales-support</strong> this week — filtered from product/ops questions. These are the gaps that cost deals when they go unanswered mid-conversation. Sourced from the Rovo weekly miss log and live channel scan.</div>
+    <div class="kg-ctx"><strong>What this is:</strong> Competitive and feature parity questions from <strong>#sales-support</strong> — filtered for competitive relevance. Questions that go unanswered in the field cost deals. Sourced from the Rovo weekly miss log.</div>
     <div class="kg-colhdr"><div>Question asked</div><div>Answer / what reps need to know</div><div>Status</div></div>
     <div class="kg-row">
       <div class="kg-q">"Can we transfer sales data from a Toast POS for a new customer?"</div>
-      <div class="kg-a"><strong>No — SpotOn cannot import historical sales data from Toast or any competitor POS.</strong> Merchants switching from Toast need to accept a clean-slate start. Acknowledge this proactively in Toast competitive deals — don't let it surface post-sign.</div>
-      <div class="kg-s"><span class="ktag kt-a">&#10003; Answered</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">Confirmed by Rovo/SME</div></div>
+      <div class="kg-a"><strong>No — SpotOn cannot import historical sales data from Toast or any competitor POS.</strong> Acknowledge proactively in Toast deals — don't let it surface post-sign.</div>
+      <div class="kg-s"><span class="ktag kt-a">&#10003; Answered</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">Confirmed · Rovo/SME</div></div>
     </div>
     <div class="kg-row">
-      <div class="kg-q">"Square auto-emails a detailed item-level sales report — can SpotOn do this?"</div>
-      <div class="kg-a"><strong>Gap — Square's auto-email includes item-level detail SpotOn does not currently push automatically.</strong> SpotOn Dashboard has the reports; the issue is automated email delivery at item-level. Position the Dashboard app as the alternative or flag for roadmap input.</div>
-      <div class="kg-s"><span class="ktag kt-g">&#9888; Gap</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">Flagged by rep · Apr 2026</div></div>
-    </div>
-    <div class="kg-row">
-      <div class="kg-q">"What inventory management does SpotOn offer with RPOS?"</div>
-      <div class="kg-a"><strong>Basic inventory is native; robust management requires 3rd-party integration</strong> (Sculpture Hospitality for bars, MarketMan for F&B). Gap vs. Square's new native MarketMan AI integration. In Square competitive deals on inventory, lead with SpotOn's integration ecosystem — not native parity.</div>
-      <div class="kg-s"><span class="ktag kt-p">&#9889; Partial</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">Known limitation</div></div>
+      <div class="kg-q">"Square auto-emails item-level sales reports — can SpotOn?"</div>
+      <div class="kg-a"><strong>Gap — SpotOn Dashboard has the data; automated item-level email push is not current.</strong> Position Dashboard app as the alternative or flag for roadmap input. <span class="gov gov-prod">Needs Product Review</span></div>
+      <div class="kg-s"><span class="ktag kt-g">&#9888; Gap</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">Flagged · Apr 2026</div></div>
     </div>
     <div class="kg-row">
       <div class="kg-q">"Does a prospect need to pay off a Toast Capital loan before switching?"</div>
-      <div class="kg-a"><strong>No — merchants don't need to pay off Toast Capital before switching.</strong> SpotOn can offer a preview capital offer based on the merchant's loan and sales info (Zach Harper, confirmed). Toast Capital doesn't lock the POS — the obligation stays with Toast but doesn't prevent migration. Clean opener for Toast accounts raising financing as an objection.</div>
+      <div class="kg-a"><strong>No — Toast Capital doesn't lock the POS.</strong> SpotOn can preview a capital offer based on loan and sales info (Zach Harper, confirmed). Clean opener for Toast accounts raising financing as an objection.</div>
       <div class="kg-s"><span class="ktag kt-a">&#10003; Answered</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">Confirmed · Zach Harper</div></div>
     </div>
     <div class="kg-row">
-      <div class="kg-q">"Are Express handhelds able to go off-site like RPOS handhelds?"</div>
-      <div class="kg-a"><strong>Not confirmed as equivalent — flagged as a potential capability gap.</strong> Rovo could not confirm off-site Express handheld functionality. Reps pitching Express for mobile/off-site use cases (food trucks, catering, events) should verify with the tech team before committing in prospect conversations.</div>
+      <div class="kg-q">"Are Express handhelds able to go off-site?"</div>
+      <div class="kg-a"><strong>Not confirmed as equivalent to RPOS handhelds off-site.</strong> Do not commit in prospect conversations without tech team verification. <span class="gov gov-prod">Needs Product Review</span></div>
       <div class="kg-s"><span class="ktag kt-g">&#9888; Unconfirmed</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">Rovo miss · Apr 2026</div></div>
     </div>
     <div class="kg-row">
       <div class="kg-q">"Can you show interchange plus rates on a merchant statement?"</div>
-      <div class="kg-a"><strong>Yes — SpotOn can process on interchange plus pricing.</strong> This is a direct counter to Shift4's "SimpleChange" bundled pricing, which disguises margin. SpotOn's interchange plus transparency is a documented competitive advantage in SkyTab deals — pair with the Shift4 fee stack data from the section above.</div>
+      <div class="kg-a"><strong>Yes — SpotOn processes on interchange plus.</strong> Direct counter to Shift4's SimpleChange bundled pricing. Use with the Shift4 fee stack in every SkyTab competitive deal.</div>
       <div class="kg-s"><span class="ktag kt-a">&#10003; Answered</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">Confirmed · Apr 2026</div></div>
     </div>
     <div class="kg-foot">
-      <span>Source: #sales-support · April 18–24, 2026 · Competitive &amp; feature parity questions only</span>
+      <span>Source: #sales-support · April 21–27, 2026 · Competitive &amp; feature questions only</span>
       <span>Rovo miss log + live channel scan</span>
     </div>
   </div>
-  <div style="margin-top:32px;margin-bottom:28px;">
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:12px;">&#9889; Validated Intel — Ready to Use in Competitive Deals</div>
-    <table class="stbl">
-      <thead><tr><th>Competitor</th><th>Signal</th><th>Status</th><th>Use In</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Toast</strong></td><td>Spanish/Chinese = chat only. SpotOn Mexico call center = phone support.</td><td style="color:#166534;font-weight:600;">&#10003;</td><td>Spanish-speaking operators, FSR</td></tr>
-        <tr><td><strong>Toast</strong></td><td>CNP rates on OLO, handhelds, QR, offline — SpotOn doesn't charge CNP.</td><td style="color:#166534;font-weight:600;">&#10003;</td><td>Any account with digital mix</td></tr>
-        <tr><td><strong>Toast</strong></td><td>Timed Send can't add items mid-course without firing whole tab.</td><td style="color:#166534;font-weight:600;">&#10003;</td><td>FSR, fine dining demos</td></tr>
-        <tr><td><strong>Shift4</strong></td><td>RAF $325/device + Annual $99/device = ~$1,299/year before processing.</td><td style="color:#166534;font-weight:600;">&#10003;</td><td>Every SkyTab deal</td></tr>
-        <tr><td><strong>Shift4</strong></td><td>10-item cancellation letter: no check splits, no coursing, poor support.</td><td style="color:#166534;font-weight:600;">&#10003; Field doc</td><td>FSR accounts considering SkyTab</td></tr>
-        <tr><td><strong>Square</strong></td><td>Managerbot AI agent live. SpotOn counter: Profit Assist, 4.3% avg cost savings.</td><td style="color:#166534;font-weight:600;">&#10003;</td><td>Any AI conversation</td></tr>
-        <tr><td><strong>Square</strong></td><td>Sysco nationwide deal — going door-to-door in mid-market.</td><td style="color:#166534;font-weight:600;">&#10003;</td><td>Sysco-adjacent markets</td></tr>
-        <tr><td><strong>Clover</strong></td><td>New legal entity = contract null. Clean conversion window before Clover resigns.</td><td style="color:#166534;font-weight:600;">&#10003; Contract law</td><td>NRO + new-owner accounts</td></tr>
-      </tbody>
-    </table>
+
+  <!-- DO NOT USE YET -->
+  <div class="dnu-box">
+    <h4>&#128683; Do Not Use Yet — Unverified / Needs Review</h4>
+    <div class="dnu-item">US Foods "pays for" Toast hardware — framing of bundled financing, not confirmed subsidy. <span class="gov gov-dnu" style="margin-left:6px;">Do Not Use Yet</span></div>
+    <div class="dnu-item">Square showing credit card ads on guest-facing handhelds — Reddit-sourced via one rep. Not confirmed. <span class="gov gov-dnu" style="margin-left:6px;">Do Not Use Yet</span></div>
+    <div class="dnu-item">Clover EOL hardware notices — specific hardware list and firm dates not publicly confirmed. Ask prospects to show the actual notice. <span class="gov gov-dnu" style="margin-left:6px;">Do Not Use Yet</span></div>
+    <div class="dnu-item">SkyTab support phone tree 20+ minute holds — single merchant report, structurally plausible but not confirmed. <span class="gov gov-int" style="margin-left:6px;">Internal Only</span></div>
+    <div class="dnu-item">Express handheld off-site capability — tech team confirmation needed before using in pitches. <span class="gov gov-prod" style="margin-left:6px;">Needs Product Review</span></div>
+    <div class="dnu-item">SpotOn Profit Assist contractual outcome guarantee language — Needs PMM alignment before using PAR-style ROI commitment language. <span class="gov gov-pmm" style="margin-left:6px;">Needs PMM Review</span></div>
   </div>
-  <div class="sclose">
-    <h3>&#128101; Actions for the Field This Week</h3>
-    <ul class="al">
-      <li><strong>Every SkyTab deal:</strong> RAF + Annual + Month-End Billing = ~$1,299/year before processing. Put the number in writing in your proposal.</li>
-      <li><strong>Toast deals with Spanish-speaking operators:</strong> Toast = chat only. SpotOn = phone via Mexico call center. On a Saturday night emergency, the distinction is everything.</li>
-      <li><strong>Every FSR demo vs. Toast:</strong> Show the Timed Send gap live. Demonstrable beats describable.</li>
-      <li><strong>Square deals in Sysco markets:</strong> Expect a funded Square rep. Lead with FSR depth and the feature gaps Square hasn't closed (coursing, check management, table maps).</li>
-      <li><strong>NRO pipeline:</strong> Ask every new owner if they're inheriting a Clover contract. New legal entity = null. Move fast.</li>
-      <li><strong>Profit Assist IS the AI story — activate it now.</strong> "SpotOn's Profit Assist is already delivering 4.3% avg cost savings — AI that analyzes your P&L automatically, connected to QuickBooks or R365." Talk tracks in Confluence → search "Profit Assist Expansion."</li>
-    </ul>
-  </div>
+
   <div class="sfoot">
-    <span>SpotOn Intelligence · Field Intel · April 25, 2026</span>
-    <span>#beat-clover · #beat-skytab · #beat-square · #beat-toast · #sales-support · April 18–24</span>
+    <span>SpotOn Intelligence · Field Intel · April 28, 2026</span>
+    <span>#beat-clover · #beat-skytab · #beat-square · #beat-toast · #sales-support</span>
+  </div>
+</div>
+</div>
+
+<!-- ═══════ BATTLE CARDS ═══════ -->
+<div id="p-bc" class="panel">
+<div class="bcw">
+  <div style="border-top:4px solid var(--ink);padding-top:20px;margin-bottom:20px;">
+    <div style="font-size:24px;font-weight:800;margin-bottom:4px;">Battle <em style="font-style:italic;color:var(--blue);">Cards</em></div>
+    <div style="font-size:11px;color:var(--muted);">Competitor-specific positioning for HS reps · <span class="gov gov-int">Internal only — do not share externally</span></div>
+  </div>
+
+  <div class="bc-tabs">
+    <button class="bc-tab on" onclick="showBC('toast',this)">&#127859; Toast</button>
+    <button class="bc-tab" onclick="showBC('skytab',this)">&#128179; Shift4 / SkyTab</button>
+    <button class="bc-tab" onclick="showBC('square',this)">&#9642; Square</button>
+    <button class="bc-tab" onclick="showBC('clover',this)">&#127808; Clover</button>
+    <button class="bc-tab" onclick="showBC('opentable',this)">&#128278; OpenTable</button>
+  </div>
+
+  <!-- TOAST BATTLE CARD -->
+  <div id="bc-toast" class="bc-panel on">
+    <div class="bc-hdr">
+      <div class="bc-comp">Battle Card — Updated April 28, 2026</div>
+      <div class="bc-name">Toast</div>
+      <div class="bc-sub">Market leader · $2B cash · 164K+ restaurants · "Built for Busy" brand campaign active · Q1 earnings May 7</div>
+    </div>
+    <div class="bc-body">
+      <div class="bc-sec">
+        <div class="bc-sec-title">What Toast Usually Attacks</div>
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Primary attack</div><div class="bc-item-val">"We're the industry standard — 164K restaurants trust Toast. SpotOn is smaller and less proven."</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Why it lands</div><div class="bc-item-val">Social proof is powerful. Operators don't want to be the first person to try something. "Industry standard" triggers loss aversion.</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Secondary attack</div><div class="bc-item-val">"Toast IQ gives you AI-powered insights right in your POS — SpotOn doesn't have that."</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Why it lands</div><div class="bc-item-val">AI is a current operator priority. Reps without a named SpotOn AI story lose this comparison by default.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Where SpotOn Is Vulnerable</div>
+        <div class="bc-grid">
+          <div class="bc-lose"><div class="bc-item-lbl">Historical data</div><div class="bc-item-val">SpotOn cannot import historical sales data from Toast. Operators switching must accept a clean-slate start. Acknowledge this proactively.</div></div>
+          <div class="bc-lose"><div class="bc-item-lbl">Brand awareness</div><div class="bc-item-val">Toast has national brand presence, "Built for Busy" campaign, and top-of-mind recognition SpotOn does not have at the same scale.</div></div>
+          <div class="bc-lose"><div class="bc-item-lbl">AI naming</div><div class="bc-item-val">Toast IQ is a named, marketed product. Reps must proactively name Profit Assist — it doesn't sell itself without activation.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Where SpotOn Can Win</div>
+        <div class="bc-grid">
+          <div class="bc-win"><div class="bc-item-lbl">FSR hospitality depth</div><div class="bc-item-val">Coursing, independent item sends, check management, table management built for FSR complexity. Toast's QSR enterprise push is moving away from this.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">CNP fee gap</div><div class="bc-item-val">Toast charges CNP rates on OLO, QR, handheld, and offline transactions. SpotOn does not. Calculable dollar gap for any account with digital mix.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">Bilingual phone support</div><div class="bc-item-val">Toast multilingual support = chat only. SpotOn Mexico call center = live phone in Spanish. Saturday night emergency test.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">Documented AI outcomes</div><div class="bc-item-val">Profit Assist: 4.3% avg cost savings, P&L analysis, anomaly detection. Toast IQ is newer and less outcome-validated at this specificity.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Discovery Questions · Objection Responses</div>
+        <div class="bc-qa"><div class="bc-q">Q: "Toast is the industry standard — why would I switch?"</div><div class="bc-a"><em>"That's fair — Toast is the market leader. What I'd ask is: what's the hardest part of running your operation that Toast still hasn't solved? Because as they push into drive-thru and QSR enterprise, I'm seeing gaps in the accounts that have your complexity — coursing, check management, service depth. That's where the comparison actually matters."</em></div></div>
+        <div class="bc-qa"><div class="bc-q">Q: "Toast IQ looks impressive — do you have something like that?"</div><div class="bc-a"><em>"SpotOn's Profit Assist is already delivering 4.3% average cost savings — AI that connects to your actual P&L through QuickBooks or Restaurant365, detects anomalies, and gives you specific recommendations. Toast IQ is newer and positioned more as insight reporting. Profit Assist is operationally connected."</em> <span class="gov gov-pmm" style="margin-left:6px;">Needs PMM Review before broad use</span></div></div>
+        <div class="bc-qa"><div class="bc-q">Q: "What about my Toast Capital loan — I need to pay that off first."</div><div class="bc-a"><em>"You don't — Toast Capital is a separate obligation that stays with Toast regardless of which POS you use. SpotOn can actually preview a capital offer based on your current loan and sales history. You could transition and have a capital option on the table at the same time."</em></div></div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Attach Opportunities · Proof Points · Escalation</div>
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Best attach motions</div><div class="bc-item-val">Payments (CNP delta) → Profit Assist → Online Ordering → Loyalty + Marketing</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Proof points</div><div class="bc-item-val">Profit Assist: 4.3% avg cost savings. CNP rate gap: calculable from account digital mix. SpotOn Mexico phone support: verified.</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Do not say</div><div class="bc-item-val">❌ "Toast is struggling financially" — false, retired narrative<br>❌ "Toast is just for fast food" — they serve FSR too<br>❌ "We're cheaper" — compete on value, not price</div></div>
+          <div class="esc-box"><div class="bc-item-lbl">When to escalate</div><div class="bc-item-val">Escalate to manager/SE when: multi-location enterprise deal (50+ seats), complex integration requirements (existing Toast Capital), or when the prospect asks for contractual ROI commitments.</div></div>
+        </div>
+        <div class="gov-bar"><span class="gov gov-int">Internal only</span><span class="gov gov-pmm">Profit Assist outcome language needs PMM review before formal use</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKYTAB BATTLE CARD -->
+  <div id="bc-skytab" class="bc-panel">
+    <div class="bc-hdr">
+      <div class="bc-comp">Battle Card — Updated April 28, 2026</div>
+      <div class="bc-name">Shift4 / SkyTab</div>
+      <div class="bc-sub">Payments-first POS · ~$1,299/yr in documented program fees · Leadership shakeup · BMO Market Perform rating · TouchBistro + Revel + Focus acquisitions = multi-brand support fragmentation</div>
+    </div>
+    <div class="bc-body">
+      <div class="bc-sec">
+        <div class="bc-sec-title">What SkyTab Usually Attacks</div>
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Primary attack</div><div class="bc-item-val">"SimpleChange pricing — one flat rate, no surprises. You always know what you're paying."</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Why it lands</div><div class="bc-item-val">Operators want pricing simplicity. "No surprises" messaging directly addresses payment anxiety. Sounds transparent even when it isn't.</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Secondary attack</div><div class="bc-item-val">"SkyTab hardware is sleek and modern. SpotOn looks dated."</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Why it lands</div><div class="bc-item-val">Hardware aesthetics matter in hospitality. The visible device affects how operators feel about the brand.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Where SpotOn Can Win</div>
+        <div class="bc-grid">
+          <div class="bc-win"><div class="bc-item-lbl">Fee transparency</div><div class="bc-item-val">$1,299/year in documented program fees (RAF + Annual + Month-End) before processing. Interchange-plus from SpotOn shows actual costs. The dollar comparison wins in proposals.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">FSR product depth</div><div class="bc-item-val">No check splits on handhelds, no coursing, no seating charts on Airs — all documented in a real operator cancellation letter. Verifiable product gaps.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">Support stability</div><div class="bc-item-val">Shift4's multi-brand acquisitions (SkyTab, TouchBistro, Revel, Focus) create support fragmentation risk. Ask: "When you call support, which brand do you get?"</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">Pricing clarity</div><div class="bc-item-val">SimpleChange bundles margin inside the rate. Interchange-plus with SpotOn shows actual interchange + fixed markup. Operators who review statements see the difference.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Discovery · Objection Responses</div>
+        <div class="bc-qa"><div class="bc-q">Q: "SkyTab has simple, flat-rate pricing — SpotOn seems more complicated."</div><div class="bc-a"><em>"SimpleChange is flat-rate, which means Shift4 decides what their margin is and bundles it into the rate. On top of that, they've added $1,299 per year in program fees since December 2025 — a $325 RAF, $99 Annual Program Fee, and an increased month-end billing charge. Interchange-plus with SpotOn shows you exactly what the card costs and what SpotOn's markup is. Most operators who've reviewed both statements prefer the transparency."</em></div></div>
+        <div class="bc-qa"><div class="bc-q">Q: "We already looked at SkyTab and they seemed fine for FSR."</div><div class="bc-a"><em>"A few things worth checking before you commit: does SkyTab support check splits on handhelds? Coursing? Seating charts on their mobile units? These are documented gaps — I have a real operator cancellation letter that lists 10 specific issues they hit in FSR service. I'd rather surface those questions now than have you hit them in month 3."</em></div></div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Best attach motions</div><div class="bc-item-val">Payments TCO comparison → Profit Assist savings visibility → full FSR stack vs. SkyTab app limitations</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Do not say</div><div class="bc-item-val">❌ "Hidden fees" — they're documented fees, not hidden<br>❌ "SkyTab is going out of business" — unsupported<br>❌ Make claims about Shift4's TouchBistro support without current documentation</div></div>
+        </div>
+        <div class="gov-bar"><span class="gov gov-sell">Seller Ready</span><span class="gov gov-int">Fee documentation — always cite Merchant Cost Consulting source</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SQUARE BATTLE CARD -->
+  <div id="bc-square" class="bc-panel">
+    <div class="bc-hdr">
+      <div class="bc-comp">Battle Card — Updated April 28, 2026</div>
+      <div class="bc-name">Square</div>
+      <div class="bc-sub">Sysco distribution deal active · Managerbot AI agent launched Apr 10 · MarketMan inventory AI live · Shifting from 80% self-serve to 50/50 field model · Mid-market push underway</div>
+    </div>
+    <div class="bc-body">
+      <div class="bc-sec">
+        <div class="bc-sec-title">What Square Usually Attacks</div>
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Primary attack</div><div class="bc-item-val">"Square is the complete restaurant OS — POS, payments, inventory AI, scheduling AI, marketing, online ordering, all in one."</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Why it lands</div><div class="bc-item-val">Integrated platform messaging resonates with operators who are tired of managing multiple vendors. AI story is current and well-marketed.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Where SpotOn Can Win</div>
+        <div class="bc-grid">
+          <div class="bc-win"><div class="bc-item-lbl">FSR product depth</div><div class="bc-item-val">Square's FSR product still has unresolved gaps: advanced coursing, complex check management, table management depth. SpotOn is built for this complexity natively.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">Documented AI outcomes</div><div class="bc-item-val">Profit Assist has documented outcomes (4.3% avg cost savings). Managerbot and MarketMan AI are newly launched — outcomes unvalidated at FSR scale yet.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">Guest data ownership</div><div class="bc-item-val">Square's credit card ad display on guest-facing handhelds (unverified but field-reported) raises operator guest experience questions. SpotOn doesn't monetize the operator's guest experience.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Discovery · Objection Responses</div>
+        <div class="bc-qa"><div class="bc-q">Q: "Square now has AI — Managerbot handles scheduling and purchasing automatically."</div><div class="bc-a"><em>"Managerbot just launched — it's generating a lot of buzz, which is fair. What's different about Profit Assist is that it's connected to your actual P&L and accounting software — it's not just automating tasks, it's identifying where your costs are running above benchmark and telling you specifically what to fix. We have documented outcomes: 4.3% average cost savings. Managerbot's outcomes are still TBD at FSR scale."</em> <span class="gov gov-pmm" style="margin-left:4px;">Needs PMM Review</span></div></div>
+        <div class="bc-qa"><div class="bc-q">Q: "The Sysco rep showed me Square and said it integrates with my food ordering."</div><div class="bc-a"><em>"The Sysco partnership gives Square distribution reach they didn't have before — I respect that. What Sysco reps typically show is the ordering integration. What they're not showing is what happens during service: coursing, check management, the table management complexity your operation runs every night. That's where I want to spend 20 minutes with you."</em></div></div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Best attach motions</div><div class="bc-item-val">Profit Assist vs. Managerbot → Payments (no credit card ads) → Online Ordering + Loyalty first-party data</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Do not say</div><div class="bc-item-val">❌ "Square is for small businesses" — they're actively targeting mid-market FSR<br>❌ "Managerbot doesn't work" — say "newly launched, outcomes unvalidated at FSR scale"<br>❌ Credit card ad claim without verification</div></div>
+        </div>
+        <div class="gov-bar"><span class="gov gov-sell">Seller Ready</span><span class="gov gov-pmm">AI outcome comparison language needs PMM review</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOVER BATTLE CARD -->
+  <div id="bc-clover" class="bc-panel">
+    <div class="bc-hdr">
+      <div class="bc-comp">Battle Card — Updated April 28, 2026</div>
+      <div class="bc-name">Clover</div>
+      <div class="bc-sub">Fiserv-owned · App marketplace model (fees stack on every add-on) · EOL hardware notices active · NRO contract null opportunity</div>
+    </div>
+    <div class="bc-body">
+      <div class="bc-sec">
+        <div class="bc-sec-title">What Clover Usually Attacks</div>
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Primary attack</div><div class="bc-item-val">"Already installed. You know how it works. Switching is a big disruption."</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Why it lands</div><div class="bc-item-val">Switching cost is real. Status quo bias is powerful. Operators default to familiar unless the disruption is clearly worth it.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-sec-title">Where SpotOn Can Win</div>
+        <div class="bc-grid">
+          <div class="bc-win"><div class="bc-item-lbl">NRO / new owner opportunity</div><div class="bc-item-val">New legal entity = Clover contract null. This is the cleanest SpotOn opening in any NRO deal. Move fast before Clover resigns.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">True cost comparison</div><div class="bc-item-val">Clover's app marketplace: online ordering (~$100/mo), loyalty, reservations all separate. Add them up — often equals or exceeds SpotOn's all-in price with worse integration.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">EOL hardware</div><div class="bc-item-val">Clover sending EOL notices to specific hardware. "You're already being asked to invest in new hardware — make sure it goes toward a system built for restaurants."</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Best attach motions</div><div class="bc-item-val">Full stack vs. app marketplace fees → Payments + Profit Assist → Online Ordering + Loyalty integrated</div></div>
+          <div class="bc-item"><div class="bc-item-lbl">Do not say</div><div class="bc-item-val">❌ Tell an operator their contract is null as a legal conclusion — characterize as "worth verifying"<br>❌ Cite specific EOL hardware until prospect shows notice</div></div>
+        </div>
+        <div class="gov-bar"><span class="gov gov-sell">Seller Ready</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPENTABLE BATTLE CARD -->
+  <div id="bc-opentable" class="bc-panel">
+    <div class="bc-hdr">
+      <div class="bc-comp">Battle Card — Updated April 28, 2026</div>
+      <div class="bc-name">OpenTable</div>
+      <div class="bc-sub">WA AG antitrust review active · LRA (1,400 members) on record re: POS lock-in · Annual contract mandate replacing month-to-month · No enforcement action yet</div>
+    </div>
+    <div class="bc-body">
+      <div class="bc-sec">
+        <div class="bc-sec-title">Where SpotOn Can Win</div>
+        <div class="bc-grid">
+          <div class="bc-win"><div class="bc-item-lbl">Platform independence</div><div class="bc-item-val">SpotOn's reservation and guest data tools give operators first-party ownership — no platform lock-in risk, no dependency on a third party's annual contract mandate.</div></div>
+          <div class="bc-win"><div class="bc-item-lbl">LRA quote on record</div><div class="bc-item-val">LRA CEO put POS lock-in language in writing. WA AG is reviewing. The precedent is live. Use the quote as a conversation opener — not a legal claim.</div></div>
+        </div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-qa"><div class="bc-q">Q: Opening conversation with an OpenTable-dependent FSR</div><div class="bc-a"><em>"The LRA — 1,400 restaurant members — just put in writing that OpenTable's new annual contract language could lock operators into specific POS systems. The WA Attorney General is reviewing it. I'm not saying that affects you today — but I want you to understand what the conversation looks like before you sign anything new with them."</em></div></div>
+      </div>
+      <div class="bc-sec">
+        <div class="bc-grid">
+          <div class="bc-item"><div class="bc-item-lbl">Do not say</div><div class="bc-item-val">❌ "OpenTable is illegal" — unconfirmed, under review only<br>❌ Make specific POS lock-in claims as confirmed fact<br>❌ Reference WA AG as anything beyond "currently reviewing"</div></div>
+        </div>
+        <div class="gov-bar"><span class="gov gov-sell">Seller Ready — LRA quote</span><span class="gov gov-pmm">Antitrust language needs PMM guidance before formal use</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════ MANAGER HUDDLE ═══════ -->
+<div id="p-mh" class="panel">
+<div class="mhw">
+  <div style="border-top:4px solid var(--ink);padding-top:20px;margin-bottom:20px;">
+    <div style="font-size:24px;font-weight:800;margin-bottom:4px;">Manager <em style="font-style:italic;color:var(--blue);">Huddle</em></div>
+    <div style="font-size:11px;color:var(--muted);">Monday coaching kit for ASMs · Week of April 28 · <span class="gov gov-int">Internal only</span></div>
+  </div>
+
+  <div class="mh-week">
+    <div class="mh-week-lbl">This week's theme</div>
+    <div class="mh-week-theme">Compete on outcomes, not features — and hold the line on price.</div>
+    <div class="mh-week-sub">Toast launched a brand campaign. PAR raised the proof bar. Macro is tightening. The reps who win this week are the ones who can name a dollar outcome — not just a feature — in every competitive conversation.</div>
+  </div>
+
+  <!-- WEEK SIGNALS -->
+  <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Weekly Signals for the Huddle</div>
+  <div class="hc-grid">
+    <div class="hc">
+      <div class="hc-lbl">&#128202; Market signal</div>
+      <div class="hc-val">Technomic moved to scenario-based forecasting — rare. Traffic flat in March. 50% of Texas operators unprofitable in 2025. Operators are in cost-protection mode, not growth mode. <strong>Short-horizon decision making is the buying context this week.</strong></div>
+    </div>
+    <div class="hc">
+      <div class="hc-lbl">&#127942; Competitor signal</div>
+      <div class="hc-val">Toast launched "Built for Busy" with national OOH and Arnold agency. Emotional loyalty play — harder to break than rational preference. <strong>Q1 earnings are May 7. Brief your team before that call resets the narrative.</strong></div>
+    </div>
+    <div class="hc">
+      <div class="hc-lbl">&#128233; Field signal</div>
+      <div class="hc-val">Square is in the field with Sysco reps targeting your mid-market FSR accounts. <strong>Expect better-funded Square reps in Sysco-adjacent accounts this week.</strong> Know which accounts are in that zone.</div>
+    </div>
+    <div class="hc">
+      <div class="hc-lbl">&#128279; SpotOn counter</div>
+      <div class="hc-val">Profit Assist: 4.3% avg cost savings. Shift4 fee stack: ~$1,299/year documented. LRA POS lock-in quote: use verbatim. These are three seller-ready outcomes your team should be naming this week.</div>
+    </div>
+  </div>
+
+  <!-- DISCOVERY PRACTICE -->
+  <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Capture Practice — Discovery Question of the Week</div>
+  <div class="hc" style="margin-bottom:14px;">
+    <div class="hc-lbl">&#128269; Capture · Probe for friction · Tie to impact</div>
+    <div class="hc-val" style="font-size:14px;font-weight:600;line-height:1.5;margin-bottom:8px;">"With inflation and gas prices where they are — what's your biggest cost pressure heading into summer, and what is your current system doing about it?"</div>
+    <div class="hc-val"><strong>Why it works:</strong> Opens with operator reality (macro context), not product. Creates space for the rep to hear labor, payments, or margin pain — all SpotOn attach opportunities. Does not ask for a meeting or demo — it diagnoses.</div>
+    <div class="hc-val" style="margin-top:8px;"><strong>Coach to listen for:</strong> If they say "processing fees" → Payments + Shift4 fee stack. If they say "labor" → Profit Assist + scheduling. If they say "I don't know what it's doing" → Profit Assist visibility story.</div>
+  </div>
+
+  <!-- ROLE PLAY -->
+  <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Trade Role-Play — Objection of the Week</div>
+  <div class="role-play">
+    <h4>&#127918; Scenario: Prospect has a Toast Capital loan and says "I can't switch until it's paid off."</h4>
+    <div class="rp-row"><div class="rp-lbl">Operator says:</div><div class="rp-val">"I'm actually locked into Toast because I took a Toast Capital loan. I can't switch until that's paid down."</div></div>
+    <div class="rp-row"><div class="rp-lbl">Rep should say:</div><div class="rp-val">"The loan actually doesn't lock you into the POS — those are two separate things. Toast Capital stays with Toast regardless of what system you use. We've had operators transition while still paying off their Toast Capital balance. SpotOn can also give you a preview of a capital offer based on your current loan and sales history — so you'd actually have options on the table at the same time."</div></div>
+    <div class="rp-row"><div class="rp-lbl">What to coach:</div><div class="rp-val">Did the rep Test first (what specifically is the concern) before moving to Reduce? Or did they jump straight to the answer? The TRADE move is: Test → Reduce → Anchor to value.</div></div>
+    <div class="rp-row"><div class="rp-lbl">SS stage:</div><div class="rp-val">Trade · Test → Reduce → Anchor</div></div>
+  </div>
+
+  <!-- ATTACH MOTION -->
+  <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Attach Motion of the Week</div>
+  <div class="hc" style="margin-bottom:14px;">
+    <div class="hc-lbl">&#128284; Payments → Profit Assist — the cost protection stack</div>
+    <div class="hc-val"><strong>Setup:</strong> In every SkyTab competitive deal, start with the TCO comparison ($1,299/year in documented fees). After you win on Payments, attach Profit Assist as the ongoing cost visibility layer — "You'll save on processing fees upfront, and Profit Assist will keep tracking your cost structure automatically from there."</div>
+    <div class="hc-val" style="margin-top:8px;"><strong>SS stage map:</strong> Capture (surface fee pain) → Demo (show Shift4 fee stack + Profit Assist) → Trade (anchor total savings in proposal)</div>
+    <div class="hc-val" style="margin-top:8px;"><strong>Coach to inspect:</strong> "Is Profit Assist in the proposal? Or did the rep close on Payments alone and leave the attach on the table?"</div>
+  </div>
+
+  <!-- MANAGER INSPECTION KIT -->
+  <div class="inspect-box">
+    <h4>&#128269; Manager Inspection — Deal Review Questions This Week</h4>
+    <div class="inspect-row"><div class="inspect-lbl">Align</div><div>Did the rep visit the right rooftop? Is ICP confirmed? What was the trigger event — or did they go in cold?</div></div>
+    <div class="inspect-row"><div class="inspect-lbl">Capture</div><div>Did the rep move from pain → impact → cost of delay? Do they know what this operator's biggest cost pressure is right now?</div></div>
+    <div class="inspect-row"><div class="inspect-lbl">Demo</div><div>Did they demo in the order of pain — or run the standard flow? Did they show the CNP delta or Shift4 fee comparison with a real number?</div></div>
+    <div class="inspect-row"><div class="inspect-lbl">Trade</div><div>Is Profit Assist in the proposal? Is the $1,299 SkyTab fee figure in writing with a source? Did they test the objection before reducing it?</div></div>
+    <div class="inspect-row"><div class="inspect-lbl">Handoff</div><div>Does the rep know the decision-maker? Is there a mutual action step with a date? Is pricing accurate and documented before submission?</div></div>
+  </div>
+
+  <!-- COACHING BEHAVIOR -->
+  <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:6px;">Coaching Behavior to Observe This Week</div>
+  <div class="hc" style="margin-bottom:14px;">
+    <div class="hc-lbl">&#128064; Observe: Is the rep naming outcomes — or describing features?</div>
+    <div class="hc-val"><strong>What good looks like:</strong> "Profit Assist averages 4.3% cost savings — that's about $X per month for an operation your size." Not: "Profit Assist analyzes your P&L and gives you insights."</div>
+    <div class="hc-val" style="margin-top:6px;"><strong>What to coach:</strong> Outcome first, mechanism second. The number creates urgency. The feature description does not. In a tight macro environment, operators make decisions on dollar impact — not capability demos.</div>
+    <div class="hc-val" style="margin-top:6px;"><strong>SS connection:</strong> This is Capture → Tie to Impact. The rep's job is to connect pain to a quantified business consequence — not to describe how the product works.</div>
+  </div>
+
+  <!-- FOLLOW UP ACTION -->
+  <div class="hc hc-full" style="margin-bottom:6px;border-color:var(--blue);border-width:2px;">
+    <div class="hc-lbl" style="color:var(--blue);">&#9889; Follow-up Action for Reps — Send Before End of Week</div>
+    <div class="hc-val"><strong>For every Toast competitive deal in pipeline:</strong> Add one thing Toast's enterprise push doesn't cover for the specific account (FSR complexity, bilingual support, no CNP fee) to your follow-up message this week. Toast's May 7 earnings call is coming — get your contrast in writing before their narrative resets.</div>
+    <div class="hc-val" style="margin-top:6px;"><em>Sample follow-up message: "Following up from our conversation — one thing I wanted to put in writing before Toast's earnings announcement next week: [specific gap relevant to this account]. Worth a 20-minute conversation to compare before you make a decision?"</em></div>
+  </div>
+
+  <div style="margin-top:28px;padding-top:13px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+    <span style="font-size:10px;color:var(--muted);">SpotOn Intelligence · Manager Huddle · Week of April 28, 2026</span>
+    <span style="font-size:10px;color:var(--muted);">Service Standards: Align · Capture · Demo · Trade · Handoff</span>
   </div>
 </div>
 </div>
@@ -679,50 +1214,29 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Poppins',sans-se
 </div><!-- end #dashboard -->
 
 <script>
-// ── AUTH CONFIG ──────────────────────────────────────────────
+// ── AUTH ────────────────────────────────────────
 const ALLOWED_DOMAIN = 'spoton.com';
-
 function handleCredentialResponse(response) {
   try {
-    // Decode the JWT token from Google
     const payload = JSON.parse(atob(response.credential.split('.')[1]));
     const email = payload.email || '';
     const domain = email.split('@')[1] || '';
-
     if (domain === ALLOWED_DOMAIN) {
-      // Authorized — show dashboard
       const gate = document.getElementById('auth-gate');
       gate.classList.add('hidden');
       setTimeout(() => gate.style.display = 'none', 400);
       document.getElementById('dashboard').style.display = 'block';
-
-      // Show user info in header
       const bar = document.getElementById('user-bar');
       bar.classList.add('show');
       document.getElementById('user-name').textContent = payload.name || email;
-      if (payload.picture) {
-        document.getElementById('user-avatar').src = payload.picture;
-      }
-
-      // Store session
-      sessionStorage.setItem('spoton_auth', JSON.stringify({
-        email, name: payload.name, picture: payload.picture
-      }));
+      if (payload.picture) document.getElementById('user-avatar').src = payload.picture;
+      sessionStorage.setItem('spoton_auth', JSON.stringify({email, name: payload.name, picture: payload.picture}));
     } else {
-      // Wrong domain — show error
       document.getElementById('gate-error').classList.add('show');
     }
-  } catch (e) {
-    document.getElementById('gate-error').classList.add('show');
-  }
+  } catch(e) { document.getElementById('gate-error').classList.add('show'); }
 }
-
-function signOut() {
-  sessionStorage.removeItem('spoton_auth');
-  location.reload();
-}
-
-// Check for existing session
+function signOut() { sessionStorage.removeItem('spoton_auth'); location.reload(); }
 window.addEventListener('load', function() {
   const saved = sessionStorage.getItem('spoton_auth');
   if (saved) {
@@ -734,27 +1248,65 @@ window.addEventListener('load', function() {
       bar.classList.add('show');
       document.getElementById('user-name').textContent = data.name || data.email;
       if (data.picture) document.getElementById('user-avatar').src = data.picture;
-    } catch(e) { /* fall through to login */ }
+    } catch(e) {}
   }
 });
 
-// ── DASHBOARD FUNCTIONS ──────────────────────────────────────
-function show(name,btn){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-  document.getElementById('p-'+name).classList.add('on');
+// ── TAB NAVIGATION ───────────────────────────────
+function show(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('p-' + name).classList.add('on');
   btn.classList.add('on');
 }
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('on');
-  setTimeout(()=>t.classList.remove('on'),2600);
+
+// ── BATTLE CARDS ─────────────────────────────────
+function showBC(name, btn) {
+  document.querySelectorAll('.bc-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.bc-tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('bc-' + name).classList.add('on');
+  btn.classList.add('on');
 }
-function runPulse(){
-  const d=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  const p="Run today's SpotOn Intelligence pulse. Reference date: "+d+". Sales audience. Scan #beat-clover, #beat-skytab, #beat-square, #beat-toast for the past 7 days. Scan #sales-support for competitive and feature parity questions only. Validate all field signals against public sources. Update Profit Assist talk track with any new outcome data. Produce: Market Pulse dashboard, Monday Brief (Morning Brew editorial style), and Field Intel with Knowledge Gaps section. Generate the updated HTML dashboard file.";
-  if(typeof sendPrompt==='function'){sendPrompt(p);}
-  else{navigator.clipboard.writeText(p).then(()=>toast('Prompt copied — paste into chat to run')).catch(()=>toast('Copy failed'));}
+
+// ── TOAST NOTIFICATION ──────────────────────────
+function toastMsg(msg) {
+  const t = document.getElementById('toast-msg');
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2600);
+}
+
+// ── RUN PULSE ───────────────────────────────────
+function runPulse() {
+  const d = new Date().toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
+  const p = `Run the SpotOn Intelligence V2 weekly pulse. Reference date: ${d}. Sales audience: HS reps, ASMs, RVPs.
+
+SCAN SOURCES:
+- #beat-toast, #beat-skytab, #beat-square, #beat-clover (past 7 days, validate all claims against public sources)
+- #sales-support (competitive and feature parity questions only — filter out ops/product support)
+- Rovo weekly miss log in #sales-support-rovo-feedback
+
+VALIDATE against: competitor official pages, public customer reviews, news/analyst reports, earnings calls. Label all signals with source confidence and governance status.
+
+PRODUCE ALL 5 TABS:
+1. Market Pulse — signals with importance rating, source confidence, governance badge, rep field action, Service Standards stage mapping
+2. Monday Brief — 5 stories with operator problem, competitor signal, SpotOn angle, The Move, discovery question, talk track per Service Standards
+3. Field Intel — Slack beat signals (Validated/Field Only/Unverified), Knowledge Gaps from #sales-support, Do Not Use Yet section
+4. Battle Cards — update Toast, Shift4/SkyTab, Square, Clover, OpenTable with new this-week intelligence
+5. Manager Huddle — weekly theme, market signal, competitor signal, field signal, discovery question to practice, Trade role-play, attach motion, coaching behavior, deal inspection questions
+
+SERVICE STANDARDS: Every seller action must map to Align (Prospecting), Capture (Discovery), Demo, Trade (Negotiations), or Handoff (Application).
+
+GOVERNANCE: Label every claim: Seller Ready / Needs PMM Review / Needs Product Review / Manager Coaching Only / Do Not Use Yet.
+
+Generate the full updated HTML dashboard file.`;
+
+  if (typeof sendPrompt === 'function') {
+    sendPrompt(p);
+  } else {
+    navigator.clipboard.writeText(p)
+      .then(() => toastMsg('Pulse prompt copied — paste into chat to run'))
+      .catch(() => toastMsg('Copy failed — use Ctrl+C'));
+  }
 }
 </script>
 </body>
