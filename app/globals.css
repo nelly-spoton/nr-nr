@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * MarginLab design tokens — SINGLE token layer.
+ * STATUS: PROVISIONAL. The Deal Prep reference (dealprep.vercel.app) could not be
+ * inspected (network policy blocked it), so these values are NOT extracted from it.
+ * They are borrowed from the repo's own SpotOn page (index.html) as a stand-in.
+ * Replace the values in this block once the reference has been inspected; every
+ * component reads from these variables only. See DESIGN_REFERENCE.md.
+ */
+:root {
+  --canvas: #faf8f3;
+  --surface: #ffffff;
+  --surface-2: #f7f5f0;
+  --ink: #1a1714;
+  --muted: #6b6560;
+  --rule: #e4e0d8;
+  --brand: #1d3fbe;
+  --brand-soft: #eef2ff;
+  --good: #15803d;
+  --good-soft: #dcfce7;
+  --warn: #92400e;
+  --warn-soft: #fef3c7;
+  --bad: #991b1b;
+  --bad-soft: #fee2e2;
+
+  --font-sans: Poppins, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --radius-card: 12px;
+  --radius-ctl: 8px;
+  --shadow-card: 0 1px 2px rgba(26, 23, 20, 0.05);
+  --page-max: 1200px;
+  --header-h: 56px;
+}
+
+html,
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Print: one-page operator summary ---- */
+@media print {
+  @page {
+    margin: 0.5in;
+  }
+  html,
+  body {
+    background: #fff !important;
+    font-size: 11px;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  .print-avoid-break {
+    break-inside: avoid;
+  }
+}
+.print-only {
+  display: none;
+}
