@@ -1,10 +1,14 @@
 /**
- * Structured SpotOn solution & integration-partner mapping. Edit this file to change
- * what the app shows. Everything here is a POSSIBILITY, never a guaranteed outcome.
+ * Structured SpotOn solution & integration-partner mapping. One record per product; a product
+ * carries outcome tags (food/labor/visibility) instead of being duplicated across sections.
+ * Everything here is a POSSIBILITY, never a guaranteed outcome.
  *
- * NOTE: `sourceUrl` values point to vendor home pages because deep links could not be
- * verified when this file was written. Replace with product pages after confirming.
+ * LINKS: deep product links could not be verified when this was written (network policy), so
+ * `link.status` is "vendor_home". `npm run verify:sources` checks them where the network allows;
+ * replace the URL and set status to "verified_product_page" only after checking.
  */
+import type { AttributeId, ServiceModel } from "@/config/concepts";
+
 export type Objective = "food" | "labor" | "visibility";
 export type Influence = "food" | "labor" | "both" | "insight";
 export type Nature = "workflow" | "insight";
@@ -13,17 +17,22 @@ export interface Solution {
   id: string;
   name: string;
   kind: "spoton" | "partner";
-  /** Business objectives it appears under (a product may appear under more than one). */
+  /** Outcome tags (not separate cards). */
   objectives: Objective[];
   problem: string;
   mechanism: string[];
+  /** The cost driver this may influence. */
+  costDriver: string;
   influences: Influence;
   nature: Nature;
-  /** Eligibility / integration requirements to confirm before positioning. */
   requirements: string[];
-  sourceUrl: string;
-  /** Concept types where this is typically relevant; empty = all. */
-  conceptFit?: Array<"full_service" | "quick_service" | "bar" | "custom">;
+  link: { url: string; status: "vendor_home" | "verified_product_page" };
+  /** Service models this is designed for. "mixed" concepts match any. */
+  serviceModels: ServiceModel[];
+  /** Why it is not recommended when the service model does not fit. */
+  poorFitReason: string;
+  /** Attributes that make it more relevant. */
+  attributeBoost: AttributeId[];
 }
 
 export const SOLUTIONS_DISCLAIMER =
@@ -33,9 +42,9 @@ export const OVERLAP_NOTE =
   "Several products may contribute to the same improvement target. Do not attribute one cost improvement to multiple products and add the results together.";
 
 export const OBJECTIVE_LABELS: Record<Objective, string> = {
-  food: "Food & Beverage Cost Control",
-  labor: "Labor Cost Control",
-  visibility: "Financial Visibility",
+  food: "Food & beverage cost",
+  labor: "Labor cost",
+  visibility: "Visibility",
 };
 
 export const INFLUENCE_LABELS: Record<Influence, string> = {
@@ -46,19 +55,24 @@ export const INFLUENCE_LABELS: Record<Influence, string> = {
 };
 
 const SPOTON = "https://www.spoton.com";
+const ALL: ServiceModel[] = ["table", "counter", "bar", "mixed"];
 
 export const SOLUTIONS: Solution[] = [
   {
     id: "spoton-pos-reporting",
     name: "SpotOn POS Reporting",
     kind: "spoton",
-    objectives: ["food"],
+    objectives: ["food", "visibility"],
     problem: "Operators lack clear visibility into what is selling and at what mix.",
     mechanism: ["Sales and product-mix visibility", "Helps operators understand what is selling"],
-    influences: "food",
+    costDriver: "Menu mix and purchasing decisions (insight only)",
+    influences: "insight",
     nature: "insight",
     requirements: ["Merchant runs SpotOn POS", "Confirm report availability by plan"],
-    sourceUrl: SPOTON,
+    link: { url: SPOTON, status: "vendor_home" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: [],
   },
   {
     id: "marginedge",
@@ -72,6 +86,7 @@ export const SOLUTIONS: Solution[] = [
       "Actual versus theoretical food cost",
       "Potential identification of waste and cost variance",
     ],
+    costDriver: "Purchasing, waste and recipe-cost variance",
     influences: "food",
     nature: "workflow",
     requirements: [
@@ -79,7 +94,10 @@ export const SOLUTIONS: Solution[] = [
       "Separate MarginEdge subscription and onboarding",
       "Requires consistent invoice and recipe data entry",
     ],
-    sourceUrl: "https://www.marginedge.com",
+    link: { url: "https://www.marginedge.com", status: "vendor_home" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: [],
   },
   {
     id: "restaurant365",
@@ -87,18 +105,18 @@ export const SOLUTIONS: Solution[] = [
     kind: "partner",
     objectives: ["food", "visibility"],
     problem: "Purchasing, inventory and accounting live in disconnected systems.",
-    mechanism: [
-      "Inventory and purchasing workflows",
-      "Accounting and financial reporting",
-      "Multi-location cost visibility",
-    ],
+    mechanism: ["Inventory and purchasing workflows", "Accounting and financial reporting", "Multi-location cost visibility"],
+    costDriver: "Purchasing and inventory control across locations",
     influences: "food",
     nature: "workflow",
     requirements: [
       "Confirm SpotOn POS integration availability and scope",
       "Separate Restaurant365 subscription; accounting migration effort",
     ],
-    sourceUrl: "https://www.restaurant365.com",
+    link: { url: "https://www.restaurant365.com", status: "vendor_home" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: ["multi_location"],
   },
   {
     id: "spoton-kds",
@@ -107,10 +125,14 @@ export const SOLUTIONS: Solution[] = [
     objectives: ["food"],
     problem: "Kitchen ticket errors cause remakes and wasted ingredients.",
     mechanism: ["Kitchen ticket accuracy", "Order routing", "Potential reduction of remakes and wasted ingredients"],
+    costDriver: "Remakes and ingredient waste",
     influences: "food",
     nature: "workflow",
     requirements: ["Kitchen hardware and screen placement", "Confirm compatibility with existing kitchen equipment"],
-    sourceUrl: SPOTON,
+    link: { url: SPOTON, status: "vendor_home" },
+    serviceModels: ["table", "counter", "mixed"],
+    poorFitReason: "Built around a kitchen line; bar-led concepts without a kitchen program have little to route.",
+    attributeBoost: ["high_delivery"],
   },
   {
     id: "spoton-handhelds",
@@ -124,11 +146,14 @@ export const SOLUTIONS: Solution[] = [
       "Potential reduction in errors, voids and remakes",
       "More productive use of staff time",
     ],
+    costDriver: "Order errors, voids and remakes; server time per table",
     influences: "both",
     nature: "workflow",
-    requirements: ["Best suited to table-service workflows", "Confirm device availability and Wi-Fi coverage"],
-    sourceUrl: SPOTON,
-    conceptFit: ["full_service", "bar", "custom"],
+    requirements: ["Best suited to table or bar-side ordering", "Confirm device availability and Wi-Fi coverage"],
+    link: { url: SPOTON, status: "vendor_home" },
+    serviceModels: ["table", "bar", "mixed"],
+    poorFitReason: "Designed for ordering at the guest; counter-service concepts take orders at a register.",
+    attributeBoost: ["table_service", "catering_events"],
   },
   {
     id: "spoton-teamwork",
@@ -137,10 +162,14 @@ export const SOLUTIONS: Solution[] = [
     objectives: ["labor"],
     problem: "Schedules are not tied to expected sales, so labor drifts above plan.",
     mechanism: ["Employee scheduling", "Sales-based labor planning", "Time tracking", "Labor cost monitoring"],
+    costDriver: "Scheduled versus actual hours, overtime and early clock-ins",
     influences: "labor",
     nature: "workflow",
     requirements: ["Confirm payroll and POS time-clock setup", "Manager adoption of scheduling workflow"],
-    sourceUrl: SPOTON,
+    link: { url: SPOTON, status: "vendor_home" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: ["seasonal", "multi_location"],
   },
   {
     id: "7shifts",
@@ -149,13 +178,17 @@ export const SOLUTIONS: Solution[] = [
     objectives: ["labor"],
     problem: "Scheduling is manual and not informed by forecasted demand.",
     mechanism: ["Scheduling and labor forecasting", "Sales-data integration with SpotOn", "Labor management workflows"],
+    costDriver: "Over- and under-scheduling against forecast demand",
     influences: "labor",
     nature: "workflow",
     requirements: [
       "Confirm SpotOn sales-data integration is available for this merchant",
       "Separate 7shifts subscription",
     ],
-    sourceUrl: "https://www.7shifts.com",
+    link: { url: "https://www.7shifts.com", status: "vendor_home" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: ["multi_location", "seasonal"],
   },
   {
     id: "spoton-kiosk",
@@ -164,17 +197,20 @@ export const SOLUTIONS: Solution[] = [
     objectives: ["labor"],
     problem: "Counter staff time is consumed by order-taking at peak.",
     mechanism: ["Self-service ordering for appropriate concepts", "Potential labor redeployment and ordering efficiency"],
+    costDriver: "Counter labor at peak order-taking",
     influences: "labor",
     nature: "workflow",
-    requirements: ["Appropriate for counter-service / fast-casual formats", "Hardware, space and menu-complexity fit"],
-    sourceUrl: SPOTON,
-    conceptFit: ["quick_service", "custom"],
+    requirements: ["Appropriate for counter-service formats", "Hardware, space and menu-complexity fit"],
+    link: { url: SPOTON, status: "vendor_home" },
+    serviceModels: ["counter", "mixed"],
+    poorFitReason: "Self-service ordering suits counter formats; table-service and bar-led concepts rarely use it.",
+    attributeBoost: ["counter_service"],
   },
   {
     id: "spoton-profit-assist",
     name: "SpotOn Profit Assist",
     kind: "spoton",
-    objectives: ["visibility"],
+    objectives: ["visibility", "food"],
     problem: "Management cannot quickly see where P&L opportunities sit across locations.",
     mechanism: [
       "P&L analysis",
@@ -183,10 +219,14 @@ export const SOLUTIONS: Solution[] = [
       "Multi-location performance comparisons",
       "Helps management identify and measure opportunities; does not itself guarantee cost reductions",
     ],
+    costDriver: "Cost anomalies visible in the P&L (insight only)",
     influences: "insight",
     nature: "insight",
     requirements: ["Connected accounting system (QuickBooks Online, Xero or Restaurant365)", "Confirm availability"],
-    sourceUrl: SPOTON,
+    link: { url: SPOTON, status: "vendor_home" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: ["multi_location"],
   },
   {
     id: "spoton-reporting",
@@ -195,22 +235,15 @@ export const SOLUTIONS: Solution[] = [
     objectives: ["visibility"],
     problem: "Sales and operations trends are not visible in one place.",
     mechanism: ["Sales and operations visibility", "Trend monitoring", "Location comparison where supported"],
+    costDriver: "Trend and location variance (insight only)",
     influences: "insight",
     nature: "insight",
     requirements: ["Merchant runs SpotOn POS", "Confirm multi-location comparison support"],
-    sourceUrl: SPOTON,
+    link: { url: SPOTON, status: "vendor_home" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: ["multi_location"],
   },
 ];
 
-/** Default solution selection for new scenarios. */
-export const DEFAULT_SELECTED_IDS = [
-  "marginedge",
-  "spoton-handhelds",
-  "spoton-teamwork",
-  "7shifts",
-  "spoton-profit-assist",
-];
-
-export function solutionsFor(objective: Objective): Solution[] {
-  return SOLUTIONS.filter((s) => s.objectives.includes(objective));
-}
+export const SOLUTION_BY_ID: Record<string, Solution> = Object.fromEntries(SOLUTIONS.map((s) => [s.id, s]));

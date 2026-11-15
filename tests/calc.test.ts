@@ -12,7 +12,7 @@ import {
 import { exampleScenario, hydrateScenario } from "@/lib/scenario";
 import { validateScenario } from "@/lib/validate";
 import { buildSummaryText } from "@/lib/summary";
-import { medianSetFor, REFERENCE_MEDIANS, defaultPlanning } from "@/config/benchmarks";
+import { medianApplicability, REFERENCE_MEDIANS, defaultPlanning } from "@/config/benchmarks";
 import { SOLUTIONS } from "@/config/solutions";
 import type { Scenario } from "@/lib/types";
 
@@ -175,15 +175,19 @@ describe("benchmarks", () => {
     expect(REFERENCE_MEDIANS[0]).toMatchObject({ foodPct: 32.0, laborPct: 36.5 });
     expect(REFERENCE_MEDIANS[1]).toMatchObject({ foodPct: 32.4, laborPct: 31.7 });
   });
-  it("no published medians are applied to bars or custom", () => {
-    expect(medianSetFor("bar")).toBeNull();
-    expect(medianSetFor("custom")).toBeNull();
+  it("no published medians are applied to bars, breweries or multi-concept groups", () => {
+    expect(medianApplicability("bar_pub").set).toBeNull();
+    expect(medianApplicability("brewery_taproom").set).toBeNull();
+    expect(medianApplicability("multi_concept").set).toBeNull();
   });
   it("planning ranges", () => {
     const p = defaultPlanning();
     expect(p.full_service.prime).toEqual({ min: 60, max: 65 });
     expect(p.quick_service.labor).toEqual({ min: 25, max: 30 });
-    expect(p.bar.food).toEqual({ min: null, max: null });
+    expect(p.fast_casual.labor).toEqual({ min: 25, max: 30 });
+    expect(p.bar_pub.food).toEqual({ min: null, max: null });
+    expect(p.bar_pub.origin).toBe("none");
+    expect(p.full_service.origin).toBe("illustrative");
   });
   it("range statuses", () => {
     const r = { min: 60, max: 65 };
@@ -196,9 +200,9 @@ describe("benchmarks", () => {
 });
 
 describe("solutions config & summary", () => {
-  it("every solution has a source link, requirements and mechanism", () => {
+  it("every solution has a link, requirements and mechanism", () => {
     for (const s of SOLUTIONS) {
-      expect(s.sourceUrl).toMatch(/^https:\/\//);
+      expect(s.link.url).toMatch(/^https:\/\//);
       expect(s.requirements.length).toBeGreaterThan(0);
       expect(s.mechanism.length).toBeGreaterThan(0);
     }

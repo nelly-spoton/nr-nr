@@ -1,4 +1,6 @@
-export type ConceptType = "full_service" | "quick_service" | "bar" | "custom";
+import type { AttributeId, ConceptId } from "@/config/concepts";
+
+export type { AttributeId, ConceptId };
 export type SalesInputMode = "net" | "gpv";
 export type VolumeScope = "perLocation" | "group";
 export type GpvBasis = "netEstimate" | "factor";
@@ -18,12 +20,24 @@ export interface PlanningRanges {
   food: Range;
   labor: Range;
   prime: Range;
+  /** illustrative = config default; operator = edited/entered by the operator; none = not set. */
+  origin: "illustrative" | "operator" | "none";
+}
+
+export type BevCategory = "food" | "beer" | "liquor" | "wine" | "other";
+
+/** Optional beverage-aware COGS. Mix is % of NET SALES; cost is % of that category's own sales. */
+export interface BeverageMix {
+  enabled: boolean;
+  mixPct: Record<BevCategory, NumField>;
+  costPct: Record<BevCategory, NumField>;
 }
 
 export interface Scenario {
   restaurantName: string;
   scenarioName: string;
-  concept: ConceptType;
+  concept: ConceptId;
+  attributes: AttributeId[];
   /** 1–10. V2 may replace equal-split with a per-location array. */
   locations: number | null;
 
@@ -54,8 +68,10 @@ export interface Scenario {
     otherMonthlyCost: NumField;
   };
 
-  planning: Record<ConceptType, PlanningRanges>;
-  selectedSolutionIds: string[];
+  beverageMix: BeverageMix;
+  planning: Record<ConceptId, PlanningRanges>;
+  /** Per-solution include/exclude in the summary; absent = follow the recommendation tier. */
+  solutionOverrides: Record<string, boolean>;
 }
 
 export type SalesStatus =

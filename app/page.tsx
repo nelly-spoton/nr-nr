@@ -1,10 +1,13 @@
 "use client";
 import { ArrowRight, Minus, Plus } from "lucide-react";
 import Link from "next/link";
-import { CONCEPT_LABELS } from "@/config/benchmarks";
+import { isAlcoholLed } from "@/lib/report";
+import { BeverageMixPanel } from "@/components/marginlab/BeverageMixPanel";
+import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
+import { ConceptProfile } from "@/components/marginlab/ConceptProfile";
 import { ContentCard, HeroBanner, SectionHeader, Callout } from "@/components/marginlab/Cards";
 import { CostField } from "@/components/marginlab/CostField";
-import { FormField, NumberField, SegmentedControl, SelectField, TextField } from "@/components/marginlab/Fields";
+import { FormField, NumberField, SegmentedControl, TextField } from "@/components/marginlab/Fields";
 import { ImprovementControls } from "@/components/marginlab/ImprovementControls";
 import { ResultsPanel } from "@/components/marginlab/ResultsPanel";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
@@ -12,7 +15,6 @@ import { LimeButton, SecondaryButton, buttonStyles } from "@/components/marginla
 import { safeLocations } from "@/lib/calc";
 import { usd } from "@/lib/format";
 import { issueFor } from "@/lib/validate";
-import type { ConceptType } from "@/lib/types";
 
 export default function OverviewPage() {
   const { scenario: s, result: r, update, issues, reset } = useScenario();
@@ -45,14 +47,7 @@ export default function OverviewPage() {
               <FormField label="Scenario name" htmlFor="scenario">
                 <TextField id="scenario" value={s.scenarioName} onChange={(v) => update({ scenarioName: v })} placeholder="e.g. Conservative case" />
               </FormField>
-              <FormField label="Concept type" htmlFor="concept">
-                <SelectField
-                  id="concept"
-                  value={s.concept}
-                  onChange={(v) => update({ concept: v as ConceptType })}
-                  options={(Object.keys(CONCEPT_LABELS) as ConceptType[]).map((k) => ({ value: k, label: CONCEPT_LABELS[k] }))}
-                />
-              </FormField>
+              <ConceptProfile />
               <FormField label="Number of locations (1–10)" htmlFor="locations" error={err("locations")}>
                 <div className="flex gap-2">
                   <SecondaryButton
@@ -196,12 +191,14 @@ export default function OverviewPage() {
             <p className="mt-4 text-sm text-muted">
               Current prime cost: <strong className="tabular text-ink">{r.current.prime.toFixed(2)}%</strong>
             </p>
+            {(isAlcoholLed(s) || s.attributes.includes("beverage_heavy") || s.beverageMix.enabled) && <BeverageMixPanel />}
           </ContentCard>
 
           <ContentCard>
             <SectionHeader title="Improvement assumptions" description="Percentage points of net sales — hypothetical until supported by actual cost data." />
             <ImprovementControls showPresets={false} />
           </ContentCard>
+          <CoachingPanel />
           <div className="no-print flex flex-col gap-2 lg:hidden">
             <Link href="/solutions" className={buttonStyles({ variant: "primary" })}>
               Show relevant SpotOn solutions <ArrowRight className="h-4 w-4" aria-hidden />

@@ -1,18 +1,21 @@
 "use client";
 import { Check, Copy, Printer, RotateCcw, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { CONCEPT_LABELS, NRA_SOURCE, PLANNING_NOTE, medianSetFor } from "@/config/benchmarks";
+import { CONCEPT_LABELS } from "@/config/concepts";
+import { NRA_SOURCE, PLANNING_NOTE } from "@/config/benchmarks";
+import { PROOF_DISCLAIMER, metricQualifier, verificationLabel } from "@/config/caseStudies";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/marginlab/Buttons";
 import { Badge, ContentCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
-import { RANGE_STATUS_LABEL, compareAll } from "@/lib/calc";
+import { RANGE_STATUS_LABEL } from "@/lib/calc";
+import { buildReport } from "@/lib/report";
 import { pct, pts, usd } from "@/lib/format";
 import {
   SALES_STATUS_LABEL,
+  benchmarkLine,
   buildSummaryText,
   keyAssumptions,
-  selectedSolutions,
   validationItems,
 } from "@/lib/summary";
 
@@ -35,9 +38,11 @@ export default function SummaryPage() {
   useEffect(() => setToday(new Date().toLocaleDateString("en-US", { dateStyle: "long" })), []);
 
   const text = buildSummaryText(s, r);
-  const cmp = compareAll(r, s.planning[s.concept]);
-  const med = medianSetFor(s.concept);
-  const sols = selectedSolutions(s);
+  const rep = buildReport(s, r);
+  const cmp = rep.comparison;
+  const sols = rep.included;
+  const foodPct = Math.round(rep.contribution.foodShare * 100);
+  const laborPct = Math.round(rep.contribution.laborShare * 100);
   const cmpText = (k: "food" | "labor" | "prime") => (cmp[k] === "unset" ? "No range set" : RANGE_STATUS_LABEL[cmp[k]]);
 
   async function copy() {
@@ -134,50 +139,89 @@ export default function SummaryPage() {
               <p className="text-xs text-muted">per month</p>
             </div>
             <p className="tabular text-xs text-muted">
-              Food {usd(r.savings.annualFood)}/yr · Labor {usd(r.savings.annualLabor)}/yr
-              {r.locations > 1 && <> · {usd(r.savings.perLocationAnnual)}/yr per location</>}
+              {r.locations > 1 && <>{usd(r.savings.perLocationAnnual)}/yr per location</>}
+            </p>
+          </div>
+          <div className="mt-3">
+            <div
+              role="img"
+              aria-label={`Food ${foodPct} percent, labor ${laborPct} percent of the modeled opportunity`}
+              className="flex h-2.5 overflow-hidden rounded-full bg-rule"
+            >
+              <div className="bg-brand" style={{ width: `${foodPct}%` }} />
+              <div className="bg-teal" style={{ width: `${laborPct}%` }} />
+            </div>
+            <p className="tabular mt-1 text-xs">
+              <span className="font-semibold">Food</span> {usd(r.savings.annualFood)}/yr ({foodPct}%) ·{" "}
+              <span className="font-semibold">Labor</span> {usd(r.savings.annualLabor)}/yr ({laborPct}%)
             </p>
           </div>
         </section>
 
+        <section className="print-avoid-break mt-4 text-sm">
+          <H>Customer proof (published examples, not predictions)</H>
+          {rep.proofPoints.length === 0 ? (
+            <p className="text-xs text-muted">No sufficiently relevant published example for this profile.</p>
+          ) : (
+            <ul className="grid gap-3 md:grid-cols-2">
+              {rep.proofPoints.map((m) => (
+                <li key={m.study.id} className="print-avoid-break">
+                  <p>
+                    <strong>{m.study.name}</strong> <span className="text-muted">({m.study.conceptLabel})</span>
+                  </p>
+                  <p className="font-semibold">{m.study.metric.wording}</p>
+                  <p className="text-[11px] text-muted">
+                    {verificationLabel(m.study)}. {metricQualifier(m.study.metric)}
+                  </p>
+                  <p className="break-all text-[11px]">Source: {m.study.sourceUrl}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-1 text-[11px] text-muted">{PROOF_DISCLAIMER}</p>
+        </section>
+
         <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
           <section className="print-avoid-break">
-            <H>Benchmark context</H>
-            <dl>
-              <Row k="Food vs planning range" v={cmpText("food")} />
-              <Row k="Labor vs planning range" v={cmpText("labor")} />
-              <Row k="Prime vs planning range" v={cmpText("prime")} />
-            </dl>
-            <p className="mt-1 text-xs text-muted">
-              {med
-                ? `Published medians (${med.label}): food ${pct(med.foodPct)}, labor ${pct(med.laborPct)}. `
-                : "No published benchmark applied to this concept. "}
-              {NRA_SOURCE.publisher}, {NRA_SOURCE.title} ({NRA_SOURCE.dataPeriod}). Medians, not targets; food figure excludes
-              alcoholic beverage cost.
-            </p>
+            <H>Operational improvements to validate</H>
+            <ul className="list-disc pl-5 text-xs">
+              {rep.coaching.validate.map((x) => (
+                <li key={x}>{x}</li>
+              ))}
+            </ul>
           </section>
           <section className="print-avoid-break">
             <H>Relevant solutions (possibilities)</H>
             {sols.length === 0 ? (
               <p className="text-xs text-muted">None selected.</p>
             ) : (
-              <ul className="list-disc pl-5">
+              <ul className="list-disc pl-5 text-xs">
                 {sols.map((x) => (
-                  <li key={x.id}>
-                    <strong>{x.name}</strong> <span className="text-muted">— {x.mechanism[0]}</span>
+                  <li key={x.solution.id}>
+                    <strong>{x.solution.name}</strong> <span className="text-muted">— {x.solution.costDriver}</span>
                   </li>
                 ))}
               </ul>
             )}
-            <p className="mt-1 text-xs text-muted">{OVERLAP_NOTE}</p>
+            <p className="mt-1 text-[11px] text-muted">{OVERLAP_NOTE}</p>
           </section>
         </div>
+
+        <section className="print-avoid-break mt-4 text-sm">
+          <H>Benchmark context</H>
+          <p className="text-xs">
+            Food: {cmpText("food")} · Labor: {cmpText("labor")} · Prime: {cmpText("prime")}
+          </p>
+          <p className="mt-1 text-[11px] text-muted">
+            {benchmarkLine(s, rep)} {NRA_SOURCE.publisher}, {NRA_SOURCE.title} ({NRA_SOURCE.dataPeriod}). Medians, not targets.
+          </p>
+        </section>
 
         <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
           <section className="print-avoid-break">
             <H>Key assumptions</H>
             <ul className="list-disc pl-5 text-xs">
-              {keyAssumptions(s).map((x) => (
+              {keyAssumptions(s, r).map((x) => (
                 <li key={x}>{x}</li>
               ))}
             </ul>
