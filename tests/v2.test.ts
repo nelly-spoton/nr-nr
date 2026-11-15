@@ -10,7 +10,7 @@ import { buildSummaryText } from "@/lib/summary";
 import { blendCogs } from "@/lib/beverage";
 import { researchToScenarioPatch, validateResearch, type ResearchResult } from "@/lib/research";
 import { pageSupportsMetric } from "@/lib/verify";
-import { CASE_STUDIES, PROOF_DISCLAIMER, metricQualifier } from "@/config/caseStudies";
+import { CASE_STUDIES, metricQualifier, verificationLabel } from "@/config/caseStudies";
 import { medianApplicability, ALCOHOL_QUALIFICATION } from "@/config/benchmarks";
 import { CONCEPTS, ATTRIBUTES } from "@/config/concepts";
 import { SOLUTIONS } from "@/config/solutions";
@@ -97,11 +97,13 @@ describe("case-study library", () => {
     );
     for (const c of CASE_STUDIES) expect(c.sourceUrl).toMatch(/^https:\/\/www\.spoton\.com\/success-stories\//);
   });
-  it("no record claims verification without a date; none is verified because sources were unreachable", () => {
+  it("records are labeled as accepted by the team, never as independently verified", () => {
     for (const c of CASE_STUDIES) {
-      if (c.verification.status === "verified") expect(c.verification.verifiedOn).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-      else expect(c.verification.verifiedOn).toBeNull();
-      expect(c.metric.wordingStatus === "verbatim_verified").toBe(c.verification.status === "verified");
+      expect(c.verification.status).toBe("requester_confirmed");
+      expect(c.verification.verifiedOn).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(c.verification.note).toMatch(/not independently checked/i);
+      expect(verificationLabel(c)).toMatch(/not independently checked/);
+      expect(c.metric.wordingStatus).toBe("as_provided");
     }
   });
   it("does not invent unstated fields", () => {
@@ -226,16 +228,18 @@ describe("recommendations", () => {
   });
 });
 
-describe("acceptance 9: summary", () => {
+describe("operator summary keeps customer evidence out (HS reference only)", () => {
   const s = ex({ concept: "full_service", foodImprovementPts: 0.4, laborImprovementPts: 0.6 });
   const text = buildSummaryText(s, computeScenario(s));
-  it("includes proof links, qualifications and the disclaimer", () => {
-    expect(text).toMatch(/https:\/\/www\.spoton\.com\/success-stories\//);
-    expect(text).toContain("Source not yet verified");
-    expect(text).toMatch(/not percentage points/i);
-    expect(text).toContain(PROOF_DISCLAIMER);
+  it("copy text carries no customer names, metrics or source links", () => {
+    expect(text).not.toMatch(/success-stories/);
+    expect(text).not.toMatch(/CUSTOMER PROOF/i);
+    for (const c of CASE_STUDIES) {
+      expect(text).not.toContain(c.name);
+      expect(text).not.toContain(c.metric.wording);
+    }
   });
-  it("shows food vs labor contribution and the unchanged headline", () => {
+  it("still shows food vs labor contribution and the unchanged headline", () => {
     expect(text).toContain("$108,000/year");
     expect(text).toMatch(/Food: \$43,200\/yr \(40%\) · Labor: \$64,800\/yr \(60%\)/);
   });

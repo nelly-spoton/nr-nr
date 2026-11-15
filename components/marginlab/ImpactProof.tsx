@@ -1,5 +1,5 @@
 "use client";
-import { PROOF_DISCLAIMER } from "@/config/caseStudies";
+import { PROOF_DISCLAIMER, verificationLabel } from "@/config/caseStudies";
 import { bestProofFor } from "@/lib/matching";
 import { buildProfile } from "@/lib/profile";
 import { pct, pts, usd } from "@/lib/format";
@@ -52,7 +52,7 @@ export function ImpactProof() {
                   </div>
                   <p className="mt-1">{m.study.metric.wording}</p>
                   <p className="text-xs text-muted">
-                    {m.study.verification.status === "verified" ? "Source verified" : "Source not yet verified"} ·{" "}
+                    {verificationLabel(m.study)} ·{" "}
                     <a href={m.study.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-link underline">
                       source
                     </a>

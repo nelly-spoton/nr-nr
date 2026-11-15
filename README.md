@@ -52,14 +52,16 @@ Operator Summary (print / save PDF, copy, save/load scenarios, reset to example)
   never converted into percentage points.
 - **Recommendations:** `lib/recommend.ts` ranks one record per product into Highest relevance / Additional consideration /
   Reporting / Not recommended.
+- **Operator summary:** customer evidence is a Hospitality Specialist reference on screen only; it is excluded from the printed
+  summary and the copied text.
 - **Coaching + summary:** `lib/coaching.ts`, `lib/report.ts`; the one-page summary adds food-vs-labor contribution, two proof points,
   items to validate and sources.
 - **Website research (future, not built):** `lib/research.ts` defines the contract and a pure adapter only. No scraper, no estimates.
 
-### Case-study verification (required before reps rely on proof)
+### Case-study verification (optional hardening)
 
-All eight records are **unverified**: the SpotOn pages could not be fetched when they were written, so they hold only the
-requester's brief and unstated fields are empty. On a machine that can reach spoton.com run:
+All eight records are marked **accepted by the SpotOn team, not independently checked**: the SpotOn pages could not be fetched
+when they were written, so they hold only the requester's brief and unstated fields are empty. On a machine that can reach spoton.com run:
 
 ```bash
 npm run verify:sources

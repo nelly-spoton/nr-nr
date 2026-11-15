@@ -3,7 +3,8 @@ import { Check, Copy, Printer, RotateCcw, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CONCEPT_LABELS } from "@/config/concepts";
 import { NRA_SOURCE, PLANNING_NOTE } from "@/config/benchmarks";
-import { PROOF_DISCLAIMER, metricQualifier, verificationLabel } from "@/config/caseStudies";
+import { PROOF_DISCLAIMER } from "@/config/caseStudies";
+import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/marginlab/Buttons";
 import { Badge, ContentCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
@@ -158,29 +159,6 @@ export default function SummaryPage() {
           </div>
         </section>
 
-        <section className="print-avoid-break mt-4 text-sm">
-          <H>Customer proof (published examples, not predictions)</H>
-          {rep.proofPoints.length === 0 ? (
-            <p className="text-xs text-muted">No sufficiently relevant published example for this profile.</p>
-          ) : (
-            <ul className="grid gap-3 md:grid-cols-2">
-              {rep.proofPoints.map((m) => (
-                <li key={m.study.id} className="print-avoid-break">
-                  <p>
-                    <strong>{m.study.name}</strong> <span className="text-muted">({m.study.conceptLabel})</span>
-                  </p>
-                  <p className="font-semibold">{m.study.metric.wording}</p>
-                  <p className="text-[11px] text-muted">
-                    {verificationLabel(m.study)}. {metricQualifier(m.study.metric)}
-                  </p>
-                  <p className="break-all text-[11px]">Source: {m.study.sourceUrl}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="mt-1 text-[11px] text-muted">{PROOF_DISCLAIMER}</p>
-        </section>
-
         <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
           <section className="print-avoid-break">
             <H>Operational improvements to validate</H>
@@ -239,6 +217,16 @@ export default function SummaryPage() {
           {PLANNING_NOTE} {SOLUTIONS_DISCLAIMER} This is a consultative estimate, not a quote, proposal or guarantee of savings.
         </p>
       </article>
+
+      <section className="no-print mt-8" aria-labelledby="hs-ref">
+        <h2 id="hs-ref" className="sr-only">Customer proof, Hospitality Specialist reference</h2>
+        <SectionHeader
+          title="Customer proof · Hospitality Specialist reference"
+          description="For your own preparation. Not included in the printed summary or the copied text."
+        />
+        <CaseStudyGrid matches={rep.proofPoints} />
+        <p className="mt-2 text-xs text-muted">{PROOF_DISCLAIMER}</p>
+      </section>
 
       <div className="no-print mt-8 grid gap-6 lg:grid-cols-2">
         <ContentCard>

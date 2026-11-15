@@ -88,7 +88,7 @@ export function SolutionCard({
                       {c.name}
                     </a>
                     <span className="text-muted"> ({c.conceptLabel})</span>: {c.metric.wording}{" "}
-                    <span className="text-xs text-muted">({c.verification.status === "verified" ? "verified" : "source not yet verified"}; used with other products where listed)</span>
+                    <span className="text-xs text-muted">(used with other products where listed)</span>
                   </li>
                 ))}
               </ul>

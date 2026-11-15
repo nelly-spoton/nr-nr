@@ -23,7 +23,7 @@ export function CaseStudyCard({ match }: { match: CaseMatch }) {
       <header>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h3 className="text-lg font-semibold">{c.name}</h3>
-          <Badge tone={verified ? "good" : "warn"}>{verificationLabel(c)}</Badge>
+          <Badge tone={verified ? "good" : c.verification.status === "requester_confirmed" ? "neutral" : "warn"}>{verificationLabel(c)}</Badge>
         </div>
         <p className="text-sm text-muted">
           {c.conceptLabel}

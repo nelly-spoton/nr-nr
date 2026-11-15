@@ -1,9 +1,9 @@
 /**
  * Customer success-story library (structured, editable).
  *
- * VERIFICATION STATUS: every record below is `unverified`. The source pages could not be
- * fetched when this file was written (network policy), so fields contain ONLY what the
- * requester's brief stated. Anything not stated is `null` and shown as "not yet captured".
+ * VERIFICATION STATUS: every record below is `requester_confirmed` (accepted by the SpotOn team, not
+ * independently checked). The source pages could not be fetched when this file was written (network
+ * policy), so fields contain ONLY what the requester's brief stated. Anything not stated is `null` and shown as "not yet captured".
  * Run `npm run verify:sources` somewhere that can reach spoton.com, check each record against
  * its page, then set `verification` and `wordingStatus` by hand.
  *
@@ -50,16 +50,20 @@ export interface CaseStudy {
   partners: string[];
   metric: CaseMetric;
   sourceUrl: string;
-  verification: { status: "unverified" | "verified"; verifiedOn: string | null; note: string };
+  verification: { status: "unverified" | "requester_confirmed" | "verified"; verifiedOn: string | null; note: string };
   outcomes: { food: EvidenceLevel; labor: EvidenceLevel; revenue: EvidenceLevel };
   evidenceClass: "direct_cost_outcome" | "indirect_prime_cost";
   limitations: string[];
 }
 
+/**
+ * Accepted by the SpotOn team on 2026-11-15. This is the requester's sign-off, NOT an independent
+ * check against the source pages (they were unreachable when the records were built).
+ */
 const UNVERIFIED = {
-  status: "unverified",
-  verifiedOn: null,
-  note: "Populated from the requester's brief; source page not yet checked.",
+  status: "requester_confirmed",
+  verifiedOn: "2026-11-15",
+  note: "Accepted by the SpotOn team; not independently checked against the source page.",
 } as const;
 
 const COMMON_LIMITS = [
@@ -150,7 +154,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     partners: [],
     metric: { wording: "$500–$800 weekly labor savings", wordingStatus: "as_provided", kind: "absolute_amount", unit: "usd_per_week", measure: "labor_savings", direction: "decrease", min: 500, max: 800 },
     sourceUrl: "https://www.spoton.com/success-stories/adalina/",
-    verification: { ...UNVERIFIED, note: "Challenge, improvement and location come from the requester's example card; source page not yet checked." },
+    verification: { ...UNVERIFIED, note: "Accepted by the SpotOn team; challenge, improvement and location come from the requester's example card. Not independently checked against the source page." },
     outcomes: { food: "none", labor: "direct", revenue: "none" },
     evidenceClass: "direct_cost_outcome",
     limitations: [...COMMON_LIMITS, "Dollar figure reflects this restaurant's own scale and is not scaled to another operator."],
@@ -217,7 +221,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     partners: [],
     metric: { wording: "10% increase in Saturday sales", wordingStatus: "as_provided", kind: "relative_change", unit: "percent_relative", measure: "sales", direction: "increase", min: 10 },
     sourceUrl: "https://www.spoton.com/success-stories/big-lake-brewing/",
-    verification: { ...UNVERIFIED, note: "Products not stated in the brief; source page not yet checked." },
+    verification: { ...UNVERIFIED, note: "Accepted by the SpotOn team; products not stated in the brief. Not independently checked against the source page." },
     outcomes: { food: "none", labor: "none", revenue: "direct" },
     evidenceClass: "indirect_prime_cost",
     limitations: [...COMMON_LIMITS, "A sales increase, not a food or labor saving: it is NOT counted as a prime-cost reduction."],
@@ -238,7 +242,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     partners: [],
     metric: { wording: "Five-day faster tip payouts", wordingStatus: "as_provided", kind: "duration", unit: "days", measure: "tip_payout_time", direction: "decrease", min: 5 },
     sourceUrl: "https://www.spoton.com/success-stories/cocos-crush-bar/",
-    verification: { ...UNVERIFIED, note: "Products not stated in the brief; source page not yet checked." },
+    verification: { ...UNVERIFIED, note: "Accepted by the SpotOn team; products not stated in the brief. Not independently checked against the source page." },
     outcomes: { food: "none", labor: "indirect", revenue: "none" },
     evidenceClass: "indirect_prime_cost",
     limitations: [...COMMON_LIMITS, "A payout-timing (administration) result; it is not a measured labor-cost saving."],
@@ -262,7 +266,8 @@ export function metricQualifier(m: CaseMetric): string {
 }
 
 export function verificationLabel(c: CaseStudy): string {
-  return c.verification.status === "verified" && c.verification.verifiedOn
-    ? `Source verified ${c.verification.verifiedOn}`
-    : "Source not yet verified";
+  const { status, verifiedOn } = c.verification;
+  if (status === "verified" && verifiedOn) return `Source verified ${verifiedOn}`;
+  if (status === "requester_confirmed" && verifiedOn) return `Accepted by SpotOn team ${verifiedOn}; not independently checked`;
+  return "Source not yet verified";
 }
