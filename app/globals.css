@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * MarginLab design tokens — SINGLE token layer.
+ * Source: one Deal Prep home-page screenshot (desktop only) supplied by the user.
+ * [S] = color sampled from that screenshot's pixels.
+ * [I] = inferred (assumes the screenshot is a 1440px viewport at ~1.39x scale).
+ * [U] = NOT observed (no /releases page, no mobile view, no hover/active states) — my own choice.
+ * See DESIGN_REFERENCE.md.
+ */
+:root {
+  --canvas: #f5f7fb; /* [S] page background */
+  --surface: #ffffff; /* [S] card body */
+  --surface-2: #eff3ff; /* [S] tinted card header band */
+  --ink: #000511; /* [S] heading text (darkest antialiased pixel) */
+  --muted: #657592; /* [S] secondary text */
+  --rule: #e5e7eb; /* [S] 1px card border */
+  --brand: #2f6ee4; /* [S] avatar blue; also used for primary buttons [U] */
+  --brand-soft: #eaf0fd; /* [U] derived tint of brand */
+  --link: #3969bb; /* [S] "View all" link */
+  --nav: #0e0a2d; /* [S] top navigation background */
+  --nav-fg: #a6a5c5; /* [S] nav link text */
+  --lime: #bee67b; /* [S] accent button fill (Which POS?) */
+  --lime-dot: #d1fe84; /* [S] eyebrow status dot */
+  --accent-ink: #305315; /* [S] section label green ("SAVED FOR YOU") */
+  --teal: #125a7d; /* [S] hero gradient, right side */
+  --hero-from: #0c1d5c; /* [S] hero gradient, left */
+  --hero-mid: #1b4282; /* [S] */
+  --hero-to: #0a4158; /* [S] hero gradient, right */
+  --eyebrow-bg: #1e356b; /* [S] eyebrow pill on hero */
+  --eyebrow-fg: #a0afdc; /* [S] */
+  --hero-sub: #aec6fb; /* [S] hero subtitle */
+  --good: #15803d; /* [U] status colors not observed */
+  --good-soft: #dcfce7;
+  --warn: #92400e;
+  --warn-soft: #fef3c7;
+  --bad: #991b1b;
+  --bad-soft: #fee2e2;
+
+  --font-sans: Poppins, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; /* [U] typeface not confirmed; geometric sans */
+  --radius-hero: 28px; /* [I] */
+  --radius-card: 24px; /* [I] */
+  --radius-ctl: 12px; /* [I] */
+  --shadow-card: 0 1px 2px rgba(14, 10, 45, 0.04); /* [U] */
+  --page-max: 1240px; /* [I] content width ~1723px of 2000px at 1.39x */
+  --header-h: 56px; /* [I] 78px / 1.39 */
+  --hero-gradient: linear-gradient(100deg, var(--hero-from) 0%, var(--hero-mid) 45%, var(--hero-to) 100%);
+}
+
+html,
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Print: one-page operator summary ---- */
+@media print {
+  @page {
+    margin: 0.5in;
+  }
+  html,
+  body {
+    background: #fff !important;
+    font-size: 11px;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  .print-avoid-break {
+    break-inside: avoid;
+  }
+}
+.print-only {
+  display: none;
+}
