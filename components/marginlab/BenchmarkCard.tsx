@@ -16,6 +16,7 @@ export function BenchmarkCard({
   onRange,
   status,
   medianLine,
+  origin,
 }: {
   id: string;
   title: string;
@@ -25,6 +26,7 @@ export function BenchmarkCard({
   onRange: (r: Range) => void;
   status: RangeStatus;
   medianLine?: string;
+  origin?: "illustrative" | "operator" | "none";
 }) {
   return (
     <ContentCard className="print-avoid-break">
@@ -40,7 +42,11 @@ export function BenchmarkCard({
         )}
       </div>
       <fieldset className="mt-4">
-        <legend className="mb-1.5 text-sm font-semibold">Management planning range (editable)</legend>
+        <legend className="mb-1.5 flex flex-wrap items-center gap-2 text-sm font-semibold">
+          Planning range (editable)
+          {origin === "illustrative" && <Badge tone="neutral">B · Illustrative</Badge>}
+          {origin === "operator" && <Badge tone="brand">C · Operator target</Badge>}
+        </legend>
         <div className="flex items-center gap-2">
           <NumberField
             id={`${id}-min`}

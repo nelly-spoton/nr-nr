@@ -40,6 +40,36 @@ Or via CLI: `npx vercel` (preview) / `npx vercel --prod`.
 Overview (live calculator: inputs beside results) · Benchmarks · Savings Calculator · SpotOn Solutions ·
 Operator Summary (print / save PDF, copy, save/load scenarios, reset to example).
 
+## V2: sales intelligence layer
+
+- **Concepts:** ten primary concepts plus seven attributes (`config/concepts.ts`). Saved V1 scenarios migrate automatically
+  (`bar` → Bar / Pub, `custom` → Multi-Concept Group).
+- **Benchmarks:** four kinds of numbers are kept separate: A published medians, B illustrative ranges, C operator targets,
+  D AI estimates (not enabled). Bars/breweries get no median; the food median is never applied to total COGS with alcohol.
+  Optional food/beer/liquor/wine/other COGS blends onto one net-sales denominator (`lib/beverage.ts`).
+- **Customer proof:** `config/caseStudies.ts` + `lib/matching.ts` rank up to three published examples by outcome fit, concept,
+  attributes and evidence strength. Matching never touches the calculator; a published % is typed as a relative change and is
+  never converted into percentage points.
+- **Recommendations:** `lib/recommend.ts` ranks one record per product into Highest relevance / Additional consideration /
+  Reporting / Not recommended.
+- **Coaching + summary:** `lib/coaching.ts`, `lib/report.ts`; the one-page summary adds food-vs-labor contribution, two proof points,
+  items to validate and sources.
+- **Website research (future, not built):** `lib/research.ts` defines the contract and a pure adapter only. No scraper, no estimates.
+
+### Case-study verification (required before reps rely on proof)
+
+All eight records are **unverified**: the SpotOn pages could not be fetched when they were written, so they hold only the
+requester's brief and unstated fields are empty. On a machine that can reach spoton.com run:
+
+```bash
+npm run verify:sources
+```
+
+It reports each URL's status and whether the metric figures appear on the page (it edits nothing). Then compare the exact wording by
+hand and update `verification` and `metric.wordingStatus` in `config/caseStudies.ts` (set a `verifiedOn` date). Fill in the
+challenge, what changed, products, locations and confirmed partners from the page. Solution links are vendor homepages until a
+product page is checked; update `link` the same way.
+
 ## Structure
 
 ```
@@ -49,7 +79,11 @@ components/marginlab shared design-system + feature components
 config/benchmarks.ts verified NRA medians, planning ranges, source/caveats
 config/solutions.ts  editable SpotOn solution / partner mapping
 lib/calc.ts          pure financial engine (no React)
-lib/validate.ts      input validation      lib/summary.ts  summary text
+lib/validate.ts      input validation      lib/summary.ts  summary text   lib/report.ts  assembled report
+lib/matching.ts      case-study matching     lib/recommend.ts  ranked solutions
+lib/coaching.ts      discovery panel         lib/beverage.ts   COGS blend
+lib/research.ts      future research contract
+scripts/             verify-sources.ts
 lib/scenario.ts      example scenario      lib/storage.ts  localStorage
 tests/calc.test.ts   unit tests
 ```

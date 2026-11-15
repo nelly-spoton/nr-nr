@@ -1,5 +1,9 @@
 "use client";
 import { useState } from "react";
+import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
+import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
+import { ImpactProof } from "@/components/marginlab/ImpactProof";
+import { buildReport } from "@/lib/report";
 import { BeforeAfterChart } from "@/components/marginlab/BeforeAfterChart";
 import { Callout, ContentCard, MetricCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
 import { DataTable } from "@/components/marginlab/DataTable";
@@ -27,6 +31,7 @@ export default function CalculatorPage() {
     { k: "labor", label: "Labor", c: r.current.labor, i: r.improved.labor, cm: r.current.laborMonthly, im: r.improved.laborMonthly },
     { k: "prime", label: "Prime cost", c: r.current.prime, i: r.improved.prime, cm: r.current.primeMonthly, im: r.improved.primeMonthly },
   ];
+  const rep = buildReport(s, r);
   const roi = r.roi;
   const roiErr = (f: string) => {
     const i = issueFor(issues, f);
@@ -95,9 +100,19 @@ export default function CalculatorPage() {
             </div>
           </ContentCard>
 
+          <ImpactProof />
+
+          <section aria-labelledby="calc-proof">
+            <SectionHeader title="Customer proof" description="Published examples from other restaurants, matched to this profile. They do not change the numbers above." />
+            <span id="calc-proof" className="sr-only">Customer proof</span>
+            <CaseStudyGrid matches={rep.matches} />
+          </section>
+
+          <CoachingPanel />
+
           <ContentCard>
             <details>
-              <summary className="cursor-pointer text-xs font-bold uppercase tracking-wider text-muted">
+              <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.14em] text-accent">
                 Advanced ROI (optional)
               </summary>
               <div className="mt-4 flex flex-col gap-4">

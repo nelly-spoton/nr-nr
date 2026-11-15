@@ -92,6 +92,22 @@ body {
   .print-avoid-break {
     break-inside: avoid;
   }
+  .print-page {
+    font-size: 9.5px;
+    line-height: 1.35;
+  }
+  .print-page h2 {
+    font-size: 18px;
+  }
+  .print-page .text-3xl {
+    font-size: 22px;
+  }
+  .print-page .mt-4 {
+    margin-top: 8px;
+  }
+  .print-page .grid {
+    gap: 10px;
+  }
 }
 .print-only {
   display: none;
