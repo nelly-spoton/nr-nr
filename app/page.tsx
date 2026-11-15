@@ -2,13 +2,13 @@
 import { ArrowRight, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { CONCEPT_LABELS } from "@/config/benchmarks";
-import { ContentCard, PageHeader, SectionHeader, Callout } from "@/components/marginlab/Cards";
+import { ContentCard, HeroBanner, SectionHeader, Callout } from "@/components/marginlab/Cards";
 import { CostField } from "@/components/marginlab/CostField";
 import { FormField, NumberField, SegmentedControl, SelectField, TextField } from "@/components/marginlab/Fields";
 import { ImprovementControls } from "@/components/marginlab/ImprovementControls";
 import { ResultsPanel } from "@/components/marginlab/ResultsPanel";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
-import { SecondaryButton, buttonStyles } from "@/components/marginlab/Buttons";
+import { LimeButton, SecondaryButton, buttonStyles } from "@/components/marginlab/Buttons";
 import { safeLocations } from "@/lib/calc";
 import { usd } from "@/lib/format";
 import { issueFor } from "@/lib/validate";
@@ -28,10 +28,11 @@ export default function OverviewPage() {
 
   return (
     <>
-      <PageHeader
-        title="Overview"
-        description="Enter the restaurant's volume and costs, adjust the improvement assumptions, and watch the opportunity update live."
-        actions={<SecondaryButton onClick={reset}>Reset to example</SecondaryButton>}
+      <HeroBanner
+        eyebrow="Live discovery calculator"
+        title="Find the margin hiding in prime cost."
+        subtitle="Enter volume and costs, set the improvement assumptions, and watch the opportunity update."
+        action={<LimeButton onClick={reset}>Reset to example</LimeButton>}
       />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="order-2 flex flex-col gap-6 lg:order-1">
@@ -212,7 +213,7 @@ export default function OverviewPage() {
         </div>
 
         <aside className="order-1 lg:order-2">
-          <div className="lg:sticky lg:top-20">
+          <div className="lg:sticky lg:top-[72px]">
             <ResultsPanel />
             <div className="no-print mt-3 hidden flex-col gap-2 lg:flex">
               <Link href="/solutions" className={buttonStyles({ variant: "primary" })}>

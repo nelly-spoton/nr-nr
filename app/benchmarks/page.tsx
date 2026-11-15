@@ -131,7 +131,7 @@ export default function BenchmarksPage() {
           <p>
             <strong className="text-ink">Source:</strong> {NRA_SOURCE.publisher}, <em>{NRA_SOURCE.title}</em>, using{" "}
             {NRA_SOURCE.dataPeriod}.{" "}
-            <a href={NRA_SOURCE.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-brand underline">
+            <a href={NRA_SOURCE.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-link underline">
               Publisher <ExternalLink className="h-3 w-3" aria-hidden />
             </a>
           </p>

@@ -88,7 +88,7 @@ export function SolutionCard({
           href={x.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-9 items-center gap-1 font-semibold text-brand underline"
+          className="inline-flex min-h-9 items-center gap-1 font-semibold text-link underline"
         >
           Public product source <ExternalLink className="h-3 w-3" aria-hidden />
           <span className="sr-only"> (opens in a new tab)</span>

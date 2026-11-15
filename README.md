@@ -5,8 +5,9 @@ food and labor cost ratios to benchmarks, models **percentage-point** improvemen
 SpotOn solutions. **All results are hypothetical estimates, not guaranteed savings.** No data leaves the
 browser (state lives in `localStorage`); there is no backend, database, auth or paid API.
 
-> **Design note:** the Deal Prep visual reference could not be accessed when this was built, so the styling is
-> provisional and not verified against it. See [DESIGN_REFERENCE.md](./DESIGN_REFERENCE.md).
+> **Design note:** styling follows a single Deal Prep home-page screenshot (desktop only). The live site, the
+> `/releases` page, mobile and interactive states were not inspected, so the match is partial. See
+> [DESIGN_REFERENCE.md](./DESIGN_REFERENCE.md).
 
 ## Run locally
 

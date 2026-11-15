@@ -1,7 +1,7 @@
 "use client";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { Badge } from "./Cards";
 import { Navigation } from "./Navigation";
 import { useScenario } from "./ScenarioProvider";
 import { usd } from "@/lib/format";
@@ -9,27 +9,32 @@ import { usd } from "@/lib/format";
 function Header() {
   const { scenario, result } = useScenario();
   return (
-    <header className="no-print sticky top-0 z-40 border-b-2 border-ink bg-surface">
-      <div className="mx-auto flex h-14 max-w-page items-center justify-between gap-3 px-4 sm:px-6">
-        <div className="flex min-w-0 items-center gap-2">
-          <span
-            aria-hidden
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white"
-          >
-            M
-          </span>
-          <span className="text-base font-bold tracking-tight">
-            Margin<em className="font-bold not-italic text-brand">Lab</em>
-          </span>
-          <span className="hidden text-xs text-muted md:inline">Restaurant Profit Opportunity Calculator</span>
+    <header className="no-print sticky top-0 z-40 bg-nav text-white">
+      <div className="mx-auto flex h-14 max-w-page items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-8">
+          <Link href="/" className="flex shrink-0 items-center gap-2">
+            <span
+              aria-hidden
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-brand text-sm font-bold text-white"
+            >
+              M
+            </span>
+            <span className="text-lg font-semibold tracking-tight">MarginLab</span>
+          </Link>
+          <Navigation variant="top" />
         </div>
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="hidden max-w-[16rem] truncate text-sm text-muted sm:inline">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="hidden max-w-[14rem] truncate text-sm text-nav-fg xl:inline">
             {scenario.restaurantName || "Unnamed restaurant"}
           </span>
-          <Badge tone={result.sales.preliminary ? "warn" : "good"}>
+          <span
+            className={
+              "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold " +
+              (result.sales.preliminary ? "bg-lime text-ink" : "bg-white/10 text-white")
+            }
+          >
             {result.sales.preliminary ? "Preliminary estimate" : "Estimate"}
-          </Badge>
+          </span>
         </div>
       </div>
     </header>
@@ -44,11 +49,11 @@ function MobileResultBar() {
   return (
     <div
       aria-live="polite"
-      className="no-print fixed inset-x-0 bottom-14 z-30 flex items-center justify-between border-t border-brand bg-brand px-4 py-2 text-white lg:hidden"
+      className="no-print fixed inset-x-0 bottom-14 z-30 flex items-center justify-between border-t border-white/10 bg-nav px-4 py-2 text-white lg:hidden"
       style={{ marginBottom: "env(safe-area-inset-bottom)" }}
     >
-      <span className="text-xs font-semibold uppercase tracking-wider text-white/80">Est. annual opportunity</span>
-      <span className="tabular text-lg font-extrabold">
+      <span className="text-xs font-semibold uppercase tracking-[0.14em] text-nav-fg">Est. annual opportunity</span>
+      <span className="tabular text-lg font-bold text-lime">
         {result.sales.resolved ? usd(result.savings.annualTotal) : "—"}
       </span>
     </div>
@@ -59,18 +64,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <>
       <Header />
-      <div className="mx-auto flex max-w-page gap-8 px-4 py-6 sm:px-6">
-        <aside className="no-print hidden w-56 shrink-0 lg:block">
-          <div className="sticky top-20">
-            <Navigation variant="sidebar" />
-            <p className="mt-6 px-3 text-xs text-muted">
-              Illustrative estimates for discovery conversations. Not a quote, proposal or guarantee. Inputs stay in this
-              browser.
-            </p>
-          </div>
-        </aside>
-        <main className="min-w-0 flex-1 pb-32 lg:pb-8">{children}</main>
-      </div>
+      <main className="mx-auto max-w-page px-4 py-6 pb-32 sm:px-6 sm:py-8 lg:pb-12">{children}</main>
+      <p className="no-print mx-auto max-w-page px-4 pb-24 text-xs text-muted sm:px-6 lg:pb-10">
+        Illustrative estimates for discovery conversations. Not a quote, proposal or guarantee. Inputs stay in this browser.
+      </p>
       <MobileResultBar />
       <Navigation variant="bottom" />
     </>

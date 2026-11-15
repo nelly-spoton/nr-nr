@@ -9,6 +9,7 @@ export const buttonStyles = cva(
       variant: {
         primary: "bg-brand text-white hover:bg-[color-mix(in_srgb,var(--brand)_88%,black)]",
         secondary: "border border-rule bg-surface text-ink hover:bg-surface-2",
+        lime: "bg-lime text-ink hover:brightness-95",
         ghost: "text-muted hover:bg-surface-2 hover:text-ink",
       },
       size: { md: "", sm: "min-h-9 px-3 text-xs" },
@@ -28,6 +29,9 @@ export const PrimaryButton = forwardRef<HTMLButtonElement, Omit<Props, "variant"
 });
 export const SecondaryButton = forwardRef<HTMLButtonElement, Omit<Props, "variant">>(function SecondaryButton(p, ref) {
   return <Base ref={ref} variant="secondary" {...p} />;
+});
+export const LimeButton = forwardRef<HTMLButtonElement, Omit<Props, "variant">>(function LimeButton(p, ref) {
+  return <Base ref={ref} variant="lime" {...p} />;
 });
 export const GhostButton = forwardRef<HTMLButtonElement, Omit<Props, "variant">>(function GhostButton(p, ref) {
   return <Base ref={ref} variant="ghost" {...p} />;

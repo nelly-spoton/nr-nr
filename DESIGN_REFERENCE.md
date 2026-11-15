@@ -1,68 +1,67 @@
 # DESIGN_REFERENCE.md — MarginLab vs. Deal Prep
 
-## Status: reference NOT inspected — visual fidelity is unverified
+## What was actually inspected
 
-The brief asked MarginLab to match <https://dealprep.vercel.app/releases>. When this was built, the
-sandbox's egress policy refused the connection (`CONNECT` → `403`, host `dealprep.vercel.app:443`), so:
+The live site (`dealprep.vercel.app`) is blocked by this sandbox's network policy, so it was **never opened**.
+The only reference material is **one desktop screenshot of the Deal Prep home page** supplied by the user
+(2000×1181 px). Colors below were sampled from that file's pixels.
 
-- No Deal Prep page was opened; no desktop (1440px) or mobile (390px) reference screenshots exist.
-- **No Deal Prep design token (color, font, size, radius, shadow, spacing, nav pattern) was observed.**
-- **MarginLab makes no claim of visual consistency with Deal Prep.** Do not treat any value below as
-  extracted from it.
+**Not observed — so not matched, and no fidelity is claimed for them:**
+the `/releases` page (the URL named in the brief), any mobile (390px) view, hover/focus/active/disabled states,
+tabs, filters, dropdowns, tables, form inputs, sliders, tooltips, the Products/Which POS? menus, and the typeface
+(Poppins is a guess at a geometric sans).
 
-The repo's existing `index.html` ("SpotOn Intelligence V2") is a *different* SpotOn page, not Deal Prep.
-Its palette/typography was borrowed as a **provisional stand-in** so the app has a coherent SpotOn-flavored
-look. That is a guess about family resemblance, not a verified match.
+Each token in `app/globals.css` is tagged **[S]** sampled, **[I]** inferred, or **[U]** unobserved/own choice.
 
-## What is provisional (all of it)
+## Observed patterns from the screenshot and how MarginLab uses them
 
-All styling is routed through one token layer, `app/globals.css` (`:root`), exposed to Tailwind in
-`tailwind.config.ts`. Components never hard-code colors, so re-skinning is a token edit.
+| Observed in screenshot | MarginLab |
+|---|---|
+| Dark indigo top bar (`#0e0a2d`), logo left, text nav links, no sidebar | Same: top nav on desktop (replaced my earlier sidebar) |
+| Nav link text `#a6a5c5`, brand text white | `--nav-fg`, white brand |
+| Lime accent button (`#bee67b`), lime status dot (`#d1fe84`) | `LimeButton`, eyebrow dot, preliminary badge, mobile result figure |
+| Blue avatar circle (`#2f6ee4`) | Brand blue (also my choice for primary buttons) |
+| Page bg `#f5f7fb`, white cards, 1px `#e5e7eb` border | `--canvas`, `--surface`, `--rule` |
+| Large gradient hero (`#0c1d5c` → `#1b4282` → `#0a4158`), eyebrow pill, big headline | `HeroBanner` on Overview; headline result card reuses the gradient |
+| Card with tinted header band (`#eff3ff`) | `--surface-2` (used for controls/tables) |
+| Wide-tracked uppercase section labels in dark green (`#305315`) | `SectionHeader` |
+| Muted blue-gray body text (`#657592`), near-black headings (`#000511`) | `--muted`, `--ink` |
+| Blue text link ("View all") `#3969bb` | `--link` |
+| Rounded geometry: hero ~28px, cards ~24px (inferred assuming 1440px @ ~1.39x) | `--radius-hero/card/ctl` |
+| Header ~56px, content ~1240px wide (same assumption) | `--header-h`, `--page-max` |
 
-| Token | Provisional value | Source |
-|---|---|---|
-| `--canvas` | `#faf8f3` | repo `index.html` (`--cream`) |
-| `--surface` / `--surface-2` | `#ffffff` / `#f7f5f0` | repo `index.html` |
-| `--ink` / `--muted` / `--rule` | `#1a1714` / `#6b6560` / `#e4e0d8` | repo `index.html` |
-| `--brand` / `--brand-soft` | `#1d3fbe` / `#eef2ff` | repo `index.html` (`--blue`) |
-| good / warn / bad (+soft) | greens / ambers / reds | repo `index.html` |
-| `--font-sans` | Poppins → system stack | repo `index.html` |
-| `--radius-card` / `--radius-ctl` | 12px / 8px | **chosen by me** |
-| `--shadow-card` | `0 1px 2px rgba(26,23,20,.05)` | **chosen by me** |
-| `--page-max` | 1200px | **chosen by me** |
+## Still my own choices (unobserved)
 
-Layout/interaction choices that are also **my own, not observed**: left sidebar nav on ≥1024px, fixed
-5-tab bottom bar on phones, sticky 2px-ink-bordered header with circular brand mark, sticky results rail
-on desktop, sticky annual-opportunity bar on phones.
+Bottom 5-tab bar and sticky annual-savings bar on phones; status colors (good/warn/bad); the primary-button
+treatment; segmented controls, sliders, tables and chart styling; header active-link pill; hero copy.
+The hero is shortened on phones (subtitle/action hidden) to keep inputs near the top.
 
-## To complete the visual-consistency pass (needs reference access)
+## To finish the consistency pass
 
-1. Allow `dealprep.vercel.app` in the environment's network policy, or supply screenshots at 1440px and 390px.
-2. Record the observed values for each item in the checklist: page structure/nav; header, sidebar, page title;
-   background/surface colors; type scale and weights; cards (border, shadow, radius); buttons and states;
-   tabs/filters/inputs/dropdowns; icons; spacing and max widths; mobile nav.
-3. Replace the `:root` block in `app/globals.css`; adjust `AppShell`/`Navigation` if the nav pattern differs.
-4. Capture MarginLab at the same widths and compare side by side; update this file with real findings.
+1. Provide `/releases` at 1440px and 390px (or allow `dealprep.vercel.app` in the network policy).
+2. Check the unobserved items above against it: form controls, buttons and states, tabs/filters, tables, mobile nav.
+3. Confirm the typeface and the scale assumption (viewport/DPR) behind the **[I]** values.
+4. Capture MarginLab at the same widths, compare side by side, and update this file.
 
 ## Shared components (spec name → file)
 
 | Spec | File |
 |---|---|
 | AppShell, Header | `components/marginlab/AppShell.tsx` |
-| Navigation | `components/marginlab/Navigation.tsx` |
-| PageHeader, SectionHeader, ContentCard, MetricCard (+Badge, Callout) | `components/marginlab/Cards.tsx` |
+| Navigation (top bar / mobile tabs) | `components/marginlab/Navigation.tsx` |
+| PageHeader, SectionHeader, ContentCard, MetricCard, HeroBanner, Badge, Callout | `components/marginlab/Cards.tsx` |
 | FormField, SegmentedControl, SelectField, TextField, NumberField, SliderField | `components/marginlab/Fields.tsx` |
 | Slider | `components/ui/slider.tsx` (Radix) |
 | DataTable | `components/marginlab/DataTable.tsx` |
-| PrimaryButton, SecondaryButton | `components/marginlab/Buttons.tsx` |
+| PrimaryButton, SecondaryButton, LimeButton | `components/marginlab/Buttons.tsx` |
 | InfoTooltip | `components/marginlab/InfoTooltip.tsx` |
 
-No Deal Prep release content, data or product functionality was copied (none was seen).
+No Deal Prep content, data or product functionality was copied; only generic visual patterns were reused.
 
 ## Implementation decisions (design-independent)
 
 - Results stay visible while inputs change: sticky rail on desktop; headline + sticky bar on phones.
 - Tooltips are tap/click toggles (hover also works) because hover-only fails on touch.
-- Controls ≥44px tall on touch; 16px input font on small screens (prevents iOS zoom).
-- Status never relies on color alone (text labels on every benchmark badge).
+- Controls are at least 44px tall on touch; inputs use 16px text on small screens (prevents iOS zoom).
+- Status never relies on color alone (every benchmark badge has a text label).
 - Print stylesheet hides chrome; the printed Operator Summary fits one US Letter page with the example scenario.

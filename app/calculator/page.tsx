@@ -130,7 +130,7 @@ export default function CalculatorPage() {
         </div>
 
         <aside className="order-1 lg:order-2">
-          <div className="lg:sticky lg:top-20">
+          <div className="lg:sticky lg:top-[72px]">
             <ResultsPanel />
             <div className="mt-3">
               <Callout tone="info">

@@ -31,7 +31,7 @@ export function BeforeAfterChart() {
           <Tooltip formatter={(v: number) => pct(v)} cursor={{ fill: "var(--surface-2)" }} />
           <Legend iconType="square" wrapperStyle={{ fontSize: 12 }} />
           <Bar dataKey="food" name="Food & beverage" stackId="a" fill="var(--brand)" isAnimationActive={false} />
-          <Bar dataKey="labor" name="Labor" stackId="a" fill="var(--warn)" isAnimationActive={false} />
+          <Bar dataKey="labor" name="Labor" stackId="a" fill="var(--teal)" isAnimationActive={false} />
         </BarChart>
       </ResponsiveContainer>
     </div>
