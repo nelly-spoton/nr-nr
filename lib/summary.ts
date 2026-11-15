@@ -1,6 +1,5 @@
 import { CONCEPT_LABELS } from "@/config/concepts";
 import { NRA_SOURCE, PLANNING_NOTE } from "@/config/benchmarks";
-import { PROOF_DISCLAIMER, metricQualifier, verificationLabel } from "@/config/caseStudies";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import { compareAll, RANGE_STATUS_LABEL, type ScenarioResult } from "./calc";
 import { pct, pts, usd } from "./format";
@@ -34,7 +33,6 @@ export function keyAssumptions(s: Scenario, r: ScenarioResult): string[] {
     "All savings are hypothetical estimates, not guarantees.",
     "Improvements are percentage POINTS of net sales, not relative reductions.",
     "Payment-processing, delivery-commission and sales-increase effects are not counted as prime-cost savings.",
-    "Customer examples are published results from other restaurants and do not change this model.",
   ];
   if (r.locations > 1) {
     list.splice(2, 0, "Equal sales and costs assumed across locations.");
@@ -85,16 +83,6 @@ export function buildSummaryText(s: Scenario, r: ScenarioResult): string {
     cmpLine("Labor", "labor"),
     cmpLine("Prime", "prime"),
     benchmarkLine(s, rep),
-    "",
-    "CUSTOMER PROOF (published examples, not predictions)",
-    ...(rep.proofPoints.length
-      ? rep.proofPoints.flatMap((m) => [
-          `- ${m.study.name} (${m.study.conceptLabel}): ${m.study.metric.wording} [${verificationLabel(m.study)}]`,
-          `  ${metricQualifier(m.study.metric)}`,
-          `  Source: ${m.study.sourceUrl}`,
-        ])
-      : ["- No sufficiently relevant published example for this profile."]),
-    PROOF_DISCLAIMER,
     "",
     "OPERATIONAL IMPROVEMENTS TO VALIDATE",
     ...rep.coaching.validate.map((x) => `- ${x}`),
