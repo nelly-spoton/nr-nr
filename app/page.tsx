@@ -6,7 +6,8 @@ import { BeverageMixPanel } from "@/components/marginlab/BeverageMixPanel";
 import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
 import { ConceptProfile } from "@/components/marginlab/ConceptProfile";
 import { ContentCard, HeroBanner, SectionHeader, Callout } from "@/components/marginlab/Cards";
-import { CostField } from "@/components/marginlab/CostField";
+import { CostModeInputs } from "@/components/marginlab/CostModeInputs";
+import { FinancialHealth } from "@/components/marginlab/FinancialHealth";
 import { FormField, NumberField, SegmentedControl, TextField } from "@/components/marginlab/Fields";
 import { ImprovementControls } from "@/components/marginlab/ImprovementControls";
 import { ResultsPanel } from "@/components/marginlab/ResultsPanel";
@@ -165,34 +166,13 @@ export default function OverviewPage() {
           <ContentCard>
             <SectionHeader
               title="Current costs"
-              tooltip="Both costs are % of net sales on the same denominator. Prime cost = food & beverage COGS % + fully loaded labor %."
+              tooltip="Both costs are % of net sales on the same denominator. Prime cost = food & beverage COGS + fully loaded labor."
             />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <CostField
-                id="food"
-                label="Food & beverage COGS"
-                tooltip="Cost of goods sold for food and beverage as a % of net sales."
-                pct={s.foodPct}
-                onPct={(v) => update({ foodPct: v })}
-                monthlyGroupSales={r.sales.monthlyGroup}
-                error={err("foodPct")}
-              />
-              <CostField
-                id="labor"
-                label="Fully loaded labor"
-                tooltip="Wages plus employer payroll taxes and relevant benefits, as a % of net sales."
-                pct={s.laborPct}
-                onPct={(v) => update({ laborPct: v })}
-                monthlyGroupSales={r.sales.monthlyGroup}
-                error={err("laborPct")}
-                warning={warn("foodPct")}
-              />
-            </div>
-            <p className="mt-4 text-sm text-muted">
-              Current prime cost: <strong className="tabular text-ink">{r.current.prime.toFixed(2)}%</strong>
-            </p>
-            {(isAlcoholLed(s) || s.attributes.includes("beverage_heavy") || s.beverageMix.enabled) && <BeverageMixPanel />}
+            <CostModeInputs />
+            {s.costMode === "quick" && (isAlcoholLed(s) || s.attributes.includes("beverage_heavy") || s.beverageMix.enabled) && <BeverageMixPanel />}
           </ContentCard>
+
+          <FinancialHealth />
 
           <ContentCard>
             <SectionHeader title="Improvement assumptions" description="Percentage points of net sales — hypothetical until supported by actual cost data." />

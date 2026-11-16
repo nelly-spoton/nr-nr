@@ -45,7 +45,7 @@ function Header() {
 function MobileResultBar() {
   const { result } = useScenario();
   const path = usePathname();
-  if (path.startsWith("/summary")) return null;
+  if (path.startsWith("/summary") || path.startsWith("/stats")) return null;
   return (
     <div
       aria-live="polite"

@@ -2,6 +2,7 @@
  * Pure financial calculation engine. No React, no DOM, no storage.
  * All improvements are percentage POINTS of net sales (never relative reductions).
  */
+import { computeDetailed, type DetailedBreakdown } from "./detailed";
 import type { PlanningRanges, Range, SalesStatus, Scenario } from "./types";
 
 export const MAX_IMPROVEMENT_PTS = 5;
@@ -132,8 +133,18 @@ export function computeRoi(s: Scenario, monthlySavings: number): RoiResult {
   };
 }
 
+export interface CogsBreakdown {
+  mode: "quick" | "detailed";
+  /** Detailed inputs valid (quick mode: always true). */
+  valid: boolean;
+  problems: string[];
+  /** Null in quick mode: a food/alcohol split is never fabricated. */
+  detail: DetailedBreakdown | null;
+}
+
 export interface ScenarioResult {
   locations: number;
+  cogs: CogsBreakdown;
   sales: SalesResult;
   current: CostBlock;
   improved: CostBlock;
@@ -167,7 +178,9 @@ export function effectivePts(requested: number | null, currentPct: number): { pt
 export function computeScenario(s: Scenario): ScenarioResult {
   const locations = safeLocations(s.locations);
   const sales = resolveSales(s);
-  const food = clamp(safe(s.foodPct), 0, 100);
+  const detail = s.costMode === "detailed" ? computeDetailed(sales.monthlyGroup, s.detailed) : null;
+  // Detailed mode: blended F&B COGS % of total net sales. Quick mode: the entered combined %.
+  const food = clamp(detail ? detail.blendedPct : safe(s.foodPct), 0, 100);
   const labor = clamp(safe(s.laborPct), 0, 100);
 
   const f = effectivePts(s.foodImprovementPts, food);
@@ -185,6 +198,7 @@ export function computeScenario(s: Scenario): ScenarioResult {
 
   return {
     locations,
+    cogs: { mode: s.costMode, valid: detail ? detail.valid : true, problems: detail ? detail.problems : [], detail },
     sales,
     current,
     improved,

@@ -3,6 +3,7 @@ import { NRA_SOURCE, PLANNING_NOTE } from "@/config/benchmarks";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import { compareAll, RANGE_STATUS_LABEL, type ScenarioResult } from "./calc";
 import { pct, pts, usd } from "./format";
+import { buildHealth, NEAR_WINDOW_NOTE, PEER_LABEL, type HealthModel } from "./health";
 import { buildReport, isAlcoholLed, type Report } from "./report";
 import type { SalesStatus, Scenario } from "./types";
 
@@ -51,8 +52,34 @@ export function benchmarkLine(s: Scenario, rep: Report): string {
   return `Published medians (${m.set.label}): food ${pct(m.set.foodPct)}, labor ${pct(m.set.laborPct)}.${m.qualification ? " " + m.qualification : ""}`;
 }
 
+/** Compact text lines for the financial-health section (also used by the printed summary). */
+export function healthLines(h: HealthModel): string[] {
+  const out: string[] = [];
+  for (const row of h.rows) {
+    if (row.id === "pretax" && h.profit.status === "unknown") continue;
+    const v = row.valuePct === null ? "not entered" : pct(row.valuePct);
+    if (row.stat && row.deltaPts !== null) {
+      const sign = row.deltaPts >= 0 ? "+" : "−";
+      out.push(`${row.label}: ${v} · ${PEER_LABEL[row.status]} (${sign}${Math.abs(row.deltaPts).toFixed(2)} pts vs. ${pct(row.stat.value)} ${row.stat.segment === "full_service" ? "full-service" : "limited-service"} median)`);
+    } else out.push(`${row.label}: ${v} · ${PEER_LABEL.none}`);
+  }
+  return out;
+}
+
+export function profitLines(h: HealthModel): string[] {
+  const p = h.profit;
+  if (p.status === "unknown") return [`Profitability: ${p.label}. ${p.reason ?? ""}`.trim()];
+  const dir = p.direction === "loss" ? "loss" : p.direction === "profit" ? "profit" : "break-even";
+  return [
+    `Profitability: ${p.label}`,
+    `Estimated pretax ${dir}: ${usd(p.pretaxMonthly)}/month · ${usd(p.pretaxAnnual)}/year (${pct(p.marginPct ?? 0)} of net sales)`.replace("Estimated pretax", p.status === "verified" ? "Pretax" : "Estimated pretax"),
+    ...p.assumptions.map((a) => `  Assumption: ${a}`),
+  ];
+}
+
 export function buildSummaryText(s: Scenario, r: ScenarioResult): string {
   const rep = buildReport(s, r);
+  const health = buildHealth(s, r);
   const name = s.restaurantName.trim() || "Restaurant";
   const cmp = compareAll(r, s.planning[s.concept]);
   const cmpLine = (label: string, k: "food" | "labor" | "prime") =>
@@ -78,6 +105,12 @@ export function buildSummaryText(s: Scenario, r: ScenarioResult): string {
     `  Food: ${usd(r.savings.annualFood)}/yr (${Math.round(rep.contribution.foodShare * 100)}%) · Labor: ${usd(r.savings.annualLabor)}/yr (${Math.round(rep.contribution.laborShare * 100)}%)`,
     r.locations > 1 ? `Per location: ${usd(r.savings.perLocationMonthly)}/mo · ${usd(r.savings.perLocationAnnual)}/yr` : "",
     "",
+    "FINANCIAL HEALTH VS. PUBLISHED PEER MEDIANS",
+    ...healthLines(health),
+    NEAR_WINDOW_NOTE.replace("“Near”", `"Near" (±${health.windowPts} pt)`).replace(/[“”]/g, '"'),
+    ...profitLines(health),
+    "Prime cost alone does not show profitability.",
+    "",
     "BENCHMARK CONTEXT",
     cmpLine("Food", "food"),
     cmpLine("Labor", "labor"),
@@ -98,7 +131,7 @@ export function buildSummaryText(s: Scenario, r: ScenarioResult): string {
     ...validationItems(s, r).map((x) => `- ${x}`),
     "",
     "SOURCES",
-    `${NRA_SOURCE.publisher}, ${NRA_SOURCE.title} (${NRA_SOURCE.dataPeriod}). ${NRA_SOURCE.caveats[0]} ${NRA_SOURCE.caveats[1]}`,
+    `${NRA_SOURCE.publisher}, ${NRA_SOURCE.title} (${NRA_SOURCE.dataPeriod}). ${NRA_SOURCE.caveats[0]} ${NRA_SOURCE.caveats[1]} Statistics supplied by the SpotOn team; not independently checked against the publication; denominators assumed to be total sales.`,
     PLANNING_NOTE,
     SOLUTIONS_DISCLAIMER,
   ];

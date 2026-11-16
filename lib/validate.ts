@@ -46,9 +46,20 @@ export function validateScenario(s: Scenario): Issue[] {
   if (typeof s.amount === "number" && s.amount === 0)
     out.push({ field: "amount", message: "Sales are zero, so dollar results are $0.", severity: "warning" });
 
-  checkNumber(out, "foodPct", "Food & beverage cost %", s.foodPct, { max: 100, required: true });
+  if (s.costMode === "detailed") {
+    const d = s.detailed;
+    checkNumber(out, "detailed.foodSharePct", "Food revenue share", d.foodSharePct, { max: 100, required: true });
+    checkNumber(out, "detailed.alcoholSharePct", "Alcohol revenue share", d.alcoholSharePct, { max: 100, required: true });
+    checkNumber(out, "detailed.foodCogsRatePct", "Food COGS rate", d.foodCogsRatePct, { max: 100, required: true });
+    if (typeof d.alcoholSharePct === "number" && d.alcoholSharePct > 0)
+      checkNumber(out, "detailed.alcoholCogsRatePct", "Alcohol COGS rate", d.alcoholCogsRatePct, { max: 100, required: true });
+    if (typeof d.foodSharePct === "number" && typeof d.alcoholSharePct === "number" && Math.abs(d.foodSharePct + d.alcoholSharePct - 100) > 0.01)
+      out.push({ field: "detailed.foodSharePct", message: `Revenue shares total ${(d.foodSharePct + d.alcoholSharePct).toFixed(2)}%; they must add to 100%.`, severity: "error" });
+  } else {
+    checkNumber(out, "foodPct", "Food & beverage cost %", s.foodPct, { max: 100, required: true });
+  }
   checkNumber(out, "laborPct", "Labor cost %", s.laborPct, { max: 100, required: true });
-  if (!bad(s.foodPct) && !bad(s.laborPct) && (s.foodPct as number) + (s.laborPct as number) > 100)
+  if (s.costMode !== "detailed" && !bad(s.foodPct) && !bad(s.laborPct) && (s.foodPct as number) + (s.laborPct as number) > 100)
     out.push({ field: "foodPct", message: "Prime cost exceeds 100% of net sales.", severity: "warning" });
 
   checkNumber(out, "foodImprovementPts", "Food improvement", s.foodImprovementPts, { max: MAX_IMPROVEMENT_PTS });
@@ -62,6 +73,8 @@ export function validateScenario(s: Scenario): Issue[] {
   checkNumber(out, "roi.oneTimeCost", "One-time cost", s.roi.oneTimeCost, {});
   checkNumber(out, "roi.otherMonthlyCost", "Other ongoing cost", s.roi.otherMonthlyCost, {});
 
+  for (const [k, l] of Object.entries(s.expenses.lines))
+    if (!l.excluded) checkNumber(out, `expenses.${k}`, "Expense", l.monthly, {});
   return out;
 }
 
