@@ -37,8 +37,9 @@ Or via CLI: `npx vercel` (preview) / `npx vercel --prod`.
 
 ## Sections
 
-Overview (live calculator: inputs beside results) · Benchmarks · Savings Calculator · SpotOn Solutions ·
-Operator Summary (print / save PDF, copy, save/load scenarios, reset to example).
+Overview (live calculator: inputs beside results, plus Financial Health) · Savings Calculator · SpotOn Solutions ·
+Operator Summary (print / save PDF, copy, save/load scenarios, reset to example) · Industry Stats (research reference).
+The former Benchmarks tab was retired; `/benchmarks` redirects to Industry Stats, and the planning-range feature is no longer shown.
 
 ## V2: sales intelligence layer
 
@@ -94,7 +95,7 @@ product page is checked; update `link` the same way.
 ## Structure
 
 ```
-app/                 routes: / (overview), benchmarks, calculator, solutions, summary
+app/                 routes: / (overview), calculator, solutions, summary, stats
 components/ui/       slider (Radix)
 components/marginlab shared design-system + feature components
 config/benchmarks.ts verified NRA medians, planning ranges, source/caveats

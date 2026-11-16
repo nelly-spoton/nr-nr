@@ -2,20 +2,18 @@
 import { Check, Copy, Printer, RotateCcw, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CONCEPT_LABELS } from "@/config/concepts";
-import { NRA_SOURCE, PLANNING_NOTE } from "@/config/benchmarks";
+import { NRA_SOURCE } from "@/config/benchmarks";
 import { PROOF_DISCLAIMER } from "@/config/caseStudies";
 import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/marginlab/Buttons";
 import { Badge, ContentCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
-import { RANGE_STATUS_LABEL } from "@/lib/calc";
 import { buildHealth, NEAR_WINDOW_NOTE, PEER_LABEL } from "@/lib/health";
 import { buildReport } from "@/lib/report";
 import { pct, pts, usd } from "@/lib/format";
 import {
   SALES_STATUS_LABEL,
-  benchmarkLine,
   buildSummaryText,
   keyAssumptions,
   validationItems,
@@ -43,11 +41,9 @@ export default function SummaryPage() {
   const rep = buildReport(s, r);
   const health = buildHealth(s, r);
   const hp = health.profit;
-  const cmp = rep.comparison;
   const sols = rep.included;
   const foodPct = Math.round(rep.contribution.foodShare * 100);
   const laborPct = Math.round(rep.contribution.laborShare * 100);
-  const cmpText = (k: "food" | "labor" | "prime") => (cmp[k] === "unset" ? "No range set" : RANGE_STATUS_LABEL[cmp[k]]);
 
   async function copy() {
     try {
@@ -232,16 +228,6 @@ export default function SummaryPage() {
           </section>
         </div>
 
-        <section className="print-avoid-break mt-4 text-sm">
-          <H>Benchmark context</H>
-          <p className="text-xs">
-            Food: {cmpText("food")} · Labor: {cmpText("labor")} · Prime: {cmpText("prime")}
-          </p>
-          <p className="mt-1 text-[11px] text-muted">
-            {benchmarkLine(s, rep)} {NRA_SOURCE.publisher}, {NRA_SOURCE.title} ({NRA_SOURCE.dataPeriod}). Medians, not targets.
-          </p>
-        </section>
-
         <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
           <section className="print-avoid-break">
             <H>Key assumptions</H>
@@ -261,7 +247,7 @@ export default function SummaryPage() {
           </section>
         </div>
         <p className="mt-4 border-t border-rule pt-2 text-[11px] leading-snug text-muted">
-          {PLANNING_NOTE} {SOLUTIONS_DISCLAIMER} This is a consultative estimate, not a quote, proposal or guarantee of savings.
+          {SOLUTIONS_DISCLAIMER} This is a consultative estimate, not a quote, proposal or guarantee of savings.
         </p>
       </article>
 
