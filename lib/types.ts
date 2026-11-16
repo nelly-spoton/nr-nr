@@ -33,6 +33,42 @@ export interface BeverageMix {
   costPct: Record<BevCategory, NumField>;
 }
 
+export type CostMode = "quick" | "detailed";
+
+/** Detailed food/alcohol inputs. Revenue shares are % of total net sales; rates are % of that category's own sales. */
+export interface DetailedCogs {
+  foodSharePct: NumField;
+  alcoholSharePct: NumField;
+  foodCogsRatePct: NumField;
+  alcoholCogsRatePct: NumField;
+}
+
+export type ExpenseKey =
+  | "occupancy"
+  | "utilities"
+  | "marketing"
+  | "repairs"
+  | "admin"
+  | "processing"
+  | "delivery"
+  | "corporate"
+  | "otherOpex"
+  | "depreciation"
+  | "interestOther";
+
+export interface ExpenseLine {
+  /** Monthly dollars, entire group. Null = not yet addressed. 0 is a valid, addressed answer. */
+  monthly: NumField;
+  /** Already counted in food/beverage COGS or fully loaded labor, so excluded here to avoid double counting. */
+  excluded: boolean;
+}
+
+export interface Expenses {
+  /** actual = taken from the restaurant's real financial statements; assumed = operator/HS estimate. */
+  basis: "assumed" | "actual";
+  lines: Record<ExpenseKey, ExpenseLine>;
+}
+
 export interface Scenario {
   restaurantName: string;
   scenarioName: string;
@@ -55,8 +91,16 @@ export interface Scenario {
   };
 
   /** Canonical cost inputs, % of net sales. Dollar entry converts into these. */
+  /** Quick-mode combined food & beverage COGS % of net sales. */
   foodPct: NumField;
   laborPct: NumField;
+  costMode: CostMode;
+  detailed: DetailedCogs;
+  /** "Near peer median" window in percentage points (a display convention, not a statistical range). */
+  nearWindowPts: number;
+  expenses: Expenses;
+  /** Operator-chosen comparison statistic per metric (only comparable ones are offered). */
+  benchmarkPick: Record<string, string>;
 
   /** Improvement in percentage POINTS. */
   foodImprovementPts: NumField;

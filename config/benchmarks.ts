@@ -1,21 +1,21 @@
 import { CONCEPT_BY_ID, effectiveServiceModel, type AttributeId, type ConceptId } from "@/config/concepts";
 import type { PlanningRanges } from "@/lib/types";
 
-/**
- * Verified historical reference medians. Edit here only if the source is re-verified.
- * These are industry medians, NOT ideal targets, and NOT an official prime-cost median.
- */
+import { SOURCES, STAT_BY_ID } from "@/config/stats";
+
+const SRC = SOURCES.nra2025!;
+
+/** Source block for the NRA medians. Derived from config/stats.ts; do not hard-code here. */
 export const NRA_SOURCE = {
-  publisher: "National Restaurant Association",
-  title: "2025 Restaurant Operations Data Abstract",
-  dataPeriod: "2024 restaurant financial data",
-  url: "https://restaurant.org",
-  sampleContext:
-    "Medians reported by operators in the Association's operations survey; sample size and respondent mix are described in the publication — confirm there before citing externally.",
+  publisher: SRC.organization,
+  title: SRC.title,
+  dataPeriod: SRC.dataPeriod,
+  url: SRC.url ?? "https://restaurant.org",
+  sampleContext: SRC.sample,
   caveats: [
     "Industry medians, not ideal targets.",
     "The published food-cost figure covers food and NONALCOHOLIC beverage cost only; alcoholic beverage cost is excluded.",
-    "Food and labor medians are reported separately. Their sum is not an official median prime cost, so none is shown.",
+    "Food and labor medians are reported separately. Their sum is not an official median prime cost, so none is shown for full-service.",
   ],
 } as const;
 
@@ -26,9 +26,12 @@ export interface ReferenceMedians {
   laborPct: number;
 }
 
+const v = (id: string) => STAT_BY_ID[id]!.value;
+
+/** Derived from the centralized stats so Benchmarks and Industry Stats cannot disagree. */
 export const REFERENCE_MEDIANS: ReferenceMedians[] = [
-  { id: "full_service", label: "Full-Service Restaurants", foodPct: 32.0, laborPct: 36.5 },
-  { id: "limited_service", label: "Limited-Service Restaurants", foodPct: 32.4, laborPct: 31.7 },
+  { id: "full_service", label: "Full-Service Restaurants", foodPct: v("nra-fs-food"), laborPct: v("nra-fs-labor") },
+  { id: "limited_service", label: "Limited-Service Restaurants", foodPct: v("nra-ls-food"), laborPct: v("nra-ls-labor") },
 ];
 
 export interface MedianApplicability {
@@ -96,17 +99,20 @@ const none = (): PlanningRanges => ({
   origin: "none",
 });
 
+const plan = (id: string) => ({ min: STAT_BY_ID[id]!.value, max: STAT_BY_ID[id]!.valueMax! });
+
+/** Illustrative planning ranges, derived from config/stats.ts (the single source). */
 export const ILLUSTRATIVE_RANGES = {
   full_service: {
-    food: { min: 28, max: 32 },
-    labor: { min: 30, max: 34 },
-    prime: { min: 60, max: 65 },
+    food: plan("plan-fs-food"),
+    labor: plan("plan-fs-labor"),
+    prime: plan("plan-fs-prime"),
     origin: "illustrative",
   },
   quick_service: {
-    food: { min: 27, max: 32 },
-    labor: { min: 25, max: 30 },
-    prime: { min: 55, max: 60 },
+    food: plan("plan-ls-food"),
+    labor: plan("plan-ls-labor"),
+    prime: plan("plan-ls-prime"),
     origin: "illustrative",
   },
 } as const satisfies Record<string, PlanningRanges>;

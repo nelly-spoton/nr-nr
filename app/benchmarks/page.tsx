@@ -1,5 +1,6 @@
 "use client";
 import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 import {
   BENCHMARK_KINDS,
   ILLUSTRATIVE_RANGES,
@@ -48,6 +49,13 @@ export default function BenchmarksPage() {
         />
       </div>
 
+      <p className="mb-4 text-sm text-muted">
+        These figures come from the same central data as the{" "}
+        <Link href="/stats" className="font-semibold text-link underline">
+          Industry Stats
+        </Link>{" "}
+        library, which has every published statistic with its definition, source and qualifications.
+      </p>
       <ContentCard tone="muted" className="mb-6">
         <SectionHeader title="Four kinds of numbers" description="MarginLab keeps these separate and never relabels one as another." />
         <ul className="grid gap-3 md:grid-cols-2">

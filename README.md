@@ -72,6 +72,25 @@ hand and update `verification` and `metric.wordingStatus` in `config/caseStudies
 challenge, what changed, products, locations and confirmed partners from the page. Solution links are vendor homepages until a
 product page is checked; update `link` the same way.
 
+## V3: financial health + industry stats
+
+- **Central benchmark data:** `config/stats.ts` is the single source for every statistic (Benchmarks page, Overview dashboard, Industry
+  Stats, summary). Each record carries metric, value, unit, segment, numerator/denominator, data period, source, evidence class,
+  qualifications and last-verified status. Evidence classes (published measured, historical vendor, illustrative guideline, operator
+  target, AI estimate) are always labeled and never mixed. There is no geographic data.
+- **Statistics were supplied by the SpotOn team and are not independently checked.** Publication dates, deep source links and sample sizes
+  were not supplied, so they are explicit "not captured" values; the NRA link is the publisher's home page, and BevSpot has no link.
+  Numerator/denominator wording is marked unconfirmed (denominators are assumed to be total sales).
+- **Cost entry modes:** Quick (combined F&B COGS %) or Detailed (food/alcohol revenue shares and category COGS rates, blended on total
+  net sales, `lib/detailed.ts`). Category rates are never added; no alcohol means alcohol revenue and COGS are zero; Quick mode never
+  invents a split. The percentage-point savings logic is unchanged.
+- **Financial Health (Overview):** `lib/health.ts` compares food, alcohol, blended, labor, prime cost and (when determined) pretax margin
+  with published medians only where definitions are compatible, using an adjustable ± "near" window (a display convention).
+  `lib/profit.ts` estimates pretax income only when all 11 expense lines are addressed; results are labeled Verified, Estimated (with
+  assumptions) or Not yet determined, and prime cost alone never implies profit.
+- **Industry Stats (`/stats`):** searchable, filterable by segment, metric and year; cards with expandable definitions, source links, and
+  "Use in benchmark comparison" only for statistics comparable to the restaurant's inputs. Works without the calculator.
+
 ## Structure
 
 ```

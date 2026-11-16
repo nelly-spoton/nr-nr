@@ -10,6 +10,7 @@ import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/margin
 import { Badge, ContentCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { RANGE_STATUS_LABEL } from "@/lib/calc";
+import { buildHealth, NEAR_WINDOW_NOTE, PEER_LABEL } from "@/lib/health";
 import { buildReport } from "@/lib/report";
 import { pct, pts, usd } from "@/lib/format";
 import {
@@ -40,6 +41,8 @@ export default function SummaryPage() {
 
   const text = buildSummaryText(s, r);
   const rep = buildReport(s, r);
+  const health = buildHealth(s, r);
+  const hp = health.profit;
   const cmp = rep.comparison;
   const sols = rep.included;
   const foodPct = Math.round(rep.contribution.foodShare * 100);
@@ -157,6 +160,50 @@ export default function SummaryPage() {
               <span className="font-semibold">Labor</span> {usd(r.savings.annualLabor)}/yr ({laborPct}%)
             </p>
           </div>
+        </section>
+
+        <section className="print-avoid-break mt-4 text-sm">
+          <H>Financial health vs. published peer medians</H>
+          <ul className="grid gap-x-6 gap-y-1 md:grid-cols-2">
+            {health.rows
+              .filter((x) => !(x.id === "pretax" && hp.status === "unknown"))
+              .map((x) => (
+                <li key={x.id} className="flex justify-between gap-3 text-xs">
+                  <span>
+                    <span className="font-semibold">{x.label}</span>{" "}
+                    <span className="tabular">{x.valuePct === null ? "not entered" : pct(x.valuePct)}</span>
+                  </span>
+                  <span className="text-right text-muted">
+                    {PEER_LABEL[x.status]}
+                    {x.stat && x.deltaPts !== null && (
+                      <span className="tabular">
+                        {" "}
+                        ({x.deltaPts >= 0 ? "+" : "−"}
+                        {Math.abs(x.deltaPts).toFixed(2)} pts vs. {pct(x.stat.value)})
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))}
+          </ul>
+          <p className="mt-1 text-xs">
+            <span className="font-semibold">Profitability:</span> {hp.label}
+            {hp.status !== "unknown" && (
+              <span className="tabular">
+                {" "}
+                — pretax {hp.direction === "loss" ? "loss" : hp.direction === "profit" ? "profit" : "break-even"} {usd(hp.pretaxAnnual)}/yr ({pct(hp.marginPct ?? 0)} of net sales)
+              </span>
+            )}
+            . Prime cost alone does not show profitability.
+          </p>
+          {hp.status !== "unknown" && (
+            <p className="text-[11px] text-muted">Assumptions: {hp.assumptions.join(" ")}</p>
+          )}
+          <p className="mt-1 text-[11px] text-muted">
+            {NEAR_WINDOW_NOTE.replace("“Near”", `“Near” (±${health.windowPts} pt)`)} Peer medians are published medians (not targets) from the National Restaurant
+            Association 2025 abstract, 2024 data, supplied by the SpotOn team and not independently checked; denominators are assumed to be total sales.
+            {health.rows.some((x) => x.qualification) && " Qualifications: " + [...new Set(health.rows.map((x) => x.qualification).filter(Boolean))].join(" ")}
+          </p>
         </section>
 
         <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
