@@ -3,7 +3,7 @@ import { NRA_SOURCE } from "@/config/benchmarks";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import type { ScenarioResult } from "./calc";
 import { pct, pts, usd } from "./format";
-import { buildHealth, NEAR_WINDOW_NOTE, PEER_LABEL, type HealthModel } from "./health";
+import { BAND_LABEL, buildHealth, nearNote, PEER_LABEL, type HealthModel } from "./health";
 import { buildReport, isAlcoholLed, type Report } from "./report";
 import type { SalesStatus, Scenario } from "./types";
 
@@ -54,7 +54,7 @@ export function healthLines(h: HealthModel): string[] {
     const v = row.valuePct === null ? "not entered" : pct(row.valuePct);
     if (row.stat && row.deltaPts !== null) {
       const sign = row.deltaPts >= 0 ? "+" : "−";
-      out.push(`${row.label}: ${v} · ${PEER_LABEL[row.status]} (${sign}${Math.abs(row.deltaPts).toFixed(2)} pts vs. ${pct(row.stat.value)} ${row.stat.segment === "full_service" ? "full-service" : "limited-service"} median)`);
+      out.push(`${row.label}: ${v} · ${PEER_LABEL[row.status]} (${sign}${Math.abs(row.deltaPts).toFixed(1)} pts vs. ${row.stat.value.toFixed(1)}%${row.stat.subSegment ? ", " + BAND_LABEL[row.stat.subSegment] : ""})`);
     } else out.push(`${row.label}: ${v} · ${PEER_LABEL.none}`);
   }
   return out;
@@ -104,7 +104,7 @@ export function buildSummaryText(s: Scenario, r: ScenarioResult): string {
     "",
     "FINANCIAL HEALTH VS. PUBLISHED PEER MEDIANS",
     ...healthLines(health),
-    NEAR_WINDOW_NOTE.replace("“Near”", `"Near" (±${health.windowPts} pt)`).replace(/[“”]/g, '"'),
+    nearNote(health.windowPts).replace(/[“”]/g, '"'),
     ...profitLines(health),
     "Prime cost alone does not show profitability.",
     ...qualificationLines(health),
@@ -123,7 +123,7 @@ export function buildSummaryText(s: Scenario, r: ScenarioResult): string {
     ...validationItems(s, r).map((x) => `- ${x}`),
     "",
     "SOURCES",
-    `${NRA_SOURCE.publisher}, ${NRA_SOURCE.title} (${NRA_SOURCE.dataPeriod}). ${NRA_SOURCE.caveats[0]} ${NRA_SOURCE.caveats[1]} Statistics supplied by the SpotOn team; not independently checked against the publication; denominators assumed to be total sales.`,
+    `Medians: ${NRA_SOURCE.publisher}, ${NRA_SOURCE.title} (${NRA_SOURCE.dataPeriod}). Not targets. The food median covers food and nonalcoholic beverage cost only. Supplied by the SpotOn team; not independently checked.`,
     SOLUTIONS_DISCLAIMER,
   ];
   return lines.filter((l, i, a) => !(l === "" && a[i - 1] === "")).join("\n");

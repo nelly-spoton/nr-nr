@@ -20,8 +20,11 @@ export const PEER_LABEL: Record<PeerStatus, string> = {
   none: "No comparable benchmark",
 };
 
-export const NEAR_WINDOW_NOTE =
-  "“Near” uses an adjustable ± window in percentage points. It is a display convention, not a statistically validated industry range.";
+/** One short sentence; the window is a display setting, not an industry range. */
+export const nearNote = (windowPts: number) => `“Near” = within ±${windowPts} pt of the median. A display setting, not an industry range.`;
+
+/** Short labels for the full-service sales-band comparison. */
+export const BAND_LABEL: Record<string, string> = { sales_below_2m: "under $2M sales", sales_2m_plus: "$2M+ sales" };
 
 export function classify(valuePct: number, medianPct: number, windowPts: number): { status: Exclude<PeerStatus, "none">; deltaPts: number } {
   const deltaPts = Math.round((valuePct - medianPct) * 100) / 100;
@@ -59,8 +62,7 @@ export interface HealthModel {
   comparableIds: Set<string>;
 }
 
-const ALC_NOTE_SALES =
-  "Alcohol sales are part of total net sales. Food cost is shown as a % of total net sales, which assumes that is the basis of the published median (not confirmed).";
+const ALC_NOTE_SALES = "Shown as % of total sales (assumed basis); alcohol sales are in that total.";
 
 export function buildHealth(s: Scenario, r: ScenarioResult): HealthModel {
   const profile = buildProfile(s, r);
@@ -137,7 +139,7 @@ export function buildHealth(s: Scenario, r: ScenarioResult): HealthModel {
     const q = def.alcoholLed ? null : bevHeavy ? ALCOHOL_QUALIFICATION : null;
     rows.push(
       build(
-        { id: "combined", label: "Food & beverage COGS (combined)", valuePct: r.current.food, monthly: r.current.foodMonthly, detail: "Quick mode: no food/alcohol split is assumed." },
+        { id: "combined", label: "Food & beverage COGS (combined)", valuePct: r.current.food, monthly: r.current.foodMonthly, detail: "Combined; no food/alcohol split." },
         "food_cost",
         foodCandidates(),
         q ?? (appl.qualification ?? null),
@@ -191,7 +193,7 @@ export function buildHealth(s: Scenario, r: ScenarioResult): HealthModel {
         null,
         [],
         null,
-        NO_ALCOHOL_BENCHMARK + " BevSpot 2016 figures are historical, vendor-specific and are not used for comparison.",
+        NO_ALCOHOL_BENCHMARK + " (BevSpot 2016 is historical; not used.)",
         null,
       ),
     );
@@ -208,7 +210,7 @@ export function buildHealth(s: Scenario, r: ScenarioResult): HealthModel {
         sellsAlcohol ? [] : foodCandidates(),
         appl.qualification,
         sellsAlcohol
-          ? "Published food medians exclude alcoholic beverage cost, so they are not compared with a blended figure that includes it."
+          ? "Published medians exclude alcoholic beverage cost, so there is no comparison."
           : noSegReason,
         null,
       ),
@@ -236,9 +238,9 @@ export function buildHealth(s: Scenario, r: ScenarioResult): HealthModel {
       { id: "prime", label: "Total prime cost", valuePct: r.current.prime, monthly: r.current.primeMonthly, detail: "(F&B COGS $ + labor $) ÷ total net sales $" },
       "prime_cost",
       primeStat ? [primeStat] : [],
-      alcInPrime ? "Your prime cost includes alcohol cost; whether the published prime cost does is not confirmed." : null,
+      alcInPrime ? "Your prime cost includes alcohol; the median may not." : null,
       seg === "full_service"
-        ? "No measured full-service prime-cost median is published. The sum of the food and labor medians is not used."
+        ? "No measured full-service prime-cost median is published."
         : noSegReason,
       null,
     ),
@@ -252,8 +254,8 @@ export function buildHealth(s: Scenario, r: ScenarioResult): HealthModel {
     "pretax_margin",
     profit.status === "unknown" ? [] : marginCandidates(),
     profit.status === "verified"
-      ? "Definitions of income and sales in the published median are not confirmed."
-      : "Estimated from assumptions; the published median is for reported results. Definitions are not confirmed.",
+      ? "Income and sales definitions unconfirmed."
+      : "Estimated from assumptions; definitions unconfirmed.",
     profit.status === "unknown" ? "Profitability not yet determined." : noSegReason,
     null,
   );

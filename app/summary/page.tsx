@@ -9,7 +9,7 @@ import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/marginlab/Buttons";
 import { Badge, ContentCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
-import { buildHealth, NEAR_WINDOW_NOTE, PEER_LABEL } from "@/lib/health";
+import { BAND_LABEL, buildHealth, nearNote, PEER_LABEL } from "@/lib/health";
 import { buildReport } from "@/lib/report";
 import { pct, pts, usd } from "@/lib/format";
 import {
@@ -175,7 +175,7 @@ export default function SummaryPage() {
                       <span className="tabular">
                         {" "}
                         ({x.deltaPts >= 0 ? "+" : "−"}
-                        {Math.abs(x.deltaPts).toFixed(2)} pts vs. {pct(x.stat.value)})
+                        {Math.abs(x.deltaPts).toFixed(1)} pts vs. {x.stat.value.toFixed(1)}%{x.stat.subSegment ? ", " + BAND_LABEL[x.stat.subSegment] : ""})
                       </span>
                     )}
                   </span>
@@ -196,9 +196,8 @@ export default function SummaryPage() {
             <p className="text-[11px] text-muted">Assumptions: {hp.assumptions.join(" ")}</p>
           )}
           <p className="mt-1 text-[11px] text-muted">
-            {NEAR_WINDOW_NOTE.replace("“Near”", `“Near” (±${health.windowPts} pt)`)} Peer medians are published medians (not targets) from the National Restaurant
-            Association 2025 abstract, 2024 data, supplied by the SpotOn team and not independently checked; denominators are assumed to be total sales.
-            {health.rows.some((x) => x.qualification) && " Qualifications: " + [...new Set(health.rows.map((x) => x.qualification).filter(Boolean))].join(" ")}
+            {nearNote(health.windowPts)} Medians: {NRA_SOURCE.publisher} 2025 abstract ({NRA_SOURCE.dataPeriod}); not targets; the food median covers food and nonalcoholic beverage cost only; supplied by the SpotOn team, not independently checked.
+            {health.rows.some((x) => x.qualification) && " " + [...new Set(health.rows.map((x) => x.qualification).filter(Boolean))].join(" ")}
           </p>
         </section>
 

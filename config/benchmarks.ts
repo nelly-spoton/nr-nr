@@ -41,7 +41,7 @@ export interface MedianApplicability {
 }
 
 export const ALCOHOL_QUALIFICATION =
-  "The published food figure covers food and NONALCOHOLIC beverage cost only. Do not compare it with total COGS that includes beer, liquor or wine.";
+  "The median covers food and NONALCOHOLIC beverage cost only. Don't compare it with COGS that includes alcohol.";
 
 /**
  * Which published median set (if any) may be shown for a concept, and with what qualification.

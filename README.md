@@ -89,8 +89,9 @@ product page is checked; update `link` the same way.
   with published medians only where definitions are compatible, using an adjustable ± "near" window (a display convention).
   `lib/profit.ts` estimates pretax income only when all 11 expense lines are addressed; results are labeled Verified, Estimated (with
   assumptions) or Not yet determined, and prime cost alone never implies profit.
-- **Industry Stats (`/stats`):** searchable, filterable by segment, metric and year; cards with expandable definitions, source links, and
-  "Use in benchmark comparison" only for statistics comparable to the restaurant's inputs. Works without the calculator.
+- **Industry Stats (`/stats`):** an at-a-glance table of the key medians, three talking points, then collapsed sections (key-number details,
+  good to know, historical alcohol, charts, definitions, sources). Search and filters; "Use in benchmark comparison" only for comparable
+  statistics. Works without the calculator.
 
 ## Structure
 
