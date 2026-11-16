@@ -37,8 +37,9 @@ Or via CLI: `npx vercel` (preview) / `npx vercel --prod`.
 
 ## Sections
 
-Overview (live calculator: inputs beside results) · Benchmarks · Savings Calculator · SpotOn Solutions ·
-Operator Summary (print / save PDF, copy, save/load scenarios, reset to example).
+Overview (live calculator: inputs beside results, plus Financial Health) · Savings Calculator · SpotOn Solutions ·
+Operator Summary (print / save PDF, copy, save/load scenarios, reset to example) · Industry Stats (research reference).
+The former Benchmarks tab was retired; `/benchmarks` redirects to Industry Stats, and the planning-range feature is no longer shown.
 
 ## V2: sales intelligence layer
 
@@ -88,13 +89,14 @@ product page is checked; update `link` the same way.
   with published medians only where definitions are compatible, using an adjustable ± "near" window (a display convention).
   `lib/profit.ts` estimates pretax income only when all 11 expense lines are addressed; results are labeled Verified, Estimated (with
   assumptions) or Not yet determined, and prime cost alone never implies profit.
-- **Industry Stats (`/stats`):** searchable, filterable by segment, metric and year; cards with expandable definitions, source links, and
-  "Use in benchmark comparison" only for statistics comparable to the restaurant's inputs. Works without the calculator.
+- **Industry Stats (`/stats`):** an at-a-glance table of the key medians, three talking points, then collapsed sections (key-number details,
+  good to know, historical alcohol, charts, definitions, sources). Search and filters; "Use in benchmark comparison" only for comparable
+  statistics. Works without the calculator.
 
 ## Structure
 
 ```
-app/                 routes: / (overview), benchmarks, calculator, solutions, summary
+app/                 routes: / (overview), calculator, solutions, summary, stats
 components/ui/       slider (Radix)
 components/marginlab shared design-system + feature components
 config/benchmarks.ts verified NRA medians, planning ranges, source/caveats

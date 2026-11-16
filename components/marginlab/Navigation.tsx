@@ -1,12 +1,11 @@
 "use client";
-import { BarChart3, Calculator, FileText, LayoutDashboard, Library, Puzzle } from "lucide-react";
+import { Calculator, FileText, LayoutDashboard, Library, Puzzle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export const NAV = [
   { href: "/", label: "Overview", short: "Overview", icon: LayoutDashboard },
-  { href: "/benchmarks", label: "Benchmarks", short: "Benchmarks", icon: BarChart3 },
   { href: "/calculator", label: "Savings Calculator", short: "Calculator", icon: Calculator },
   { href: "/solutions", label: "SpotOn Solutions", short: "Solutions", icon: Puzzle },
   { href: "/summary", label: "Operator Summary", short: "Summary", icon: FileText },
@@ -40,7 +39,7 @@ export function Navigation({ variant }: { variant: "top" | "bottom" }) {
   return (
     <nav
       aria-label="Primary"
-      className="no-print fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t border-white/10 bg-nav pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="no-print fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-white/10 bg-nav pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       {NAV.map(({ href, short, icon: Icon }) => (
         <Link
@@ -48,7 +47,7 @@ export function Navigation({ variant }: { variant: "top" | "bottom" }) {
           href={href}
           aria-current={active(href) ? "page" : undefined}
           className={cn(
-            "flex min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] font-semibold",
+            "flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold",
             active(href) ? "text-white" : "text-nav-fg",
           )}
         >

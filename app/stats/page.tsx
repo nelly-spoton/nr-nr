@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
   BEVSPOT_BANNER,
@@ -10,31 +10,27 @@ import {
   SOURCES,
   STATS,
   STAT_BY_ID,
+  importanceOf,
   metricLabel,
-  type MetricKey,
+  type Importance,
   type Segment,
   type Stat,
-  type StatCategory,
 } from "@/config/stats";
-import { Badge, Callout, ContentCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
+import { Badge, Callout, ContentCard, PageHeader } from "@/components/marginlab/Cards";
+import { Collapsible } from "@/components/marginlab/Collapsible";
 import { SegmentedControl, SelectField } from "@/components/marginlab/Fields";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { StatCard } from "@/components/marginlab/StatCard";
 import { buildHealth } from "@/lib/health";
 
 type SegFilter = "any" | Segment;
+type Group = "key" | "useful" | "reference";
 
-const CATEGORIES: Array<{ id: StatCategory; letter: string; title: string; blurb: string }> = [
-  { id: "financial", letter: "A", title: "Financial Benchmarks", blurb: "Prime cost and pretax margin." },
-  { id: "food_beverage", letter: "B", title: "Food & Beverage Economics", blurb: "Food and nonalcoholic cost, and separately kept alcohol references." },
-  { id: "labor_profit", letter: "C", title: "Labor & Profitability", blurb: "Labor cost, including how it differed between profitable and unprofitable operators." },
-];
+const v = (id: string) => STAT_BY_ID[id]!.value;
+const pc = (n: number) => `${n.toFixed(1)}%`;
 
-const chartData = (key: MetricKey) => ({
-  metric: metricLabel[key],
-  "Full-service": STAT_BY_ID[`nra-fs-${key === "food_cost" ? "food" : key === "labor" ? "labor" : "margin"}`]!.value,
-  "Limited-service": STAT_BY_ID[`nra-ls-${key === "food_cost" ? "food" : key === "labor" ? "labor" : "margin"}`]!.value,
-});
+/** Cards on the page. Planning guidelines are retired from the UI (the data is kept). */
+const SHOWN = STATS.filter((s) => s.evidence !== "illustrative_planning");
 
 function matches(s: Stat, q: string): boolean {
   if (!q) return true;
@@ -42,39 +38,74 @@ function matches(s: Stat, q: string): boolean {
   const hay = [s.metric, s.explanation, s.operatorMeaning, src.organization, src.title, src.dataPeriod, SEGMENT_LABELS[s.segment], EVIDENCE_LABELS[s.evidence], metricLabel[s.metricKey]]
     .join(" ")
     .toLowerCase();
-  return q
-    .toLowerCase()
-    .split(/\s+/)
-    .every((w) => hay.includes(w));
+  return q.toLowerCase().split(/\s+/).every((w) => hay.includes(w));
 }
+
+const GLANCE: Array<{ label: string; fs: string; ls: string }> = [
+  { label: "Food & nonalcoholic cost", fs: pc(v("nra-fs-food")), ls: pc(v("nra-ls-food")) },
+  { label: "Labor (incl. benefits)", fs: pc(v("nra-fs-labor")), ls: pc(v("nra-ls-labor")) },
+  { label: "Prime cost (measured)", fs: "None published", ls: pc(v("nra-ls-prime")) },
+  { label: "Pretax profit margin", fs: pc(v("nra-fs-margin")), ls: pc(v("nra-ls-margin")) },
+];
+
+const laborGap = Math.round((v("nra-fs-labor-unprofitable") - v("nra-fs-labor-profitable")) * 10) / 10;
+const lsLaborGap = Math.round((v("nra-ls-labor-unprofitable") - v("nra-ls-labor-profitable")) * 10) / 10;
+
+const TALKING_POINTS = [
+  {
+    title: "Labor separates the winners",
+    body: `Full-service labor was ${pc(v("nra-fs-labor-profitable"))} at profitable operators vs. ${pc(v("nra-fs-labor-unprofitable"))} at unprofitable ones, a ${laborGap}-pt gap (limited-service: ${pc(v("nra-ls-labor-profitable"))} vs. ${pc(v("nra-ls-labor-unprofitable"))}, ${lsLaborGap} pts).`,
+  },
+  {
+    title: "Margins are thin",
+    body: `The typical pretax margin was ${pc(v("nra-fs-margin"))} for full-service and ${pc(v("nra-ls-margin"))} for limited-service, so small cost gains matter.`,
+  },
+  {
+    title: "Size changes the picture (full-service)",
+    body: `Median food cost was ${pc(v("nra-fs-food-below2m"))} under $2M in sales and ${pc(v("nra-fs-food-2m"))} at $2M or more.`,
+  },
+];
 
 export default function StatsPage() {
   const { scenario, result, update } = useScenario();
   const comparable = useMemo(() => buildHealth(scenario, result).comparableIds, [scenario, result]);
   const [q, setQ] = useState("");
   const [seg, setSeg] = useState<SegFilter>("any");
-  const [metric, setMetric] = useState<string>("any");
-  const [year, setYear] = useState<string>("any");
+  const [metric, setMetric] = useState("any");
+  const [year, setYear] = useState("any");
+  const [open, setOpen] = useState<Record<Group | "charts" | "defs" | "sources", boolean>>({
+    key: false, useful: false, reference: false, charts: false, defs: false, sources: false,
+  });
+  const toggle = (k: keyof typeof open) => setOpen((o) => ({ ...o, [k]: !o[k] }));
 
-  const years = useMemo(() => [...new Set(STATS.map((s) => SOURCES[s.sourceId]!.dataPeriod))], []);
-  const metrics = useMemo(() => [...new Set(STATS.map((s) => s.metricKey))], []);
-  const filtered = STATS.filter(
+  // Deep links (/stats#nra-fs-labor): open the right section, then scroll to the card.
+  useEffect(() => {
+    const go = () => {
+      const id = window.location.hash.slice(1);
+      const st = STAT_BY_ID[id];
+      if (!st) return;
+      const g: Importance = importanceOf(st);
+      setOpen((o) => ({ ...o, [g]: true }));
+      setTimeout(() => document.getElementById(id)?.scrollIntoView({ block: "center" }), 60);
+    };
+    go();
+    window.addEventListener("hashchange", go);
+    return () => window.removeEventListener("hashchange", go);
+  }, []);
+
+  const years = useMemo(() => [...new Set(SHOWN.map((s) => SOURCES[s.sourceId]!.dataPeriod))], []);
+  const metrics = useMemo(() => [...new Set(SHOWN.map((s) => s.metricKey))], []);
+  const searching = q.trim() !== "";
+  const filtered = SHOWN.filter(
     (s) =>
       (seg === "any" || s.segment === seg) &&
       (metric === "any" || s.metricKey === metric) &&
       (year === "any" || SOURCES[s.sourceId]!.dataPeriod === year) &&
       matches(s, q),
   );
-  const searching = q.trim() !== "";
-  const showRef = seg === "any" && metric === "any" && year === "any";
+  const filtering = searching || seg !== "any" || metric !== "any" || year !== "any";
+  const by = (g: Group) => filtered.filter((s) => importanceOf(s) === g);
   const qLower = q.toLowerCase();
-
-  const counts = {
-    measured: STATS.filter((s) => s.evidence === "published_measured").length,
-    vendor: STATS.filter((s) => s.evidence === "vendor_historical").length,
-    planning: STATS.filter((s) => s.evidence === "illustrative_planning").length,
-  };
-  const orgs = [...new Set(STATS.map((s) => SOURCES[s.sourceId]!.organization))];
   const pick = (stat: Stat, on: boolean) =>
     update((x) => {
       const next = { ...x.benchmarkPick };
@@ -82,215 +113,192 @@ export default function StatsPage() {
       else delete next[stat.metricKey];
       return { ...x, benchmarkPick: next };
     });
-
   const card = (s: Stat) => (
     <StatCard key={s.id} stat={s} comparable={comparable.has(s.id)} picked={scenario.benchmarkPick[s.metricKey] === s.id} onPick={(on) => pick(s, on)} />
   );
+  const grid = (items: Stat[]) =>
+    items.length ? <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{items.map(card)}</div> : <p className="text-sm text-muted">Nothing matches.</p>;
 
   return (
     <>
-      <PageHeader
-        title="Industry Stats"
-        description="A research reference library for a discovery conversation. It works on its own; it does not need the calculator."
-      />
+      <PageHeader title="Industry Stats" description="Published restaurant medians for a conversation. Medians describe the middle restaurant; they are not targets." />
 
       <ContentCard className="mb-6">
-        <SectionHeader title="Research summary" />
-        <p className="text-sm">
-          Published restaurant medians from the National Restaurant Association (2025 abstract, 2024 financial data), kept separate from a
-          historical vendor reference on beverage cost and from illustrative planning guidelines. Medians describe the middle restaurant; they are
-          not targets and not predictions for any one restaurant. There is no geographic data.
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-accent">At a glance · median, NRA 2025 abstract (2024 data)</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[320px] border-collapse text-sm">
+            <caption className="sr-only">Published medians, full-service versus limited-service</caption>
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-wider text-muted">
+                <th scope="col" className="py-2 pr-3 font-semibold" />
+                <th scope="col" className="px-3 py-2 text-right font-semibold">Full-service</th>
+                <th scope="col" className="px-3 py-2 text-right font-semibold">Limited-service</th>
+              </tr>
+            </thead>
+            <tbody>
+              {GLANCE.map((r) => (
+                <tr key={r.label} className="border-t border-rule">
+                  <th scope="row" className="py-3 pr-3 text-left font-semibold">{r.label}</th>
+                  <td className="tabular px-3 py-3 text-right text-lg font-semibold">{r.fs.startsWith("None") ? <span className="text-sm font-normal text-muted">{r.fs}</span> : r.fs}</td>
+                  <td className="tabular px-3 py-3 text-right text-lg font-semibold">{r.ls}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-3 text-xs text-muted">
+          Food excludes alcohol. Prime cost is measured directly, not food plus labor added together. Supplied by the SpotOn team; not independently checked.
         </p>
-        <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <dt className="text-xs font-semibold uppercase tracking-wider text-muted">Statistics</dt>
-            <dd className="tabular text-2xl font-semibold">{STATS.length}</dd>
-            <dd className="text-xs text-muted">
-              {counts.measured} published · {counts.vendor} historical vendor · {counts.planning} planning guidelines
-            </dd>
+      </ContentCard>
+
+      <div className="mb-6 grid gap-3 md:grid-cols-3">
+        {TALKING_POINTS.map((t) => (
+          <div key={t.title} className="rounded-card border border-rule bg-surface p-4">
+            <h3 className="text-sm font-semibold">{t.title}</h3>
+            <p className="mt-1 text-sm text-muted">{t.body}</p>
           </div>
-          <div>
-            <dt className="text-xs font-semibold uppercase tracking-wider text-muted">Last verified</dt>
-            <dd className="text-base font-semibold">Supplied 2026-11-16</dd>
-            <dd className="text-xs text-muted">None independently checked against the publications yet.</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-semibold uppercase tracking-wider text-muted">Source organizations</dt>
-            <dd className="text-base font-semibold">{orgs.join(" · ")}</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-semibold uppercase tracking-wider text-muted">Data years</dt>
-            <dd className="text-base font-semibold">{years.filter((y) => /^\d/.test(y)).map((y) => y.split(" ")[0]).join(" · ")}</dd>
-          </div>
-        </dl>
-        <div className="mt-4">
-          <label htmlFor="stat-search" className="text-sm font-semibold">
-            Search statistics
-          </label>
+        ))}
+      </div>
+
+      <div className="mb-4 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+        <div>
+          <label htmlFor="stat-search" className="mb-1.5 block text-sm font-semibold">Search all statistics</label>
           <input
             id="stat-search"
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="e.g. labor, full-service, pretax, BevSpot"
-            className="mt-1.5 min-h-11 w-full rounded-ctl border border-rule bg-surface px-3 text-base sm:text-sm"
+            placeholder="e.g. labor, pretax, full-service"
+            className="min-h-11 w-full rounded-ctl border border-rule bg-surface px-3 text-base sm:text-sm"
           />
         </div>
-      </ContentCard>
-
-      <div className="mb-6 grid gap-4 md:grid-cols-[1fr_12rem_12rem]">
-        <div>
-          <p className="mb-1.5 text-sm font-semibold">Restaurant segment</p>
-          <SegmentedControl
-            label="Restaurant segment"
-            value={seg}
-            onChange={setSeg}
-            options={[
-              { value: "any", label: "Show all" },
-              { value: "full_service", label: "Full-service" },
-              { value: "limited_service", label: "Limited" },
-              { value: "all", label: "All types" },
-            ]}
-          />
-        </div>
-        <div>
-          <label htmlFor="metric-filter" className="mb-1.5 block text-sm font-semibold">Financial metric</label>
-          <SelectField id="metric-filter" value={metric} onChange={setMetric} options={[{ value: "any", label: "All metrics" }, ...metrics.map((m) => ({ value: m, label: metricLabel[m] }))]} />
-        </div>
-        <div>
-          <label htmlFor="year-filter" className="mb-1.5 block text-sm font-semibold">Publication / data year</label>
-          <SelectField id="year-filter" value={year} onChange={setYear} options={[{ value: "any", label: "All years" }, ...years.map((y) => ({ value: y, label: y }))]} />
-        </div>
+        <SegmentedControl
+          label="Restaurant segment"
+          className="md:w-80"
+          value={seg}
+          onChange={setSeg}
+          options={[
+            { value: "any", label: "Show all" },
+            { value: "full_service", label: "Full-service" },
+            { value: "limited_service", label: "Limited" },
+            { value: "all", label: "All types" },
+          ]}
+        />
       </div>
-
-      <ContentCard className="mb-8">
-        <SectionHeader title="Comparison charts" description="Published medians, full-service vs. limited-service (NRA 2025 abstract, 2024 data)." />
-        <div className="grid gap-6 md:grid-cols-2">
-          <div role="img" aria-label="Food cost, labor cost and pretax margin medians for full-service versus limited-service restaurants" className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={(["food_cost", "labor", "pretax_margin"] as MetricKey[]).map(chartData)} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid stroke="var(--rule)" vertical={false} />
-                <XAxis dataKey="metric" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis unit="%" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `${v.toFixed(1)}%`} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="Full-service" fill="var(--brand)" isAnimationActive={false} />
-                <Bar dataKey="Limited-service" fill="var(--teal)" isAnimationActive={false} />
-              </BarChart>
-            </ResponsiveContainer>
+      <details className="mb-6 text-sm">
+        <summary className="cursor-pointer text-xs font-semibold text-link">More filters</summary>
+        <div className="mt-2 grid gap-3 sm:grid-cols-2">
+          <div>
+            <label htmlFor="metric-filter" className="mb-1 block text-xs font-semibold text-muted">Metric</label>
+            <SelectField id="metric-filter" value={metric} onChange={setMetric} options={[{ value: "any", label: "All metrics" }, ...metrics.map((m) => ({ value: m, label: metricLabel[m] }))]} />
           </div>
-          <div role="img" aria-label="Labor cost medians for profitable versus unprofitable operators, by segment" className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={[
-                  { segment: "Full-service", Profitable: STAT_BY_ID["nra-fs-labor-profitable"]!.value, Unprofitable: STAT_BY_ID["nra-fs-labor-unprofitable"]!.value },
-                  { segment: "Limited-service", Profitable: STAT_BY_ID["nra-ls-labor-profitable"]!.value, Unprofitable: STAT_BY_ID["nra-ls-labor-unprofitable"]!.value },
-                ]}
-                margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
-              >
-                <CartesianGrid stroke="var(--rule)" vertical={false} />
-                <XAxis dataKey="segment" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis unit="%" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `${v.toFixed(1)}%`} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="Profitable" name="Labor, profitable operators" fill="var(--brand)" isAnimationActive={false} />
-                <Bar dataKey="Unprofitable" name="Labor, unprofitable operators" fill="var(--teal)" isAnimationActive={false} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div>
+            <label htmlFor="year-filter" className="mb-1 block text-xs font-semibold text-muted">Data year</label>
+            <SelectField id="year-filter" value={year} onChange={setYear} options={[{ value: "any", label: "All years" }, ...years.map((y) => ({ value: y, label: y }))]} />
           </div>
         </div>
-        <p className="mt-3 text-xs text-muted">
-          Each bar is a separately published median. Medians are not added together, and no measured full-service prime-cost median is published.
-        </p>
-      </ContentCard>
+      </details>
 
-      <div className="flex flex-col gap-10">
-        {CATEGORIES.map((c) => {
-          const items = filtered.filter((s) => s.category === c.id);
-          if (!items.length) return null;
-          const bev = c.id === "food_beverage";
-          const alcohol = items.filter((s) => s.evidence === "vendor_historical");
-          const rest = items.filter((s) => s.evidence !== "vendor_historical");
-          return (
-            <section key={c.id} aria-labelledby={`cat-${c.id}`}>
-              <span id={`cat-${c.id}`} className="sr-only">{c.title}</span>
-              <SectionHeader title={`${c.letter} · ${c.title}`} description={c.blurb} />
-              {rest.length > 0 && <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{rest.map(card)}</div>}
-              {bev && (alcohol.length > 0 || showRef) && (
-                <div className="mt-6">
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Alcoholic beverage references (kept separate from NRA medians)</h3>
-                  <Callout>{BEVSPOT_BANNER}</Callout>
-                  <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {alcohol.map(card)}
-                    <article className="flex flex-col gap-2 rounded-card border border-rule bg-surface p-5 shadow-card">
-                      <Badge>Current alcohol benchmark</Badge>
-                      <p className="text-lg font-semibold">{NO_ALCOHOL_BENCHMARK}</p>
-                      <p className="text-sm text-muted">
-                        No validated modern benchmark for beer, liquor or wine cost is available in this library. Use the operator&apos;s own current figures.
-                      </p>
-                    </article>
-                  </div>
-                </div>
-              )}
-            </section>
-          );
-        })}
-        {filtered.length === 0 && (
-          <p className="rounded-ctl border border-rule bg-surface-2 p-4 text-sm text-muted">No statistics match these filters. Clear the search or filters to see them all.</p>
-        )}
+      <div className="flex flex-col gap-3">
+        <Collapsible title="Key numbers: details and sources" tag="Know these" count={by("key").length} open={open.key || filtering} onToggle={() => toggle("key")}>
+          {grid(by("key"))}
+        </Collapsible>
 
-        {(showRef || searching) && (
-          <>
-            <section aria-labelledby="cat-D">
-              <span id="cat-D" className="sr-only">Restaurant Economics 101</span>
-              <SectionHeader title="D · Restaurant Economics 101" description="Definitions and formulas used throughout MarginLab." />
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {DEFINITIONS.filter((d) => !searching || `${d.term} ${d.body} ${d.formula ?? ""}`.toLowerCase().includes(qLower)).map((d) => (
-                  <article key={d.id} id={d.id} className="rounded-card border border-rule bg-surface p-5 shadow-card">
-                    <Badge>Definition</Badge>
-                    <h3 className="mt-2 text-base font-semibold">{d.term}</h3>
-                    <p className="mt-1 text-sm">{d.body}</p>
-                    {d.formula && <p className="mt-2 rounded-ctl bg-surface-2 p-2 font-mono text-xs">{d.formula}</p>}
-                  </article>
-                ))}
-              </div>
-            </section>
+        <Collapsible title="Good to know" tag="Labor story and size" count={by("useful").length} open={open.useful || filtering} onToggle={() => toggle("useful")}>
+          {grid(by("useful"))}
+        </Collapsible>
 
-            <section aria-labelledby="cat-E">
-              <span id="cat-E" className="sr-only">Research Sources</span>
-              <SectionHeader title="E · Research Sources" />
-              <ul className="grid gap-4 md:grid-cols-2">
-                {Object.values(SOURCES)
-                  .filter((s) => !searching || `${s.organization} ${s.title}`.toLowerCase().includes(qLower))
-                  .map((s) => (
-                    <li key={s.id} className="rounded-card border border-rule bg-surface p-5 shadow-card">
-                      <h3 className="text-base font-semibold">{s.title}</h3>
-                      <p className="text-sm text-muted">{s.organization}</p>
-                      <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-                        <dt className="text-muted">Data period</dt>
-                        <dd>{s.dataPeriod}</dd>
-                        <dt className="text-muted">Published</dt>
-                        <dd>{s.publicationDate ?? (s.publicationYear ? `${s.publicationYear} (exact date not captured)` : "—")}</dd>
-                        <dt className="text-muted">Sample</dt>
-                        <dd>{s.sample}</dd>
-                        <dt className="text-muted">Link</dt>
-                        <dd>
-                          {s.url ? (
-                            <a href={s.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-link underline">
-                              {s.urlStatus === "publisher_home" ? "Publisher site (no deep link captured)" : s.url}
-                            </a>
-                          ) : (
-                            "No source link captured"
-                          )}
-                        </dd>
-                      </dl>
-                      <p className="mt-2 text-xs text-muted">{s.note}</p>
-                    </li>
-                  ))}
-              </ul>
-            </section>
-          </>
-        )}
+        <Collapsible title="Alcohol (historical)" tag="Reference" count={by("reference").length} open={open.reference || filtering} onToggle={() => toggle("reference")}>
+          <Callout>{BEVSPOT_BANNER}</Callout>
+          <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {by("reference").map(card)}
+            <article className="flex flex-col gap-1 rounded-card border border-rule bg-surface p-4">
+              <Badge>Current alcohol benchmark</Badge>
+              <p className="text-base font-semibold">{NO_ALCOHOL_BENCHMARK}</p>
+              <p className="text-sm text-muted">Ask for the operator&apos;s own current beer, liquor and wine costs.</p>
+            </article>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Charts" tag="Reference" open={open.charts} onToggle={() => toggle("charts")}>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div role="img" aria-label="Food cost, labor cost and pretax margin medians, full-service versus limited-service" className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={[
+                    { metric: "Food", "Full-service": v("nra-fs-food"), "Limited-service": v("nra-ls-food") },
+                    { metric: "Labor", "Full-service": v("nra-fs-labor"), "Limited-service": v("nra-ls-labor") },
+                    { metric: "Pretax margin", "Full-service": v("nra-fs-margin"), "Limited-service": v("nra-ls-margin") },
+                  ]}
+                  margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
+                >
+                  <CartesianGrid stroke="var(--rule)" vertical={false} />
+                  <XAxis dataKey="metric" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis unit="%" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <Tooltip formatter={(x: number) => `${x.toFixed(1)}%`} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="Full-service" fill="var(--brand)" isAnimationActive={false} />
+                  <Bar dataKey="Limited-service" fill="var(--teal)" isAnimationActive={false} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div role="img" aria-label="Labor medians for profitable versus unprofitable operators, by segment" className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={[
+                    { segment: "Full-service", Profitable: v("nra-fs-labor-profitable"), Unprofitable: v("nra-fs-labor-unprofitable") },
+                    { segment: "Limited-service", Profitable: v("nra-ls-labor-profitable"), Unprofitable: v("nra-ls-labor-unprofitable") },
+                  ]}
+                  margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
+                >
+                  <CartesianGrid stroke="var(--rule)" vertical={false} />
+                  <XAxis dataKey="segment" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis unit="%" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <Tooltip formatter={(x: number) => `${x.toFixed(1)}%`} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="Profitable" name="Labor, profitable" fill="var(--brand)" isAnimationActive={false} />
+                  <Bar dataKey="Unprofitable" name="Labor, unprofitable" fill="var(--teal)" isAnimationActive={false} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Definitions and formulas" tag="Reference" count={DEFINITIONS.length} open={open.defs || (searching && DEFINITIONS.some((d) => `${d.term} ${d.body}`.toLowerCase().includes(qLower)))} onToggle={() => toggle("defs")}>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {DEFINITIONS.filter((d) => !searching || `${d.term} ${d.body} ${d.formula ?? ""}`.toLowerCase().includes(qLower)).map((d) => (
+              <article key={d.id} id={d.id} className="rounded-card border border-rule bg-surface p-4">
+                <h3 className="text-sm font-semibold">{d.term}</h3>
+                <p className="mt-1 text-sm text-muted">{d.body}</p>
+                {d.formula && <p className="mt-2 rounded-ctl bg-surface-2 p-2 font-mono text-xs">{d.formula}</p>}
+              </article>
+            ))}
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Sources" tag="Reference" count={Object.values(SOURCES).filter((s) => s.id !== "marginlab").length} open={open.sources} onToggle={() => toggle("sources")}>
+          <ul className="grid gap-3 md:grid-cols-2">
+            {Object.values(SOURCES)
+              .filter((s) => s.id !== "marginlab")
+              .map((s) => (
+                <li key={s.id} className="rounded-card border border-rule bg-surface p-4">
+                  <h3 className="text-sm font-semibold">{s.title}</h3>
+                  <p className="text-sm text-muted">{s.organization} · data {s.dataPeriod}{s.publicationYear ? ` · published ${s.publicationYear}` : ""}</p>
+                  <p className="mt-1 text-sm">{s.sample}</p>
+                  <p className="mt-1 text-sm">
+                    {s.url ? (
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-link underline">
+                        {s.urlStatus === "publisher_home" ? "Publisher site (no deep link captured)" : s.url}
+                      </a>
+                    ) : (
+                      "No source link captured"
+                    )}
+                  </p>
+                  <p className="mt-1 text-xs text-muted">{s.note}</p>
+                </li>
+              ))}
+          </ul>
+        </Collapsible>
       </div>
     </>
   );

@@ -147,12 +147,12 @@ function nra(
   };
 }
 
-const FOOD_EXPL = "The middle restaurant's spend on food and nonalcoholic beverages, as a share of sales.";
-const FOOD_MEAN = "Compare actual purchasing and waste with similar restaurants before assuming food cost is the problem.";
-const LABOR_EXPL = "The middle restaurant's labor cost, including benefits, as a share of sales.";
-const LABOR_MEAN = "Labor is a major restaurant expense. Compare actual staffing cost with similar restaurants before recommending changes.";
-const MARGIN_EXPL = "The middle restaurant's pretax profit as a share of sales.";
-const MARGIN_MEAN = "Shows how thin typical margins are, so a small cost improvement can matter. It is not a target.";
+const FOOD_EXPL = "Food and nonalcoholic beverage cost as a share of sales, for the middle restaurant.";
+const FOOD_MEAN = "Check purchasing and waste before assuming food cost is the problem.";
+const LABOR_EXPL = "Labor cost including benefits, as a share of sales, for the middle restaurant.";
+const LABOR_MEAN = "Labor is a major cost. Compare actual staffing with similar restaurants before suggesting changes.";
+const MARGIN_EXPL = "Pretax profit as a share of sales, for the middle restaurant.";
+const MARGIN_MEAN = "Margins are thin, so small cost gains matter. Not a target.";
 
 export const STATS: Stat[] = [
   // ---------------- Full-service (NRA 2025, 2024 data)
@@ -167,21 +167,21 @@ export const STATS: Stat[] = [
   }),
   nra("nra-fs-labor-profitable", "labor_profitable", "Labor cost, profitable operators", 34.2, "full_service", "labor_profit", "Wages, payroll taxes and benefits", {
     condition: "profitable",
-    qualifications: ["Describes a group of operators (those that were profitable), not a threshold for any one restaurant.", "A median, not a target."],
-    explanation: "The middle labor cost among full-service operators that reported a pretax profit.",
-    operatorMeaning: "Context for the labor conversation. It does not say a restaurant at this level is profitable, or that one above it is not.",
+    qualifications: ["Describes a group of operators, not a threshold for one restaurant.", "A median, not a target."],
+    explanation: "Labor cost among full-service operators that reported a pretax profit.",
+    operatorMeaning: "Context only. It says nothing about whether a given restaurant is profitable.",
   }),
   nra("nra-fs-labor-unprofitable", "labor_unprofitable", "Labor cost, unprofitable operators", 42.9, "full_service", "labor_profit", "Wages, payroll taxes and benefits", {
     condition: "unprofitable",
-    qualifications: ["Describes a group of operators (those that were unprofitable), not a threshold for any one restaurant.", "A median, not a target."],
-    explanation: "The middle labor cost among full-service operators that reported a pretax loss.",
-    operatorMeaning: "Shows how much heavier labor was among loss-making operators. It does not predict any one restaurant's result.",
+    qualifications: ["Describes a group of operators, not a threshold for one restaurant.", "A median, not a target."],
+    explanation: "Labor cost among full-service operators that reported a pretax loss.",
+    operatorMeaning: "Shows how much heavier labor was at loss-making operators. Not a prediction.",
   }),
   nra("nra-fs-food-below2m", "food_cost", "Food and nonalcoholic beverage cost, annual sales below $2M", 33.7, "full_service", "food_beverage", NRA_FOOD_NUM, {
     subSegment: "sales_below_2m",
     qualifications: [...FOOD_QUAL, "Sales band applies to one restaurant's annual sales; for a group, per-location sales are assumed."],
     explanation: FOOD_EXPL + " Full-service restaurants with annual sales below $2 million.",
-    operatorMeaning: "Smaller restaurants had a higher median food cost. Use the band that matches this restaurant's size.",
+    operatorMeaning: "Smaller restaurants had a higher median food cost.",
   }),
   nra("nra-fs-margin-below2m", "pretax_margin", "Pretax profit margin, annual sales below $2M", 1.1, "full_service", "financial", "Pretax income", {
     subSegment: "sales_below_2m",
@@ -193,7 +193,7 @@ export const STATS: Stat[] = [
     subSegment: "sales_2m_plus",
     qualifications: [...FOOD_QUAL, "Sales band applies to one restaurant's annual sales; for a group, per-location sales are assumed."],
     explanation: FOOD_EXPL + " Full-service restaurants with annual sales of $2 million or more.",
-    operatorMeaning: "Larger restaurants had a lower median food cost. Use the band that matches this restaurant's size.",
+    operatorMeaning: "Larger restaurants had a lower median food cost.",
   }),
   nra("nra-fs-margin-2m", "pretax_margin", "Pretax profit margin, annual sales $2M or more", 4.3, "full_service", "financial", "Pretax income", {
     subSegment: "sales_2m_plus",
@@ -214,23 +214,23 @@ export const STATS: Stat[] = [
       "Whether the published prime cost includes alcoholic beverage cost is not confirmed here.",
       "A median, not a target.",
     ],
-    explanation: "The middle limited-service restaurant's combined food/beverage and labor cost, as a share of sales, measured directly rather than added from separate medians.",
-    operatorMeaning: "A direct reference for prime cost in limited-service concepts. Compare only when the restaurant's own prime cost is defined the same way.",
+    explanation: "Food/beverage plus labor cost as a share of sales, measured directly (not added from separate medians).",
+    operatorMeaning: "A direct prime-cost reference for limited-service. Compare only if defined the same way.",
   }),
   nra("nra-ls-margin", "pretax_margin", "Pretax profit margin", 4.0, "limited_service", "financial", "Pretax income", {
     explanation: MARGIN_EXPL, operatorMeaning: MARGIN_MEAN,
   }),
   nra("nra-ls-labor-profitable", "labor_profitable", "Labor cost, profitable operators", 30.0, "limited_service", "labor_profit", "Wages, payroll taxes and benefits", {
     condition: "profitable",
-    qualifications: ["Describes a group of operators (those that were profitable), not a threshold for any one restaurant.", "A median, not a target."],
-    explanation: "The middle labor cost among limited-service operators that reported a pretax profit.",
-    operatorMeaning: "Context for the labor conversation. It does not say a restaurant at this level is profitable, or that one above it is not.",
+    qualifications: ["Describes a group of operators, not a threshold for one restaurant.", "A median, not a target."],
+    explanation: "Labor cost among limited-service operators that reported a pretax profit.",
+    operatorMeaning: "Context only. It says nothing about whether a given restaurant is profitable.",
   }),
   nra("nra-ls-labor-unprofitable", "labor_unprofitable", "Labor cost, unprofitable operators", 34.1, "limited_service", "labor_profit", "Wages, payroll taxes and benefits", {
     condition: "unprofitable",
-    qualifications: ["Describes a group of operators (those that were unprofitable), not a threshold for any one restaurant.", "A median, not a target."],
-    explanation: "The middle labor cost among limited-service operators that reported a pretax loss.",
-    operatorMeaning: "Shows how much heavier labor was among loss-making operators. It does not predict any one restaurant's result.",
+    qualifications: ["Describes a group of operators, not a threshold for one restaurant.", "A median, not a target."],
+    explanation: "Labor cost among limited-service operators that reported a pretax loss.",
+    operatorMeaning: "Shows how much heavier labor was at loss-making operators. Not a prediction.",
   }),
   // ---------------- Alcohol: historical, vendor-specific (kept apart from NRA medians)
   ...(
@@ -258,8 +258,8 @@ export const STATS: Stat[] = [
         "Not a 2026 industry average and not comparable with NRA restaurant medians.",
         "Not used for any comparison in MarginLab.",
       ],
-      explanation: "The middle cost for this beverage category among BevSpot customers in 2016.",
-      operatorMeaning: "Historical context only. Ask for the operator's own current pour or category costs instead.",
+      explanation: "Middle cost for this beverage category among BevSpot customers in 2016.",
+      operatorMeaning: "Historical context only. Ask for the operator's own current costs.",
       lastVerified: SUPPLIED,
     }),
   ),
@@ -340,6 +340,17 @@ export const SUBSEGMENT_LABELS: Record<SubSegment, string> = {
 
 /** Alcohol: there is no validated current benchmark. */
 export const NO_ALCOHOL_BENCHMARK = "No verified current benchmark.";
+
+/** How much a rep needs this number in a first conversation. */
+export type Importance = "key" | "useful" | "reference";
+
+const KEY_IDS = new Set(["nra-fs-food", "nra-fs-labor", "nra-fs-margin", "nra-ls-food", "nra-ls-labor", "nra-ls-margin", "nra-ls-prime"]);
+
+/** key = know these; useful = good to know; reference = background (historical vendor data, planning guidelines). */
+export function importanceOf(s: Stat): Importance {
+  if (s.evidence !== "published_measured") return "reference";
+  return KEY_IDS.has(s.id) ? "key" : "useful";
+}
 
 /** Published, measured statistics only (the ones usable for peer-median comparison). */
 export const measuredStats = () => STATS.filter((s) => s.evidence === "published_measured");

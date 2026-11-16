@@ -2,7 +2,7 @@
  * "What this means for your discovery" content. Built from the scenario and structured evidence;
  * it poses questions and names what to validate rather than scripting a pitch.
  */
-import { compareToRange, type ScenarioResult } from "./calc";
+import type { ScenarioResult } from "./calc";
 import { CONCEPT_BY_ID } from "@/config/concepts";
 import { metricQualifier } from "@/config/caseStudies";
 import type { CaseMatch } from "./matching";
@@ -39,20 +39,13 @@ export function buildCoaching(
   const laborShare = total > 0 ? labor / total : 0.5;
   const lean: "labor" | "food" | "balanced" = laborShare > 0.6 ? "labor" : laborShare < 0.4 ? "food" : "balanced";
 
-  const range = s.planning[s.concept];
-  const laborStatus = compareToRange(r.current.labor, range.labor);
-  const foodStatus = compareToRange(r.current.food, range.food);
 
-  let challenge =
+  const challenge =
     lean === "labor"
       ? "The scenario leans on labor. The open question is whether scheduled hours track expected demand, and whether actual hours match the schedule."
       : lean === "food"
         ? "The scenario leans on food cost. The open question is whether actual food cost tracks what the menu should cost given what is selling."
         : "The scenario splits between food and labor. Establish which lever the operator feels is looser before assuming both.";
-  const notes: string[] = [];
-  if (laborStatus === "above") notes.push("labor is above the planning range you set");
-  if (foodStatus === "above") notes.push("food cost is above the planning range you set");
-  if (notes.length) challenge += " Note: " + notes.join(" and ") + " (a planning range is a guide, not a verdict).";
 
   const missing: string[] = [];
   if (r.sales.preliminary) missing.push("A verified monthly net-sales figure (POS report or financial statement).");

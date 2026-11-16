@@ -2,7 +2,7 @@
 import { ArrowDown, ArrowUp, Equal } from "lucide-react";
 import Link from "next/link";
 import { SEGMENT_LABELS } from "@/config/stats";
-import { buildHealth, NEAR_WINDOW_NOTE, PEER_LABEL, type HealthRow, type PeerStatus } from "@/lib/health";
+import { BAND_LABEL, buildHealth, nearNote, PEER_LABEL, type HealthRow, type PeerStatus } from "@/lib/health";
 import { pct, pts, usd } from "@/lib/format";
 import { Badge, Callout, ContentCard, MetricCard, SectionHeader } from "./Cards";
 import { ComparisonBar } from "./ComparisonBar";
@@ -22,9 +22,14 @@ function StatusBadge({ status }: { status: PeerStatus }) {
   );
 }
 
+const SEG_SHORT = { full_service: "full-service", limited_service: "limited-service", all: "" } as const;
+/** Published medians are given to one decimal; show them that way. */
+const med = (n: number) => `${n.toFixed(1)}%`;
+const sign = (n: number) => `${n >= 0 ? "+" : "−"}${Math.abs(n).toFixed(1)} pts`;
+
 function Row({ row, windowPts }: { row: HealthRow; windowPts: number }) {
-  const segLabel = row.stat ? SEGMENT_LABELS[row.stat.segment].toLowerCase() : "";
-  const delta = row.deltaPts !== null ? `${row.deltaPts >= 0 ? "+" : "−"}${Math.abs(row.deltaPts).toFixed(2)} pts` : null;
+  const seg = row.stat ? SEG_SHORT[row.stat.segment] : "";
+  const who = row.stat ? seg + (row.stat.subSegment ? ", " + BAND_LABEL[row.stat.subSegment] : "") : "";
   return (
     <li className="rounded-card border border-rule bg-surface p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -46,29 +51,24 @@ function Row({ row, windowPts }: { row: HealthRow; windowPts: number }) {
             median={row.stat.value}
             windowPts={windowPts}
             status={row.status}
-            label={`${row.label} ${pct(row.valuePct)} versus ${segLabel} median ${pct(row.stat.value)}`}
+            label={`${row.label} ${pct(row.valuePct)} versus ${seg} median ${pct(row.stat.value)}`}
           />
           <p className="mt-2 text-sm">
-            {PEER_LABEL[row.status]}: <strong className="tabular">{delta}</strong> vs. the published {segLabel} median of{" "}
-            <strong className="tabular">{pct(row.stat.value)}</strong>
-            {row.stat.subSegment ? ` (${row.stat.metric.split(",")[1]?.trim() ?? "sales band"})` : ""}. Bar: restaurant (filled), median (line), ±{windowPts} pt “near” window (shaded).
+            <strong className="tabular">{row.deltaPts !== null ? sign(row.deltaPts) : ""}</strong> vs. the {med(row.stat.value)} median ({who})
           </p>
           {row.band && (
-            <p className="mt-1 text-sm text-muted">
-              Against the {row.band.stat.metric.split(",")[1]?.trim()} median of {pct(row.band.stat.value)}: {PEER_LABEL[row.band.status].toLowerCase()} (
-              {row.band.deltaPts >= 0 ? "+" : "−"}
-              {Math.abs(row.band.deltaPts).toFixed(2)} pts).
+            <p className="text-sm text-muted">
+              vs. {BAND_LABEL[row.band.stat.subSegment ?? ""] ?? "sales band"} ({med(row.band.stat.value)}): <span className="tabular">{sign(row.band.deltaPts)}</span>
             </p>
           )}
-          {row.qualification && <p className="mt-1 text-xs font-semibold text-warn">{row.qualification}</p>}
-          <p className="mt-1 text-xs text-muted">
-            {row.stat.sourceId === "nra2025" ? "National Restaurant Association, 2025 abstract (2024 data). " : ""}A median, not a target.{" "}
-            {row.statsHref && (
+          {row.qualification && <p className="mt-1 text-xs text-warn">{row.qualification}</p>}
+          {row.statsHref && (
+            <p className="mt-1 text-xs text-muted">
               <Link href={row.statsHref} className="font-semibold text-link underline">
-                See this statistic
+                Source and definition
               </Link>
-            )}
-          </p>
+            </p>
+          )}
         </>
       ) : (
         <p className="mt-2 text-sm text-muted">{row.noBenchmarkReason}</p>
@@ -88,7 +88,7 @@ export function FinancialHealth() {
     <ContentCard className="border-brand/30" >
       <SectionHeader
         title="Restaurant Financial Health"
-        description="How these ratios compare with published peer medians, where the definitions line up. Context for a conversation, not a score."
+        description="How this restaurant compares with published medians. Context, not a score."
       />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
@@ -112,7 +112,9 @@ export function FinancialHealth() {
       </div>
 
       <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-        <p className="text-xs text-muted">{NEAR_WINDOW_NOTE}</p>
+        <p className="text-xs text-muted">
+          {nearNote(s.nearWindowPts)} Bar: you (fill) vs. median (line); shaded = near.
+        </p>
         <FormField label="“Near” window" htmlFor="window-group">
           <SegmentedControl
             label="Near window in percentage points"
@@ -134,9 +136,8 @@ export function FinancialHealth() {
 
       {h.laborContext && (
         <p className="mt-4 rounded-ctl bg-surface-2 p-3 text-xs text-muted">
-          <strong className="text-ink">Labor context.</strong> Among {SEGMENT_LABELS[h.segment!].toLowerCase()} operators the labor median was{" "}
-          {pct(h.laborContext.profitable.value)} for profitable operators and {pct(h.laborContext.unprofitable.value)} for unprofitable
-          operators. These describe groups of restaurants, not a threshold for this one.
+          <strong className="text-ink">Labor context ({SEGMENT_LABELS[h.segment!].toLowerCase()}):</strong> median {med(h.laborContext.profitable.value)} for
+          profitable operators vs. {med(h.laborContext.unprofitable.value)} for unprofitable ones. Group medians, not a threshold.
         </p>
       )}
 
@@ -146,8 +147,7 @@ export function FinancialHealth() {
         {p.status === "unknown" ? (
           <>
             <p className="mt-1 text-sm text-muted">
-              Prime cost alone does not show whether a restaurant is profitable: occupancy, utilities, marketing and other costs still come out of
-              what is left. {p.reason}
+              Prime cost alone doesn&apos;t show profit. Add the other expenses to estimate it. {p.reason}
             </p>
             {p.missing.length > 0 && p.addressed > 0 && (
               <p className="mt-1 text-xs text-muted">Still to address: {p.missing.join("; ")}.</p>
@@ -160,7 +160,7 @@ export function FinancialHealth() {
               <strong>{usd(p.pretaxMonthly)}/mo</strong> · <strong>{usd(p.pretaxAnnual)}/yr</strong> · {pct(p.marginPct ?? 0)} of net sales
             </p>
             <div className="mt-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted">{p.status === "verified" ? "Basis" : "Assumptions behind this estimate"}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted">{p.status === "verified" ? "Basis" : "Assumptions"}</p>
               <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-muted">
                 {p.assumptions.map((a) => (
                   <li key={a}>{a}</li>

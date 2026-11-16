@@ -212,7 +212,7 @@ describe("solutions config & summary", () => {
     const t = buildSummaryText(s, computeScenario(s));
     expect(t).toContain("PRELIMINARY");
     expect(t).toContain("$108,000/year");
-    expect(t).toContain("NONALCOHOLIC");
+    expect(t).toMatch(/nonalcoholic beverage cost only/i);
   });
   it("hydrate tolerates garbage", () => {
     expect(hydrateScenario("nope").restaurantName).toBe("Example Restaurant Group");
