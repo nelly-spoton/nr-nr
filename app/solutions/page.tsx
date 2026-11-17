@@ -8,10 +8,11 @@ import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
 import { Badge } from "@/components/marginlab/Cards";
 import { Collapsible } from "@/components/marginlab/Collapsible";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
+import { FinancialHealth } from "@/components/marginlab/FinancialHealth";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { SolutionCard } from "@/components/marginlab/SolutionCard";
 import { StepFooter } from "@/components/marginlab/StepFooter";
-import { StepProgress } from "@/components/marginlab/StepProgress";
+import { StepHeader } from "@/components/marginlab/StepHeader";
 import { pts } from "@/lib/format";
 import { buildReport } from "@/lib/report";
 import { requiredStatus } from "@/lib/steps";
@@ -20,13 +21,13 @@ export default function Step2Page() {
   const { scenario: s, result: r } = useScenario();
   const [more, setMore] = useState(false);
   const [no, setNo] = useState(false);
+  const [cmp, setCmp] = useState(false);
   const st = requiredStatus(s, r);
 
   if (!st.complete)
     return (
       <>
-        <StepProgress />
-        <h1 className="mb-4 text-2xl font-semibold tracking-tight sm:text-3xl">Solutions that fit</h1>
+        <StepHeader step={2} title="Solutions that fit" subtitle="Recommendations built from your answers in Step 1." />
         <EmptyStep what="Recommendations" />
       </>
     );
@@ -39,10 +40,8 @@ export default function Step2Page() {
 
   return (
     <>
-      <StepProgress />
+      <StepHeader step={2} title="Solutions that fit" subtitle="Built from your answers. Change them in Step 1 and this page updates." />
       <div className="mb-5">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Solutions that fit</h1>
-        <p className="mt-1 text-sm text-muted">Built from your answers. Change them in Step 1 and this page updates.</p>
         <p className="mt-3 flex flex-wrap items-center gap-2 text-sm">
           <Badge tone="brand">{CONCEPT_LABELS[s.concept]}</Badge>
           <Badge>{r.locations} location{r.locations > 1 ? "s" : ""}</Badge>
@@ -95,6 +94,12 @@ export default function Step2Page() {
         <p className="mb-3 text-sm text-muted">Published results from other restaurants. Not predictions, and they don&apos;t change your numbers.</p>
         <CaseStudyGrid matches={rep.matches} compact />
       </section>
+
+      <div className="mb-6">
+        <Collapsible title="How you compare with industry medians" tag="Optional" open={cmp} onToggle={() => setCmp((o) => !o)}>
+          <FinancialHealth embedded />
+        </Collapsible>
+      </div>
 
       <CoachingPanel />
 

@@ -6,11 +6,12 @@ import { NRA_SOURCE } from "@/config/benchmarks";
 import { PROOF_DISCLAIMER } from "@/config/caseStudies";
 import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
-import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/marginlab/Buttons";
+import { GhostButton, LimeButton, SecondaryButton } from "@/components/marginlab/Buttons";
 import { Badge, ContentCard, SectionHeader } from "@/components/marginlab/Cards";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
 import { StepFooter } from "@/components/marginlab/StepFooter";
-import { StepProgress } from "@/components/marginlab/StepProgress";
+import { FormField, TextField } from "@/components/marginlab/Fields";
+import { StepHeader } from "@/components/marginlab/StepHeader";
 import { requiredStatus } from "@/lib/steps";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { BAND_LABEL, buildHealth, nearNote, PEER_LABEL } from "@/lib/health";
@@ -36,7 +37,7 @@ function Row({ k, v, strong }: { k: string; v: string; strong?: boolean }) {
 }
 
 export default function SummaryPage() {
-  const { scenario: s, result: r, reset, saved, saveNamed, loadSavedScenario, deleteSaved } = useScenario();
+  const { scenario: s, result: r, update, reset, saved, saveNamed, loadSavedScenario, deleteSaved } = useScenario();
   const [copied, setCopied] = useState<"idle" | "ok" | "fail">("idle");
   const [today, setToday] = useState("");
   useEffect(() => setToday(new Date().toLocaleDateString("en-US", { dateStyle: "long" })), []);
@@ -74,33 +75,38 @@ export default function SummaryPage() {
   if (!requiredStatus(s, r).complete)
     return (
       <>
-        <StepProgress />
-        <h1 className="mb-4 text-2xl font-semibold tracking-tight sm:text-3xl">Your summary</h1>
+        <StepHeader step={3} title="Your summary" subtitle="A one-page summary of the restaurant and the opportunity." />
         <EmptyStep what="The summary" />
       </>
     );
 
   return (
     <>
-      <StepProgress />
-      <div className="no-print mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Your summary</h1>
-          <p className="mt-1 text-sm text-muted">One page to print, save as a PDF, or copy. Nothing is uploaded.</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <PrimaryButton onClick={() => window.print()}>
-            <Printer className="h-4 w-4" aria-hidden /> Print / Save PDF
-          </PrimaryButton>
-          <SecondaryButton onClick={copy}>
-            {copied === "ok" ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
-            {copied === "ok" ? "Copied" : copied === "fail" ? "Copy failed" : "Copy summary"}
-          </SecondaryButton>
-        </div>
-      </div>
+      <StepHeader
+        step={3}
+        title="Your summary"
+        subtitle="One page to print, save as a PDF, or copy. Nothing is uploaded."
+        actions={
+          <>
+            <LimeButton onClick={() => window.print()}>
+              <Printer className="h-4 w-4" aria-hidden /> Print / Save PDF
+            </LimeButton>
+            <SecondaryButton onClick={copy}>
+              {copied === "ok" ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
+              {copied === "ok" ? "Copied" : copied === "fail" ? "Copy failed" : "Copy summary"}
+            </SecondaryButton>
+          </>
+        }
+      />
       <span aria-live="polite" className="sr-only">
         {copied === "ok" ? "Summary copied to clipboard" : copied === "fail" ? "Could not copy" : ""}
       </span>
+
+      <div className="no-print mb-4 max-w-md">
+        <FormField label="Restaurant name" htmlFor="name" hint="Shown at the top of the summary.">
+          <TextField id="name" value={s.restaurantName} onChange={(v) => update({ restaurantName: v })} placeholder="e.g. Harbor Grill" />
+        </FormField>
+      </div>
 
       <article className="print-page rounded-card border border-rule bg-surface p-5 shadow-card sm:p-8" aria-label="Printable operator summary">
         <header className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-ink pb-3">
