@@ -37,6 +37,9 @@ export function CaseStudyCard({ match, compact = false }: { match: CaseMatch; co
       {compact ? (
         <>
           <p className="text-xl font-semibold">{c.metric.wording}</p>
+          {c.additionalMetrics?.map((m) => (
+            <p key={m.wording} className="text-sm font-semibold">{m.wording}</p>
+          ))}
           <p className="text-sm text-muted">Why it may fit: {match.reasons.slice(0, 2).join(" · ")}</p>
           <details className="text-sm">
             <summary className="cursor-pointer text-xs font-semibold text-link">Details and limits</summary>
@@ -47,6 +50,9 @@ export function CaseStudyCard({ match, compact = false }: { match: CaseMatch; co
               <Field label="Keep in mind">
                 <ul className="list-disc space-y-0.5 pl-5 text-xs text-muted">
                   <li>{metricQualifier(c.metric)}</li>
+                  {c.additionalMetrics?.map((m) => (
+                    <li key={m.wording}>{metricQualifier(m)}</li>
+                  ))}
                   {c.limitations.map((l) => (
                     <li key={l}>{l}</li>
                   ))}
@@ -59,6 +65,9 @@ export function CaseStudyCard({ match, compact = false }: { match: CaseMatch; co
       <dl className="grid gap-3">
         <Field label="Published result">
           <span className="text-xl font-semibold">{c.metric.wording}</span>
+          {c.additionalMetrics?.map((m) => (
+            <span key={m.wording} className="block text-sm font-semibold">{m.wording}</span>
+          ))}
           {c.metric.wordingStatus === "as_provided" && (
             <span className="block text-xs text-muted">Wording as provided; exact source wording still to be confirmed.</span>
           )}

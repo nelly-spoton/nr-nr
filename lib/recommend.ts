@@ -31,6 +31,10 @@ export function recommendSolutions(p: Profile): Recommendation[] {
     const proof = casesForSolution(s.id).map((c) => c.id);
     const reasons: string[] = [];
 
+    if (s.existingOnly) {
+      return { solution: s, tier: "not_recommended" as Tier, score: 0, reasons: [], exclusion: s.existingOnly, proofCaseIds: proof };
+    }
+
     if (s.nature === "insight") {
       return { solution: s, tier: "visibility" as Tier, score: 0, reasons: ["Provides visibility to find and measure opportunities; it is not a direct cost lever."], proofCaseIds: proof };
     }
@@ -84,5 +88,5 @@ export const TIER_LABELS: Record<Tier, string> = {
 export function isIncluded(r: Recommendation, overrides: Record<string, boolean>): boolean {
   const o = overrides[r.solution.id];
   if (o !== undefined) return o;
-  return r.tier === "highest";
+  return r.tier === "highest" || !!r.solution.featured;
 }

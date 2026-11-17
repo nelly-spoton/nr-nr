@@ -93,9 +93,10 @@ describe("benchmarks and beverage", () => {
 describe("case-study library", () => {
   it("contains the eight requested records with unique ids and source URLs", () => {
     expect(CASE_STUDIES.map((c) => c.id).sort()).toEqual(
-      ["adalina", "big-daves-bagels", "big-lake-brewing", "butcher-paper-bbq", "cocos-crush-bar", "fat-zachs-pizza", "kaleis-kitchenette", "the-mudpuppy"].sort(),
+      ["adalina", "big-daves-bagels", "big-lake-brewing", "butcher-paper-bbq", "cocos-crush-bar", "fat-zachs-pizza", "kaleis-kitchenette", "the-mudpuppy", "weinbergers-deli"].sort(),
     );
-    for (const c of CASE_STUDIES) expect(c.sourceUrl).toMatch(/^https:\/\/www\.spoton\.com\/success-stories\//);
+    for (const c of CASE_STUDIES)
+      expect(c.sourceUrl).toMatch(c.id === "weinbergers-deli" ? /^https:\/\/www\.businesswire\.com\// : /^https:\/\/www\.spoton\.com\/success-stories\//);
   });
   it("records are labeled as accepted by the team, never as independently verified", () => {
     for (const c of CASE_STUDIES) {
@@ -208,7 +209,7 @@ describe("recommendations", () => {
     expect(recs.map((r) => r.solution.id).sort()).toEqual([...ids].sort());
   });
   it("insight products land in the reporting tier, never 'highest'", () => {
-    for (const r of recommendSolutions(prof({}))) if (r.solution.nature === "insight") expect(r.tier).toBe("visibility");
+    for (const r of recommendSolutions(prof({}))) if (r.solution.nature === "insight" && !r.solution.existingOnly) expect(r.tier).toBe("visibility");
   });
   it("highest tier is capped and tied to the selected levers", () => {
     const labor = recommendSolutions(prof({ foodImprovementPts: 0, laborImprovementPts: 1 }));

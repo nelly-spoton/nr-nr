@@ -26,13 +26,17 @@ export interface Solution {
   influences: Influence;
   nature: Nature;
   requirements: string[];
-  link: { url: string; status: "vendor_home" | "verified_product_page" };
+  link: { url: string; status: "vendor_home" | "provided_link" | "verified_product_page" };
   /** Service models this is designed for. "mixed" concepts match any. */
   serviceModels: ServiceModel[];
   /** Why it is not recommended when the service model does not fit. */
   poorFitReason: string;
   /** Attributes that make it more relevant. */
   attributeBoost: AttributeId[];
+  /** Shown as a spotlight on the Solutions step instead of in the ranked lists. */
+  featured?: boolean;
+  /** Set when the product is for merchants who already use it; the text says what to position instead. */
+  existingOnly?: string;
 }
 
 export const SOLUTIONS_DISCLAIMER =
@@ -207,6 +211,58 @@ export const SOLUTIONS: Solution[] = [
     attributeBoost: ["counter_service"],
   },
   {
+    id: "sam",
+    name: "Sam (SpotOn Assistant Manager)",
+    kind: "spoton",
+    objectives: ["visibility"],
+    problem: "Owners have no analyst. It takes digging through reports to see what changed and where the money went.",
+    mechanism: [
+      "A chat assistant in the Dashboard, and by text message",
+      "Ask about sales, labor, guests, reviews, kitchen (KDS) and menus; get a plain-language answer in seconds",
+      "Saved custom reports, scheduled text recaps and CSV downloads",
+      "Answers in the language the question is asked in",
+    ],
+    costDriver: "Spotting margin leaks sooner: what changed and where the money went (insight, not a direct cost lever)",
+    influences: "insight",
+    nature: "insight",
+    requirements: [
+      "SpotOn Restaurant POS or Express, using the SpotOn Dashboard",
+      "Used by owners and managers (not shift leads or staff)",
+      "Inventory and accounting data may not be connected yet; confirm what is live",
+      "Confirm current pricing and availability",
+    ],
+    // Public help article for Sam, as provided by SpotOn staff; not opened from the build environment.
+    link: { url: "https://help.spoton.com/space/SK/5631180809/Sam:+Your+Conversational+AI+Assistant+%7C+SpotOn+Dashboard", status: "provided_link" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: [],
+    featured: true,
+  },
+  {
+    id: "spoton-profit-ai",
+    name: "SpotOn Profit AI",
+    kind: "spoton",
+    objectives: ["visibility"],
+    problem: "Management cannot see what changed in profit from week to week.",
+    mechanism: [
+      "Weekly insight cards on the Dashboard homepage that show what changed and why",
+      "Works alongside Sam, so answers sit next to the insights",
+      "Accounting analysis with QuickBooks Online, Xero and Restaurant365",
+    ],
+    costDriver: "Week-to-week changes in the drivers of profit (insight only)",
+    influences: "insight",
+    nature: "insight",
+    requirements: [
+      "SpotOn Restaurant POS or Express",
+      "Offered in beta; confirm availability and terms",
+      "Accounting analysis needs a connected accounting system",
+    ],
+    link: { url: SPOTON, status: "vendor_home" },
+    serviceModels: ALL,
+    poorFitReason: "",
+    attributeBoost: ["multi_location"],
+  },
+  {
     id: "spoton-profit-assist",
     name: "SpotOn Profit Assist",
     kind: "spoton",
@@ -220,6 +276,7 @@ export const SOLUTIONS: Solution[] = [
       "Helps management identify and measure opportunities; does not itself guarantee cost reductions",
     ],
     costDriver: "Cost anomalies visible in the P&L (insight only)",
+    existingOnly: "For merchants already using it. For new merchants, position Profit AI and Sam instead.",
     influences: "insight",
     nature: "insight",
     requirements: ["Connected accounting system (QuickBooks Online, Xero or Restaurant365)", "Confirm availability"],

@@ -63,7 +63,7 @@ export function SolutionCard({ rec }: { rec: Recommendation }) {
             </p>
           )}
           <a href={x.link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-semibold text-link underline">
-            {x.link.status === "verified_product_page" ? "Product page" : "Vendor site"} <ExternalLink className="h-3 w-3" aria-hidden />
+            {x.link.status === "verified_product_page" ? "Product page" : x.link.status === "provided_link" ? "Help article" : "Vendor site"} <ExternalLink className="h-3 w-3" aria-hidden />
             <span className="sr-only"> (opens in a new tab)</span>
           </a>
         </div>
