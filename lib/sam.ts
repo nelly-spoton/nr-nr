@@ -1,8 +1,9 @@
 /**
- * Text for the Sam (SpotOn Assistant Manager) spotlight, tied to the Step 1 focus.
+ * Text for the Sam (SpotOn Assistant Manager) solution card, tied to the Step 1 focus.
  * Public-facing only: it uses statements from SpotOn's press release, makes no claim about plans, users
  * or commercial terms, and never promises what an answer will show. Sam is described as an insight tool.
  */
+import { SOLUTION_BY_ID } from "@/config/solutions";
 import type { Focus } from "./types";
 
 export interface SamFit {
@@ -11,11 +12,7 @@ export interface SamFit {
 }
 
 /** Questions the announcement lists as common requests. */
-export const SAM_EXAMPLE_QUESTIONS = [
-  "How are sales today?",
-  "How did this weekend compare with last weekend?",
-  "Who has the highest tip average by server?",
-];
+export const SAM_EXAMPLE_QUESTIONS = SOLUTION_BY_ID["sam"]!.examples ?? [];
 
 export function samFit(focus: Focus): SamFit {
   const labor = "SpotOn describes Sam as showing where schedules don't match demand";

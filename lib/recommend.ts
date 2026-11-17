@@ -5,6 +5,7 @@
 import { effectiveServiceModel } from "@/config/concepts";
 import { SOLUTIONS, type Solution } from "@/config/solutions";
 import { casesForSolution } from "./matching";
+import { samFit } from "./sam";
 import { leverWeights, type Profile } from "./profile";
 
 export type Tier = "highest" | "additional" | "visibility" | "not_recommended";
@@ -20,6 +21,12 @@ export interface Recommendation {
   proofCaseIds: string[];
 }
 
+const EFFICIENCY_REASON: Partial<Record<Solution["influences"], string>> = {
+  efficiency: "Speeds up menu changes. It is not a direct cost lever.",
+  guest: "Targets checkout speed and guest reviews. It is not a direct cost lever.",
+  admin: "Targets the admin work of tips and payouts. It is not a direct cost lever.",
+};
+
 const TOP_N = 4;
 const HIGH_CUTOFF = 55;
 
@@ -31,6 +38,14 @@ export function recommendSolutions(p: Profile): Recommendation[] {
     const proof = casesForSolution(s.id).map((c) => c.id);
     const reasons: string[] = [];
 
+    if (s.id === "sam") {
+      const focus = p.foodPts > 0 && p.laborPts === 0 ? "food" : p.laborPts > 0 && p.foodPts === 0 ? "labor" : "both";
+      const fit = samFit(focus);
+      return { solution: s, tier: "visibility" as Tier, score: 0, reasons: [`${fit.headline} ${fit.detail}`], proofCaseIds: proof };
+    }
+    if (s.nature === "efficiency") {
+      return { solution: s, tier: "visibility" as Tier, score: 0, reasons: [EFFICIENCY_REASON[s.influences] ?? "Saves time. It is not a direct cost lever."], proofCaseIds: proof };
+    }
     if (s.nature === "insight") {
       return { solution: s, tier: "visibility" as Tier, score: 0, reasons: ["Provides visibility to find and measure opportunities; it is not a direct cost lever."], proofCaseIds: proof };
     }

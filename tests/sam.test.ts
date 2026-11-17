@@ -5,6 +5,7 @@ import { applyGuided } from "@/lib/focus";
 import { matchCaseStudies } from "@/lib/matching";
 import { buildProfile } from "@/lib/profile";
 import { isIncluded, recommendSolutions } from "@/lib/recommend";
+import { OTHER_SOLUTIONS } from "@/config/otherSolutions";
 import { SAM_EXAMPLE_QUESTIONS, samFit } from "@/lib/sam";
 import { blankScenario, exampleScenario } from "@/lib/scenario";
 import { buildSummaryText } from "@/lib/summary";
@@ -104,7 +105,7 @@ describe("Weinberger's Deli (from the public press release)", () => {
 });
 
 describe("public information only", () => {
-  const files = ["config/solutions.ts", "config/caseStudies.ts", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SamSpotlight.tsx", "components/marginlab/SolutionCard.tsx"];
+  const files = ["config/solutions.ts", "config/caseStudies.ts", "config/otherSolutions.ts", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SolutionCard.tsx"];
   const src = Object.fromEntries(files.map((f) => [f, readFileSync(f, "utf8")]));
 
   it("never mentions pricing, in any solution or anywhere solutions are described", () => {
@@ -122,16 +123,50 @@ describe("public information only", () => {
     for (const [f, text] of Object.entries(src)) for (const re of banned) expect(text, `${f} ${re}`).not.toMatch(re);
   });
 
-  it("does not recommend Profit Assist or Profit AI", () => {
-    expect(SOLUTIONS.map((s) => s.id)).not.toContain("spoton-profit-assist");
+  it("lists the AI menu assistant as an efficiency tool with no cost claim", () => {
+    const m = SOLUTIONS.find((s) => s.id === "spoton-ai-menu-assistant")!;
+    expect(m.nature).toBe("efficiency");
+    expect(m.link.url).toBe("https://www.spoton.com/solutions/ai-menu-assistant/");
+    expect(m.mechanism.join(" ")).not.toMatch(/sav|cut|reduc|margin|profit/i);
+  });
+
+  it("lists Mobile Pay & Review without fee claims, as a guest-experience tool", () => {
+    const m = SOLUTIONS.find((s) => s.id === "spoton-mobile-pay-review")!;
+    expect(m.link.url).toBe("https://www.spoton.com/solutions/mobile-pay-and-review/");
+    expect(m.nature).toBe("efficiency");
+    expect(JSON.stringify(m)).not.toMatch(/software fees|no extra|RPOS/i);
+  });
+
+  it("lists Tip Management, linked to its two published customer stories", () => {
+    const m = SOLUTIONS.find((s) => s.id === "spoton-tip-management")!;
+    expect(m.link.url).toBe("https://www.spoton.com/solutions/tip-management/");
+    expect(m.nature).toBe("efficiency");
+    expect(m.claims!.join(" ")).toMatch(/Coco's Crush Bar/);
+    expect(m.claims!.join(" ")).toMatch(/Mudpuppy/);
+  });
+
+  it("lists Tip Access without any fee, cost or regulatory-footer text", () => {
+    const m = SOLUTIONS.find((s) => s.id === "spoton-tip-access")!;
+    expect(m.link.url).toBe("https://www.spoton.com/solutions/earned-tip-access/");
+    expect(JSON.stringify(m)).not.toMatch(/\bfee|no extra|low cost|1%|\$25|FDIC|Sutton/i);
+    expect(m.requirements.join(" ")).toMatch(/eligibility and state availability/);
+  });
+
+  it("keeps payment processing and capital loans out of the other-solutions list", () => {
+    const all = JSON.stringify(OTHER_SOLUTIONS);
+    expect(all).not.toMatch(/processing|capital|loan/i);
+    expect(OTHER_SOLUTIONS.flatMap((g) => g.items)).toContain("Loyalty");
+  });
+
+  it("lists Profit Assist from its public product page, and never Profit AI", () => {
+    const pa = SOLUTIONS.find((s) => s.id === "spoton-profit-assist")!;
+    expect(pa.link.url).toBe("https://www.spoton.com/solutions/profitability-analysis-software/");
     expect(SOLUTIONS.map((s) => s.id)).not.toContain("spoton-profit-ai");
   });
 
   it("the spotlight's numbers are the ones in the release", () => {
-    const spot = src["components/marginlab/SamSpotlight.tsx"]!;
-    for (const n of ["44%", "30%", "74%", "63%"]) expect(spot).toContain(n);
-    expect(spot).toMatch(/not a prediction for yours/);
-    expect(spot).toMatch(/doesn&apos;t say what period/);
+    const cases = src["config/caseStudies.ts"]!;
+    for (const n of ["44%", "30%", "74%", "63%"]) expect(cases).toContain(n);
   });
 
   it("the case-study library is the eight SpotOn success stories plus the public press release", () => {

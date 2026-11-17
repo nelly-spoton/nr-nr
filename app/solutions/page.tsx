@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { CONCEPT_LABELS } from "@/config/concepts";
+import { OTHER_SOLUTIONS, OTHER_SOLUTIONS_NOTE } from "@/config/otherSolutions";
 import { FOCUS_OPTIONS } from "@/lib/focus";
 import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
@@ -10,7 +11,6 @@ import { Collapsible } from "@/components/marginlab/Collapsible";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
 import { FinancialHealth } from "@/components/marginlab/FinancialHealth";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
-import { SamSpotlight } from "@/components/marginlab/SamSpotlight";
 import { SolutionCard } from "@/components/marginlab/SolutionCard";
 import { StepFooter } from "@/components/marginlab/StepFooter";
 import { StepHeader } from "@/components/marginlab/StepHeader";
@@ -23,6 +23,7 @@ export default function Step2Page() {
   const [more, setMore] = useState(false);
   const [no, setNo] = useState(false);
   const [cmp, setCmp] = useState(false);
+  const [other, setOther] = useState(false);
   const st = requiredStatus(s, r);
 
   if (!st.complete)
@@ -34,9 +35,9 @@ export default function Step2Page() {
     );
 
   const rep = buildReport(s, r);
-  const listed = rep.recs.filter((x) => !x.solution.featured);
-  const best = listed.filter((x) => x.tier === "highest");
-  const maybe = listed.filter((x) => x.tier === "additional" || x.tier === "visibility");
+  const listed = rep.recs;
+  const best = [...listed.filter((x) => x.tier === "highest"), ...listed.filter((x) => x.solution.featured && x.tier !== "highest")];
+  const maybe = listed.filter((x) => !best.includes(x) && (x.tier === "additional" || x.tier === "visibility"));
   const notFit = listed.filter((x) => x.tier === "not_recommended");
   const focus = FOCUS_OPTIONS.find((o) => o.value === s.focus)!.label;
 
@@ -52,8 +53,6 @@ export default function Step2Page() {
           <Link href="/" className="text-xs font-semibold text-link underline">Change answers</Link>
         </p>
       </div>
-
-      <SamSpotlight />
 
       <section aria-labelledby="best" className="mb-6">
         <h2 id="best" className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Best fit for you</h2>
@@ -91,6 +90,17 @@ export default function Step2Page() {
             </ul>
           </Collapsible>
         )}
+        <Collapsible title="Beyond prime cost: other SpotOn solutions" tag="Names only" open={other} onToggle={() => setOther((o) => !o)}>
+          <p className="mb-3 text-sm text-muted">{OTHER_SOLUTIONS_NOTE}</p>
+          <dl className="grid gap-3 sm:grid-cols-2">
+            {OTHER_SOLUTIONS.map((g) => (
+              <div key={g.heading}>
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">{g.heading}</dt>
+                <dd className="text-sm">{g.items.join(", ")}</dd>
+              </div>
+            ))}
+          </dl>
+        </Collapsible>
       </div>
 
       <section aria-labelledby="proof" className="mb-6">
