@@ -35,11 +35,16 @@ npm run dev          # http://localhost:3000
 
 Or via CLI: `npx vercel` (preview) / `npx vercel --prod`.
 
-## Sections
+## How it works (three steps)
 
-Overview (live calculator: inputs beside results, plus Financial Health) · Savings Calculator · SpotOn Solutions ·
-Operator Summary (print / save PDF, copy, save/load scenarios, reset to example) · Industry Stats (research reference).
-The former Benchmarks tab was retired; `/benchmarks` redirects to Industry Stats, and the planning-range feature is no longer shown.
+1. **Your restaurant.** Six required answers: restaurant type, number of locations, monthly sales, food & beverage cost, labor cost, and what to
+   improve (food, labor or both, and by how much). The estimated annual opportunity updates live. Everything else (names, tags, GPV,
+   food/alcohol split, industry comparison) is optional and tucked away.
+2. **Solutions.** Recommendations and similar-restaurant results are built from the Step 1 answers and change when they change.
+3. **Summary.** A one-page summary to print, save as a PDF, or copy.
+
+**Industry Stats** is a separate research reference. Steps 2 and 3 ask you to finish Step 1 first. The old Savings Calculator tab was merged
+into Step 1 (`/calculator` redirects to it); Benchmarks was retired earlier (`/benchmarks` redirects to Industry Stats).
 
 ## V2: sales intelligence layer
 
@@ -96,7 +101,7 @@ product page is checked; update `link` the same way.
 ## Structure
 
 ```
-app/                 routes: / (overview), calculator, solutions, summary, stats
+app/                 routes: / (step 1), solutions (step 2), summary (step 3), stats
 components/ui/       slider (Radix)
 components/marginlab shared design-system + feature components
 config/benchmarks.ts verified NRA medians, planning ranges, source/caveats
@@ -106,6 +111,7 @@ lib/validate.ts      input validation      lib/summary.ts  summary text   lib/re
 lib/matching.ts      case-study matching     lib/recommend.ts  ranked solutions
 lib/coaching.ts      discovery panel         lib/beverage.ts   COGS blend
 lib/research.ts      future research contract
+lib/steps.ts         required answers + steps    lib/focus.ts  "what to improve" → points
 scripts/             verify-sources.ts
 lib/scenario.ts      example scenario      lib/storage.ts  localStorage
 tests/calc.test.ts   unit tests

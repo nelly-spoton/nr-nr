@@ -15,7 +15,7 @@ export function ImprovementControls({ showPresets = true }: { showPresets?: bool
         label="Food & beverage cost improvement"
         tooltip="Percentage POINTS of net sales removed from food & beverage cost (e.g. 32.00% → 31.60% is 0.40 pts). Not a relative reduction."
         value={scenario.foodImprovementPts}
-        onChange={(v) => update({ foodImprovementPts: v })}
+        onChange={(v) => update({ foodImprovementPts: v, improvementMode: "custom" })}
         error={issueFor(issues, "foodImprovementPts")?.severity === "error" ? issueFor(issues, "foodImprovementPts")?.message : undefined}
         warning={result.improvement.foodClamped ? "Capped: food cost cannot go below 0%." : undefined}
       />
@@ -23,7 +23,7 @@ export function ImprovementControls({ showPresets = true }: { showPresets?: bool
         label="Labor cost improvement"
         tooltip="Percentage POINTS of net sales removed from fully loaded labor cost. 0–5 pts."
         value={scenario.laborImprovementPts}
-        onChange={(v) => update({ laborImprovementPts: v })}
+        onChange={(v) => update({ laborImprovementPts: v, improvementMode: "custom" })}
         error={issueFor(issues, "laborImprovementPts")?.severity === "error" ? issueFor(issues, "laborImprovementPts")?.message : undefined}
         warning={result.improvement.laborClamped ? "Capped: labor cost cannot go below 0%." : undefined}
       />
@@ -44,7 +44,7 @@ export function ImprovementControls({ showPresets = true }: { showPresets?: bool
                   aria-pressed={on}
                   onClick={() => {
                     const s = splitPreset(t, result.current.food, result.current.labor);
-                    update({ foodImprovementPts: s.food, laborImprovementPts: s.labor });
+                    update({ foodImprovementPts: s.food, laborImprovementPts: s.labor, improvementMode: "custom" });
                   }}
                   className={cn(
                     "min-h-11 min-w-16 rounded-ctl border px-3 text-sm font-semibold",

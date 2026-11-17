@@ -5,9 +5,11 @@ import type { ReactNode } from "react";
 import { Navigation } from "./Navigation";
 import { useScenario } from "./ScenarioProvider";
 import { usd } from "@/lib/format";
+import { requiredStatus } from "@/lib/steps";
 
 function Header() {
   const { scenario, result } = useScenario();
+  const started = requiredStatus(scenario, result).complete;
   return (
     <header className="no-print sticky top-0 z-40 bg-nav text-white">
       <div className="mx-auto flex h-14 max-w-page items-center justify-between gap-4 px-4 sm:px-6">
@@ -24,17 +26,19 @@ function Header() {
           <Navigation variant="top" />
         </div>
         <div className="flex min-w-0 items-center gap-3">
-          <span className="hidden max-w-[14rem] truncate text-sm text-nav-fg xl:inline">
-            {scenario.restaurantName || "Unnamed restaurant"}
-          </span>
-          <span
-            className={
-              "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold " +
-              (result.sales.preliminary ? "bg-lime text-ink" : "bg-white/10 text-white")
-            }
-          >
-            {result.sales.preliminary ? "Preliminary estimate" : "Estimate"}
-          </span>
+          {scenario.restaurantName && (
+            <span className="hidden max-w-[14rem] truncate text-sm text-nav-fg xl:inline">{scenario.restaurantName}</span>
+          )}
+          {started && (
+            <span
+              className={
+                "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold " +
+                (result.sales.preliminary ? "bg-lime text-ink" : "bg-white/10 text-white")
+              }
+            >
+              {result.sales.preliminary ? "Preliminary estimate" : "Estimate"}
+            </span>
+          )}
         </div>
       </div>
     </header>
@@ -43,9 +47,10 @@ function Header() {
 
 /** Compact always-visible result for phones, so the number stays on screen while inputs change. */
 function MobileResultBar() {
-  const { result } = useScenario();
+  const { result, scenario } = useScenario();
   const path = usePathname();
-  if (path.startsWith("/summary") || path.startsWith("/stats")) return null;
+  if (path !== "/" && !path.startsWith("/solutions")) return null;
+  const done = requiredStatus(scenario, result).complete;
   return (
     <div
       aria-live="polite"
@@ -54,7 +59,7 @@ function MobileResultBar() {
     >
       <span className="text-xs font-semibold uppercase tracking-[0.14em] text-nav-fg">Est. annual opportunity</span>
       <span className="tabular text-lg font-bold text-lime">
-        {result.sales.resolved ? usd(result.savings.annualTotal) : "—"}
+        {done ? usd(result.savings.annualTotal) : "—"}
       </span>
     </div>
   );

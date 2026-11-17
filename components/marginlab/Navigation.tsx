@@ -1,14 +1,13 @@
 "use client";
-import { Calculator, FileText, LayoutDashboard, Library, Puzzle } from "lucide-react";
+import { ClipboardList, FileText, Library, Puzzle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export const NAV = [
-  { href: "/", label: "Overview", short: "Overview", icon: LayoutDashboard },
-  { href: "/calculator", label: "Savings Calculator", short: "Calculator", icon: Calculator },
-  { href: "/solutions", label: "SpotOn Solutions", short: "Solutions", icon: Puzzle },
-  { href: "/summary", label: "Operator Summary", short: "Summary", icon: FileText },
+  { href: "/", label: "1 · Your restaurant", short: "Restaurant", icon: ClipboardList },
+  { href: "/solutions", label: "2 · Solutions", short: "Solutions", icon: Puzzle },
+  { href: "/summary", label: "3 · Summary", short: "Summary", icon: FileText },
   { href: "/stats", label: "Industry Stats", short: "Stats", icon: Library },
 ] as const;
 
@@ -39,7 +38,7 @@ export function Navigation({ variant }: { variant: "top" | "bottom" }) {
   return (
     <nav
       aria-label="Primary"
-      className="no-print fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-white/10 bg-nav pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="no-print fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-white/10 bg-nav pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       {NAV.map(({ href, short, icon: Icon }) => (
         <Link

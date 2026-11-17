@@ -35,6 +35,11 @@ export interface BeverageMix {
 
 export type CostMode = "quick" | "detailed";
 
+/** Which cost the operator wants to improve (drives recommendations and the points split). */
+export type Focus = "food" | "labor" | "both";
+/** guided = points follow focus + level; custom = the operator set the sliders directly. */
+export type ImprovementMode = "guided" | "custom";
+
 /** Detailed food/alcohol inputs. Revenue shares are % of total net sales; rates are % of that category's own sales. */
 export interface DetailedCogs {
   foodSharePct: NumField;
@@ -73,6 +78,8 @@ export interface Scenario {
   restaurantName: string;
   scenarioName: string;
   concept: ConceptId;
+  /** False until the operator picks a restaurant type (the select starts on a placeholder). */
+  conceptConfirmed: boolean;
   attributes: AttributeId[];
   /** 1–10. V2 may replace equal-split with a per-location array. */
   locations: number | null;
@@ -101,6 +108,11 @@ export interface Scenario {
   expenses: Expenses;
   /** Operator-chosen comparison statistic per metric (only comparable ones are offered). */
   benchmarkPick: Record<string, string>;
+
+  /** Guided improvement: focus + total points. Individual points follow them unless mode is custom. */
+  focus: Focus;
+  level: number;
+  improvementMode: ImprovementMode;
 
   /** Improvement in percentage POINTS. */
   foodImprovementPts: NumField;

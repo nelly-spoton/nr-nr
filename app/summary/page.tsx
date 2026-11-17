@@ -7,7 +7,11 @@ import { PROOF_DISCLAIMER } from "@/config/caseStudies";
 import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/marginlab/Buttons";
-import { Badge, ContentCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
+import { Badge, ContentCard, SectionHeader } from "@/components/marginlab/Cards";
+import { EmptyStep } from "@/components/marginlab/EmptyStep";
+import { StepFooter } from "@/components/marginlab/StepFooter";
+import { StepProgress } from "@/components/marginlab/StepProgress";
+import { requiredStatus } from "@/lib/steps";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { BAND_LABEL, buildHealth, nearNote, PEER_LABEL } from "@/lib/health";
 import { buildReport } from "@/lib/report";
@@ -67,23 +71,33 @@ export default function SummaryPage() {
     setTimeout(() => setCopied("idle"), 2500);
   }
 
+  if (!requiredStatus(s, r).complete)
+    return (
+      <>
+        <StepProgress />
+        <h1 className="mb-4 text-2xl font-semibold tracking-tight sm:text-3xl">Your summary</h1>
+        <EmptyStep what="The summary" />
+      </>
+    );
+
   return (
     <>
-      <PageHeader
-        title="Operator Summary"
-        description="A one-page financial snapshot to copy, print or save as PDF. Nothing is uploaded; inputs stay in this browser."
-        actions={
-          <>
-            <PrimaryButton onClick={() => window.print()}>
-              <Printer className="h-4 w-4" aria-hidden /> Print / Save PDF
-            </PrimaryButton>
-            <SecondaryButton onClick={copy}>
-              {copied === "ok" ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
-              {copied === "ok" ? "Copied" : copied === "fail" ? "Copy failed" : "Copy summary"}
-            </SecondaryButton>
-          </>
-        }
-      />
+      <StepProgress />
+      <div className="no-print mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Your summary</h1>
+          <p className="mt-1 text-sm text-muted">One page to print, save as a PDF, or copy. Nothing is uploaded.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <PrimaryButton onClick={() => window.print()}>
+            <Printer className="h-4 w-4" aria-hidden /> Print / Save PDF
+          </PrimaryButton>
+          <SecondaryButton onClick={copy}>
+            {copied === "ok" ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
+            {copied === "ok" ? "Copied" : copied === "fail" ? "Copy failed" : "Copy summary"}
+          </SecondaryButton>
+        </div>
+      </div>
       <span aria-live="polite" className="sr-only">
         {copied === "ok" ? "Summary copied to clipboard" : copied === "fail" ? "Could not copy" : ""}
       </span>
@@ -260,7 +274,7 @@ export default function SummaryPage() {
         <p className="mt-2 text-xs text-muted">{PROOF_DISCLAIMER}</p>
       </section>
 
-      <div className="no-print mt-8 grid gap-6 lg:grid-cols-2">
+      <div className="no-print mt-8 grid gap-6">
         <ContentCard>
           <SectionHeader title="Scenarios" description="Saved in this browser only (localStorage)." />
           <div className="flex flex-wrap gap-2">
@@ -268,7 +282,7 @@ export default function SummaryPage() {
               <Save className="h-4 w-4" aria-hidden /> Save current scenario
             </SecondaryButton>
             <SecondaryButton onClick={reset}>
-              <RotateCcw className="h-4 w-4" aria-hidden /> Reset to example
+              <RotateCcw className="h-4 w-4" aria-hidden /> Start over
             </SecondaryButton>
           </div>
           {saved.length > 0 ? (
@@ -296,11 +310,8 @@ export default function SummaryPage() {
             <p className="mt-4 text-sm text-muted">No saved scenarios yet.</p>
           )}
         </ContentCard>
-        <ContentCard tone="muted">
-          <SectionHeader title="Plain-text version" description="This is what “Copy summary” places on the clipboard." />
-          <pre className="max-h-72 overflow-auto whitespace-pre-wrap text-xs leading-relaxed">{text}</pre>
-        </ContentCard>
       </div>
+      <StepFooter backHref="/solutions" backLabel="Back: Solutions" />
     </>
   );
 }

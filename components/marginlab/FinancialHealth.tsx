@@ -78,18 +78,20 @@ function Row({ row, windowPts }: { row: HealthRow; windowPts: number }) {
 }
 
 /** "Restaurant Financial Health": peer-median comparisons plus an honest profitability status. */
-export function FinancialHealth() {
+export function FinancialHealth({ embedded = false }: { embedded?: boolean }) {
   const { scenario: s, result: r, update } = useScenario();
   const h = buildHealth(s, r);
   const p = h.profit;
   const rows = h.rows.filter((x) => !(x.id === "pretax" && p.status === "unknown"));
 
-  return (
-    <ContentCard className="border-brand/30" >
-      <SectionHeader
-        title="Restaurant Financial Health"
-        description="How this restaurant compares with published medians. Context, not a score."
-      />
+  const inner = (
+    <>
+      {!embedded && (
+        <SectionHeader
+          title="Restaurant Financial Health"
+          description="How this restaurant compares with published medians. Context, not a score."
+        />
+      )}
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <MetricCard label="Total prime cost" value={pct(r.current.prime)} sub={`${usd(r.current.primeMonthly)}/mo · cost mix, not profit`} />
@@ -173,6 +175,7 @@ export function FinancialHealth() {
           <ExpensesPanel />
         </div>
       </div>
-    </ContentCard>
+    </>
   );
+  return embedded ? inner : <ContentCard className="border-brand/30">{inner}</ContentCard>;
 }
