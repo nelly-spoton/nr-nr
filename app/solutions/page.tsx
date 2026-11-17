@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { CONCEPT_LABELS } from "@/config/concepts";
+import { OTHER_SOLUTIONS, OTHER_SOLUTIONS_NOTE } from "@/config/otherSolutions";
 import { FOCUS_OPTIONS } from "@/lib/focus";
 import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
@@ -22,6 +23,7 @@ export default function Step2Page() {
   const [more, setMore] = useState(false);
   const [no, setNo] = useState(false);
   const [cmp, setCmp] = useState(false);
+  const [other, setOther] = useState(false);
   const st = requiredStatus(s, r);
 
   if (!st.complete)
@@ -88,6 +90,17 @@ export default function Step2Page() {
             </ul>
           </Collapsible>
         )}
+        <Collapsible title="Beyond prime cost: other SpotOn solutions" tag="Names only" open={other} onToggle={() => setOther((o) => !o)}>
+          <p className="mb-3 text-sm text-muted">{OTHER_SOLUTIONS_NOTE}</p>
+          <dl className="grid gap-3 sm:grid-cols-2">
+            {OTHER_SOLUTIONS.map((g) => (
+              <div key={g.heading}>
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">{g.heading}</dt>
+                <dd className="text-sm">{g.items.join(", ")}</dd>
+              </div>
+            ))}
+          </dl>
+        </Collapsible>
       </div>
 
       <section aria-labelledby="proof" className="mb-6">

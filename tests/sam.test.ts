@@ -5,6 +5,7 @@ import { applyGuided } from "@/lib/focus";
 import { matchCaseStudies } from "@/lib/matching";
 import { buildProfile } from "@/lib/profile";
 import { isIncluded, recommendSolutions } from "@/lib/recommend";
+import { OTHER_SOLUTIONS } from "@/config/otherSolutions";
 import { SAM_EXAMPLE_QUESTIONS, samFit } from "@/lib/sam";
 import { blankScenario, exampleScenario } from "@/lib/scenario";
 import { buildSummaryText } from "@/lib/summary";
@@ -104,7 +105,7 @@ describe("Weinberger's Deli (from the public press release)", () => {
 });
 
 describe("public information only", () => {
-  const files = ["config/solutions.ts", "config/caseStudies.ts", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SolutionCard.tsx"];
+  const files = ["config/solutions.ts", "config/caseStudies.ts", "config/otherSolutions.ts", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SolutionCard.tsx"];
   const src = Object.fromEntries(files.map((f) => [f, readFileSync(f, "utf8")]));
 
   it("never mentions pricing, in any solution or anywhere solutions are described", () => {
@@ -149,6 +150,12 @@ describe("public information only", () => {
     expect(m.link.url).toBe("https://www.spoton.com/solutions/earned-tip-access/");
     expect(JSON.stringify(m)).not.toMatch(/\bfee|no extra|low cost|1%|\$25|FDIC|Sutton/i);
     expect(m.requirements.join(" ")).toMatch(/eligibility and state availability/);
+  });
+
+  it("keeps payment processing and capital loans out of the other-solutions list", () => {
+    const all = JSON.stringify(OTHER_SOLUTIONS);
+    expect(all).not.toMatch(/processing|capital|loan/i);
+    expect(OTHER_SOLUTIONS.flatMap((g) => g.items)).toContain("Loyalty");
   });
 
   it("lists Profit Assist from its public product page, and never Profit AI", () => {
