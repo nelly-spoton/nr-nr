@@ -84,5 +84,5 @@ export const TIER_LABELS: Record<Tier, string> = {
 export function isIncluded(r: Recommendation, overrides: Record<string, boolean>): boolean {
   const o = overrides[r.solution.id];
   if (o !== undefined) return o;
-  return r.tier === "highest";
+  return r.tier === "highest" || !!r.solution.featured;
 }

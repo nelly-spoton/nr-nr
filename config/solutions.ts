@@ -26,13 +26,15 @@ export interface Solution {
   influences: Influence;
   nature: Nature;
   requirements: string[];
-  link: { url: string; status: "vendor_home" | "verified_product_page" };
+  link: { url: string; status: "vendor_home" | "provided_link" | "verified_product_page" };
   /** Service models this is designed for. "mixed" concepts match any. */
   serviceModels: ServiceModel[];
   /** Why it is not recommended when the service model does not fit. */
   poorFitReason: string;
   /** Attributes that make it more relevant. */
   attributeBoost: AttributeId[];
+  /** Shown as a spotlight on the Solutions step instead of in the ranked lists. */
+  featured?: boolean;
 }
 
 export const SOLUTIONS_DISCLAIMER =
@@ -91,7 +93,7 @@ export const SOLUTIONS: Solution[] = [
     nature: "workflow",
     requirements: [
       "Confirm SpotOn POS integration is available for this merchant",
-      "Separate MarginEdge subscription and onboarding",
+      "Separate MarginEdge account and onboarding",
       "Requires consistent invoice and recipe data entry",
     ],
     link: { url: "https://www.marginedge.com", status: "vendor_home" },
@@ -111,7 +113,7 @@ export const SOLUTIONS: Solution[] = [
     nature: "workflow",
     requirements: [
       "Confirm SpotOn POS integration availability and scope",
-      "Separate Restaurant365 subscription; accounting migration effort",
+      "Separate Restaurant365 account; accounting migration effort",
     ],
     link: { url: "https://www.restaurant365.com", status: "vendor_home" },
     serviceModels: ALL,
@@ -183,7 +185,7 @@ export const SOLUTIONS: Solution[] = [
     nature: "workflow",
     requirements: [
       "Confirm SpotOn sales-data integration is available for this merchant",
-      "Separate 7shifts subscription",
+      "Separate 7shifts account and onboarding",
     ],
     link: { url: "https://www.7shifts.com", status: "vendor_home" },
     serviceModels: ALL,
@@ -207,26 +209,31 @@ export const SOLUTIONS: Solution[] = [
     attributeBoost: ["counter_service"],
   },
   {
-    id: "spoton-profit-assist",
-    name: "SpotOn Profit Assist",
+    id: "sam",
+    name: "Sam (SpotOn Assistant Manager)",
     kind: "spoton",
-    objectives: ["visibility", "food"],
-    problem: "Management cannot quickly see where P&L opportunities sit across locations.",
+    objectives: ["visibility"],
+    problem: "Owners and managers need quick answers about sales, labor and costs without digging through reports.",
     mechanism: [
-      "P&L analysis",
-      "Accounting integrations with QuickBooks Online, Xero and Restaurant365",
-      "Cost anomaly identification",
-      "Multi-location performance comparisons",
-      "Helps management identify and measure opportunities; does not itself guarantee cost reductions",
+      "SpotOn's first AI agent, part of SpotOn Intelligence",
+      "Ask questions about sales, labor, purchasing and costs in plain language and get answers in seconds",
+      "Custom reports built on request, from the dashboard, the mobile app or by text",
+      "Draws on SpotOn sales, labor, kitchen display and guest data plus third-party sources such as local events, weather and reviews",
     ],
-    costDriver: "Cost anomalies visible in the P&L (insight only)",
+    costDriver: "Seeing where costs are climbing and where schedules and purchasing don't match demand (insight, not a direct cost lever)",
     influences: "insight",
     nature: "insight",
-    requirements: ["Connected accounting system (QuickBooks Online, Xero or Restaurant365)", "Confirm availability"],
-    link: { url: SPOTON, status: "vendor_home" },
+    requirements: [
+      "Used from the SpotOn dashboard, mobile app or by text",
+      "Currently available in English and Spanish",
+      "Confirm availability for this merchant",
+    ],
+    // Public help article, as provided by SpotOn; not opened from the build environment.
+    link: { url: "https://help.spoton.com/space/SK/5631180809/Sam:+Your+Conversational+AI+Assistant+%7C+SpotOn+Dashboard", status: "provided_link" },
     serviceModels: ALL,
     poorFitReason: "",
-    attributeBoost: ["multi_location"],
+    attributeBoost: [],
+    featured: true,
   },
   {
     id: "spoton-reporting",

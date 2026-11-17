@@ -12,8 +12,8 @@
  */
 import type { AttributeId, ConceptId, ServiceModel } from "@/config/concepts";
 
-export type MetricKind = "relative_change" | "absolute_amount" | "duration";
-export type MetricUnit = "percent_relative" | "usd_per_week" | "days";
+export type MetricKind = "relative_change" | "absolute_amount" | "duration" | "percent_unspecified";
+export type MetricUnit = "percent_relative" | "usd_per_week" | "usd_total" | "percent_unspecified" | "days";
 export type MetricMeasure = "cogs" | "labor_cost" | "labor_savings" | "sales" | "tip_payout_time";
 export type EvidenceLevel = "direct" | "indirect" | "none";
 
@@ -49,6 +49,8 @@ export interface CaseStudy {
   /** Confirmed integration partners only. */
   partners: string[];
   metric: CaseMetric;
+  /** Further published results from the same source, shown beneath the main one. */
+  additionalMetrics?: CaseMetric[];
   sourceUrl: string;
   verification: { status: "unverified" | "requester_confirmed" | "verified"; verifiedOn: string | null; note: string };
   outcomes: { food: EvidenceLevel; labor: EvidenceLevel; revenue: EvidenceLevel };
@@ -84,7 +86,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     focusTags: ["food costs", "profitability"],
     challenge: null,
     improvement: null,
-    products: [{ name: "SpotOn Profit Assist", solutionId: "spoton-profit-assist" }],
+    products: [{ name: "SpotOn Profit Assist" }],
     partners: [],
     metric: { wording: "9% decrease in COGS", wordingStatus: "as_provided", kind: "relative_change", unit: "percent_relative", measure: "cogs", direction: "decrease", min: 9 },
     sourceUrl: "https://www.spoton.com/success-stories/butcher-paper-bbq/",
@@ -106,7 +108,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     challenge: null,
     improvement: null,
     products: [
-      { name: "SpotOn Profit Assist", solutionId: "spoton-profit-assist" },
+      { name: "SpotOn Profit Assist" },
       { name: "SpotOn Restaurant" },
     ],
     partners: [],
@@ -206,6 +208,43 @@ export const CASE_STUDIES: CaseStudy[] = [
     limitations: [...COMMON_LIMITS, "Exact products and the starting labor baseline are not captured; a 20% relative change can be a small or large number of points."],
   },
   {
+    id: "weinbergers-deli",
+    name: "Weinberger's Deli",
+    conceptLabel: "Deli",
+    // Classified as cafe/bakery for matching; the release does not state the service style.
+    concepts: ["cafe_bakery"],
+    attributes: [],
+    serviceModel: "mixed",
+    locationText: "Grapevine, TX",
+    locations: null,
+    focusTags: ["food costs", "labor", "profitability"],
+    challenge:
+      "An independent that expanded this year. Labor was running at 44% of sales, food cost at 30% and prime cost at 74%, against a goal of 63%.",
+    improvement:
+      "Uses SpotOn Assistant Manager for daily scheduling, food cost comparisons and sales predictions he used to piece together manually. It surfaced rising food costs, waste and overstaffing.",
+    products: [{ name: "SpotOn Assistant Manager (Sam)", solutionId: "sam" }],
+    partners: [],
+    metric: { wording: "Saved more than $124,000", wordingStatus: "as_provided", kind: "absolute_amount", unit: "usd_total", measure: "labor_savings", direction: "decrease", min: 124000 },
+    additionalMetrics: [
+      { wording: "Lowered food costs by 3.5%", wordingStatus: "as_provided", kind: "percent_unspecified", unit: "percent_unspecified", measure: "cogs", direction: "decrease", min: 3.5 },
+    ],
+    // Public SpotOn press release (Business Wire, Nov 17, 2026). Text supplied by the requester.
+    sourceUrl: "https://www.businesswire.com/news/home/20261117137877/en/SpotOn-Introduces-SpotOn-Assistant-Manager-an-AI-Agent-that-Helped-a-Texas-Restaurant-Save-More-than-%24124000",
+    verification: {
+      status: "requester_confirmed",
+      verifiedOn: "2026-11-17",
+      note: "Taken from the SpotOn press release text supplied by the requester; not checked against the live page. Not independently checked.",
+    },
+    // Food cost is a measured result. The release says overstaffing was addressed but gives no separate labor figure.
+    outcomes: { food: "direct", labor: "indirect", revenue: "none" },
+    evidenceClass: "direct_cost_outcome",
+    limitations: [
+      ...COMMON_LIMITS,
+      "The $124,000 is described as saved by addressing rising food costs, waste and overstaffing; the release does not split it by cost or state the period.",
+      "Reported by SpotOn in a press release, with the owner quoted.",
+    ],
+  },
+  {
     id: "big-lake-brewing",
     name: "Big Lake Brewing",
     conceptLabel: "Brewery / Taproom",
@@ -260,6 +299,10 @@ export function metricQualifier(m: CaseMetric): string {
     return "A sales increase reported as a relative %. It is not a cost saving and is not counted as a prime-cost reduction.";
   if (m.kind === "relative_change")
     return "Reported as a relative change (%), not percentage points of net sales. Without the published baseline it cannot be converted into this prospect's prime-cost improvement.";
+  if (m.kind === "percent_unspecified")
+    return "The release says 3.5% but not whether that is points of sales or a relative reduction (it gives a 30% starting food cost), so it is not converted into this prospect's model.";
+  if (m.unit === "usd_total")
+    return "A total dollar figure. The period it covers and how it was measured are not stated; one restaurant, not scaled to this prospect.";
   if (m.kind === "absolute_amount")
     return "A dollar figure at that restaurant's own scale; not scaled to this prospect.";
   return "An administrative timing result, not a measured cost saving.";
