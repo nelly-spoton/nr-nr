@@ -10,6 +10,7 @@ import { GhostButton, LimeButton, SecondaryButton } from "@/components/marginlab
 import { Badge, ContentCard, SectionHeader } from "@/components/marginlab/Cards";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
 import { StepFooter } from "@/components/marginlab/StepFooter";
+import { FormField, TextField } from "@/components/marginlab/Fields";
 import { StepHeader } from "@/components/marginlab/StepHeader";
 import { requiredStatus } from "@/lib/steps";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
@@ -36,7 +37,7 @@ function Row({ k, v, strong }: { k: string; v: string; strong?: boolean }) {
 }
 
 export default function SummaryPage() {
-  const { scenario: s, result: r, reset, saved, saveNamed, loadSavedScenario, deleteSaved } = useScenario();
+  const { scenario: s, result: r, update, reset, saved, saveNamed, loadSavedScenario, deleteSaved } = useScenario();
   const [copied, setCopied] = useState<"idle" | "ok" | "fail">("idle");
   const [today, setToday] = useState("");
   useEffect(() => setToday(new Date().toLocaleDateString("en-US", { dateStyle: "long" })), []);
@@ -100,6 +101,12 @@ export default function SummaryPage() {
       <span aria-live="polite" className="sr-only">
         {copied === "ok" ? "Summary copied to clipboard" : copied === "fail" ? "Could not copy" : ""}
       </span>
+
+      <div className="no-print mb-4 max-w-md">
+        <FormField label="Restaurant name" htmlFor="name" hint="Shown at the top of the summary.">
+          <TextField id="name" value={s.restaurantName} onChange={(v) => update({ restaurantName: v })} placeholder="e.g. Harbor Grill" />
+        </FormField>
+      </div>
 
       <article className="print-page rounded-card border border-rule bg-surface p-5 shadow-card sm:p-8" aria-label="Printable operator summary">
         <header className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-ink pb-3">

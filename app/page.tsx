@@ -1,14 +1,12 @@
 "use client";
 import { Minus, Plus } from "lucide-react";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { CONCEPTS, type ConceptId } from "@/config/concepts";
 import { AttributeChips } from "@/components/marginlab/ConceptProfile";
 import { Badge, Callout, ContentCard } from "@/components/marginlab/Cards";
-import { Collapsible } from "@/components/marginlab/Collapsible";
-import { FinancialHealth } from "@/components/marginlab/FinancialHealth";
 import { FocusPicker } from "@/components/marginlab/FocusPicker";
-import { FormField, NumberField, SegmentedControl, SelectField, TextField } from "@/components/marginlab/Fields";
+import { FormField, NumberField, SegmentedControl, SelectField } from "@/components/marginlab/Fields";
 import { RequiredChecklist } from "@/components/marginlab/RequiredChecklist";
 import { ResultsPanel } from "@/components/marginlab/ResultsPanel";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
@@ -34,8 +32,6 @@ function Section({ title, required, children }: { title: string; required?: bool
 
 export default function Step1Page() {
   const { scenario: s, result: r, update, issues, reset, loadExample } = useScenario();
-  const [moreOpen, setMoreOpen] = useState(false);
-  const [compareOpen, setCompareOpen] = useState(false);
   const st = requiredStatus(s, r);
   // A missing required answer is shown by the checklist; only real errors (e.g. 120%) show on the field.
   const err = (f: string) => {
@@ -85,6 +81,12 @@ export default function Step1Page() {
                   </SecondaryButton>
                 </div>
               </FormField>
+              <details className="rounded-ctl border border-rule bg-surface-2 p-3 text-sm sm:col-span-2" open={s.attributes.length > 0 ? true : undefined}>
+                <summary className="cursor-pointer font-semibold text-link">Describe it for sharper recommendations (optional)</summary>
+                <div className="mt-3">
+                  <AttributeChips />
+                </div>
+              </details>
             </div>
           </Section>
 
@@ -104,6 +106,76 @@ export default function Step1Page() {
                 <NumberField id="labor" value={s.laborPct} onChange={(v) => update({ laborPct: v })} suffix="%" invalid={!!err("laborPct")} />
               </FormField>
 
+              <details className="rounded-ctl border border-rule bg-surface-2 p-3 text-sm sm:col-span-2" open={isGpv || group ? true : undefined}>
+                <summary className="cursor-pointer font-semibold text-link">Only know card volume (GPV) or a group total?</summary>
+                <div className="mt-3 flex flex-col gap-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField label="The sales figure above covers" htmlFor="scope-group">
+                      <SegmentedControl
+                        label="Volume applies to"
+                        value={s.volumeScope}
+                        onChange={(v) => update({ volumeScope: v })}
+                        options={[
+                          { value: "perLocation", label: "Each location" },
+                          { value: "group", label: "The whole group" },
+                        ]}
+                      />
+                    </FormField>
+                    <FormField label="The figure is" htmlFor="mode-group">
+                      <SegmentedControl
+                        label="Sales figure type"
+                        value={s.salesMode}
+                        onChange={(v) => update({ salesMode: v })}
+                        options={[
+                          { value: "net", label: "Net sales", sub: "preferred" },
+                          { value: "gpv", label: "GPV", sub: "card volume" },
+                        ]}
+                      />
+                    </FormField>
+                    {!isGpv && (
+                      <FormField label="How sure are you of it?" htmlFor="conf-group">
+                        <SegmentedControl
+                          label="Confidence in the sales figure"
+                          value={s.salesConfidence}
+                          onChange={(v) => update({ salesConfidence: v })}
+                          options={[
+                            { value: "estimated", label: "Estimate" },
+                            { value: "verified", label: "Verified" },
+                          ]}
+                        />
+                      </FormField>
+                    )}
+                  </div>
+                  {isGpv && (
+                    <div className="flex flex-col gap-4">
+                      <Callout>GPV can include tax and tip and leave out cash, so it isn&apos;t net sales. Give a net-sales estimate or your own conversion factor. Results stay preliminary.</Callout>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <FormField label="Convert GPV using" htmlFor="basis-group">
+                          <SegmentedControl
+                            label="Convert GPV using"
+                            value={s.gpv.basis}
+                            onChange={(v) => update({ gpv: { ...s.gpv, basis: v } })}
+                            options={[
+                              { value: "netEstimate", label: "Net-sales estimate" },
+                              { value: "factor", label: "Conversion factor" },
+                            ]}
+                          />
+                        </FormField>
+                        {s.gpv.basis === "netEstimate" ? (
+                          <FormField label="Net-sales estimate ($/month)" htmlFor="gpv-net" error={err("gpv.netEstimate")} hint="Same coverage as the GPV above.">
+                            <NumberField id="gpv-net" value={s.gpv.netEstimate} prefix="$" invalid={!!err("gpv.netEstimate")} onChange={(v) => update({ gpv: { ...s.gpv, netEstimate: v } })} />
+                          </FormField>
+                        ) : (
+                          <FormField label="GPV-to-net-sales factor" htmlFor="gpv-factor" error={err("gpv.conversionFactor")} hint="Your assumption, e.g. 0.85.">
+                            <NumberField id="gpv-factor" value={s.gpv.conversionFactor} invalid={!!err("gpv.conversionFactor")} onChange={(v) => update({ gpv: { ...s.gpv, conversionFactor: v } })} />
+                          </FormField>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </details>
+
               <AlcoholQuestion />
             </div>
           </Section>
@@ -112,95 +184,14 @@ export default function Step1Page() {
             <FocusPicker />
           </Section>
 
-          <Collapsible title="More details" tag="Optional" open={moreOpen} onToggle={() => setMoreOpen((o) => !o)}>
-            <div className="flex flex-col gap-6">
-              <FormField label="Restaurant name" htmlFor="name" hint="Appears on the summary.">
-                <TextField id="name" value={s.restaurantName} onChange={(v) => update({ restaurantName: v })} placeholder="e.g. Harbor Grill" />
-              </FormField>
-
-              <AttributeChips />
-
-              <fieldset className="flex flex-col gap-4">
-                <legend className="mb-1 text-sm font-semibold">About the sales figure</legend>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField label="The figure covers" htmlFor="scope-group">
-                    <SegmentedControl
-                      label="Volume applies to"
-                      value={s.volumeScope}
-                      onChange={(v) => update({ volumeScope: v })}
-                      options={[
-                        { value: "perLocation", label: "Each location" },
-                        { value: "group", label: "The whole group" },
-                      ]}
-                    />
-                  </FormField>
-                  <FormField label="The figure is" htmlFor="mode-group">
-                    <SegmentedControl
-                      label="Sales figure type"
-                      value={s.salesMode}
-                      onChange={(v) => update({ salesMode: v })}
-                      options={[
-                        { value: "net", label: "Net sales", sub: "preferred" },
-                        { value: "gpv", label: "GPV", sub: "card volume" },
-                      ]}
-                    />
-                  </FormField>
-                  {!isGpv && (
-                    <FormField label="How sure are you of it?" htmlFor="conf-group">
-                      <SegmentedControl
-                        label="Confidence in the sales figure"
-                        value={s.salesConfidence}
-                        onChange={(v) => update({ salesConfidence: v })}
-                        options={[
-                          { value: "estimated", label: "Estimate" },
-                          { value: "verified", label: "Verified" },
-                        ]}
-                      />
-                    </FormField>
-                  )}
-                </div>
-                {isGpv && (
-                  <div className="flex flex-col gap-4">
-                    <Callout>GPV can include tax and tip and leave out cash, so it isn&apos;t net sales. Give a net-sales estimate or your own conversion factor. Results stay preliminary.</Callout>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <FormField label="Convert GPV using" htmlFor="basis-group">
-                        <SegmentedControl
-                          label="Convert GPV using"
-                          value={s.gpv.basis}
-                          onChange={(v) => update({ gpv: { ...s.gpv, basis: v } })}
-                          options={[
-                            { value: "netEstimate", label: "Net-sales estimate" },
-                            { value: "factor", label: "Conversion factor" },
-                          ]}
-                        />
-                      </FormField>
-                      {s.gpv.basis === "netEstimate" ? (
-                        <FormField label="Net-sales estimate ($/month)" htmlFor="gpv-net" error={err("gpv.netEstimate")} hint="Same coverage as the GPV above.">
-                          <NumberField id="gpv-net" value={s.gpv.netEstimate} prefix="$" invalid={!!err("gpv.netEstimate")} onChange={(v) => update({ gpv: { ...s.gpv, netEstimate: v } })} />
-                        </FormField>
-                      ) : (
-                        <FormField label="GPV-to-net-sales factor" htmlFor="gpv-factor" error={err("gpv.conversionFactor")} hint="Your assumption, e.g. 0.85.">
-                          <NumberField id="gpv-factor" value={s.gpv.conversionFactor} invalid={!!err("gpv.conversionFactor")} onChange={(v) => update({ gpv: { ...s.gpv, conversionFactor: v } })} />
-                        </FormField>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </fieldset>
-            </div>
-          </Collapsible>
-
-          <Collapsible title="See how you compare with industry medians" tag="Optional" open={compareOpen} onToggle={() => setCompareOpen((o) => !o)}>
-            <FinancialHealth embedded />
-          </Collapsible>
-
-          <div className="lg:hidden">
-            <RequiredChecklist className="mb-3" />
+          <div className="flex flex-col gap-3 lg:hidden">
+            <ResultsPanel />
+            <RequiredChecklist />
             <StepFooter nextHref="/solutions" nextLabel="Next: Solutions" disabled={!st.complete} hint="Finish the required questions first." />
           </div>
         </div>
 
-        <aside>
+        <aside className="hidden lg:block">
           <div className="flex flex-col gap-3 lg:sticky lg:top-[72px]">
             <ResultsPanel />
             <div className="hidden lg:block">

@@ -8,6 +8,7 @@ import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
 import { Badge } from "@/components/marginlab/Cards";
 import { Collapsible } from "@/components/marginlab/Collapsible";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
+import { FinancialHealth } from "@/components/marginlab/FinancialHealth";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { SolutionCard } from "@/components/marginlab/SolutionCard";
 import { StepFooter } from "@/components/marginlab/StepFooter";
@@ -20,6 +21,7 @@ export default function Step2Page() {
   const { scenario: s, result: r } = useScenario();
   const [more, setMore] = useState(false);
   const [no, setNo] = useState(false);
+  const [cmp, setCmp] = useState(false);
   const st = requiredStatus(s, r);
 
   if (!st.complete)
@@ -92,6 +94,12 @@ export default function Step2Page() {
         <p className="mb-3 text-sm text-muted">Published results from other restaurants. Not predictions, and they don&apos;t change your numbers.</p>
         <CaseStudyGrid matches={rep.matches} compact />
       </section>
+
+      <div className="mb-6">
+        <Collapsible title="How you compare with industry medians" tag="Optional" open={cmp} onToggle={() => setCmp((o) => !o)}>
+          <FinancialHealth embedded />
+        </Collapsible>
+      </div>
 
       <CoachingPanel />
 
