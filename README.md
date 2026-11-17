@@ -40,6 +40,8 @@ Or via CLI: `npx vercel` (preview) / `npx vercel --prod`.
 1. **Your restaurant.** Six required answers: restaurant type, number of locations, monthly sales, food & beverage cost, labor cost, and what to
    improve (food, labor or both, and by how much). The estimated annual opportunity updates live. Everything else (names, tags, GPV,
    food/alcohol split, industry comparison) is optional and tucked away.
+   Once those are answered, **Where you stand** shows food, labor and prime cost on a scale against the NRA medians (marker, median tick,
+   shaded "typical" band), with a one-line headline of the largest difference.
 2. **Solutions.** Recommendations and similar-restaurant results are built from the Step 1 answers and change when they change.
 3. **Summary.** A one-page summary to print, save as a PDF, or copy.
 
