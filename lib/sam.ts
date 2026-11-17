@@ -1,7 +1,7 @@
 /**
  * Text for the Sam (SpotOn Assistant Manager) spotlight, tied to the Step 1 focus.
- * Public-facing only: it makes no claim about data sources, plans, users or commercial terms, and it never
- * promises what an answer will show. Sam is described as an insight tool, not a cost lever.
+ * Public-facing only: it uses statements from SpotOn's press release, makes no claim about plans, users
+ * or commercial terms, and never promises what an answer will show. Sam is described as an insight tool.
  */
 import type { Focus } from "./types";
 
@@ -10,10 +10,20 @@ export interface SamFit {
   detail: string;
 }
 
+/** Questions the announcement lists as common requests. */
+export const SAM_EXAMPLE_QUESTIONS = [
+  "How are sales today?",
+  "How did this weekend compare with last weekend?",
+  "Who has the highest tip average by server?",
+];
+
 export function samFit(focus: Focus): SamFit {
+  const labor = "SpotOn describes Sam as showing where schedules don't match demand";
+  const food = "SpotOn describes Sam as showing where costs are climbing and where purchasing doesn't match demand";
   const what = focus === "labor" ? "labor" : focus === "food" ? "food & beverage cost" : "food and labor";
+  const claim = focus === "labor" ? labor : focus === "food" ? food : `${food}, and where schedules don't match demand`;
   return {
     headline: `You are looking at ${what}.`,
-    detail: `Sam can help an owner or manager see what is changing in the numbers behind ${focus === "both" ? "them" : "it"} by asking in plain language. It is an insight tool: it helps you see, and does not cut cost by itself.`,
+    detail: `${claim}. It is an insight tool: it helps you see, and does not cut cost by itself.`,
   };
 }
