@@ -101,6 +101,8 @@ export interface Scenario {
   /** Quick-mode combined food & beverage COGS % of net sales. */
   foodPct: NumField;
   laborPct: NumField;
+  /** "Does the restaurant sell alcohol?" Yes → split food and alcohol (or enter one combined %). */
+  sellsAlcohol: boolean;
   costMode: CostMode;
   detailed: DetailedCogs;
   /** "Near peer median" window in percentage points (a display convention, not a statistical range). */

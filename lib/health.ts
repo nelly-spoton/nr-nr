@@ -73,7 +73,7 @@ export function buildHealth(s: Scenario, r: ScenarioResult): HealthModel {
   const detail = r.cogs.detail;
   const profit = computeProfit(s, r);
   const sellsAlcohol = !!detail?.sellsAlcohol;
-  const bevHeavy = profile.attributes.includes("beverage_heavy");
+  const bevHeavy = profile.attributes.includes("beverage_heavy") || (s.costMode === "quick" && s.sellsAlcohol);
   const annualPerLoc = r.sales.annualPerLocation;
   const comparable = new Set<string>();
 

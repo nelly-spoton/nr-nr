@@ -50,6 +50,7 @@ export function exampleScenario(): Scenario {
     gpv: { basis: "netEstimate", netEstimate: null, conversionFactor: null },
     foodPct: 32.0,
     laborPct: 36.0,
+    sellsAlcohol: false,
     costMode: "quick",
     detailed: emptyDetailed(),
     nearWindowPts: 1,
@@ -148,6 +149,10 @@ export function hydrateScenario(raw: unknown): Scenario {
     focus: r.focus === "food" || r.focus === "labor" || r.focus === "both" ? r.focus : "both",
     level: typeof r.level === "number" && Number.isFinite(r.level) ? r.level : 1,
     improvementMode: r.improvementMode === "guided" ? "guided" : "custom",
+    sellsAlcohol:
+      typeof r.sellsAlcohol === "boolean"
+        ? r.sellsAlcohol
+        : r.costMode === "detailed" && (typeof r.detailed?.alcoholSharePct === "number" ? r.detailed.alcoholSharePct : 0) > 0,
     costMode: r.costMode === "detailed" ? "detailed" : "quick",
     detailed: { ...emptyDetailed(), ...(r.detailed ?? {}) },
     nearWindowPts: nw,

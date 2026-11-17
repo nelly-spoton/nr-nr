@@ -6,11 +6,11 @@ import { NRA_SOURCE } from "@/config/benchmarks";
 import { PROOF_DISCLAIMER } from "@/config/caseStudies";
 import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
-import { GhostButton, PrimaryButton, SecondaryButton } from "@/components/marginlab/Buttons";
+import { GhostButton, LimeButton, SecondaryButton } from "@/components/marginlab/Buttons";
 import { Badge, ContentCard, SectionHeader } from "@/components/marginlab/Cards";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
 import { StepFooter } from "@/components/marginlab/StepFooter";
-import { StepProgress } from "@/components/marginlab/StepProgress";
+import { StepHeader } from "@/components/marginlab/StepHeader";
 import { requiredStatus } from "@/lib/steps";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { BAND_LABEL, buildHealth, nearNote, PEER_LABEL } from "@/lib/health";
@@ -74,30 +74,29 @@ export default function SummaryPage() {
   if (!requiredStatus(s, r).complete)
     return (
       <>
-        <StepProgress />
-        <h1 className="mb-4 text-2xl font-semibold tracking-tight sm:text-3xl">Your summary</h1>
+        <StepHeader step={3} title="Your summary" subtitle="A one-page summary of the restaurant and the opportunity." />
         <EmptyStep what="The summary" />
       </>
     );
 
   return (
     <>
-      <StepProgress />
-      <div className="no-print mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Your summary</h1>
-          <p className="mt-1 text-sm text-muted">One page to print, save as a PDF, or copy. Nothing is uploaded.</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <PrimaryButton onClick={() => window.print()}>
-            <Printer className="h-4 w-4" aria-hidden /> Print / Save PDF
-          </PrimaryButton>
-          <SecondaryButton onClick={copy}>
-            {copied === "ok" ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
-            {copied === "ok" ? "Copied" : copied === "fail" ? "Copy failed" : "Copy summary"}
-          </SecondaryButton>
-        </div>
-      </div>
+      <StepHeader
+        step={3}
+        title="Your summary"
+        subtitle="One page to print, save as a PDF, or copy. Nothing is uploaded."
+        actions={
+          <>
+            <LimeButton onClick={() => window.print()}>
+              <Printer className="h-4 w-4" aria-hidden /> Print / Save PDF
+            </LimeButton>
+            <SecondaryButton onClick={copy}>
+              {copied === "ok" ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
+              {copied === "ok" ? "Copied" : copied === "fail" ? "Copy failed" : "Copy summary"}
+            </SecondaryButton>
+          </>
+        }
+      />
       <span aria-live="polite" className="sr-only">
         {copied === "ok" ? "Summary copied to clipboard" : copied === "fail" ? "Could not copy" : ""}
       </span>

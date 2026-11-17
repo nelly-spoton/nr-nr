@@ -53,7 +53,7 @@ export function ScenarioProvider({ children }: { children: ReactNode }) {
     const entry: SavedScenario = {
       id: `${Date.now()}`,
       savedAt: new Date().toISOString(),
-      scenario: { ...scenario, scenarioName: scenario.scenarioName.trim() || "Untitled scenario" },
+      scenario: { ...scenario, scenarioName: scenario.scenarioName.trim() || scenario.restaurantName.trim() || "Untitled scenario" },
     };
     setSaved((prev) => {
       const next = [entry, ...prev].slice(0, 25);

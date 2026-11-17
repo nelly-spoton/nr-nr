@@ -4,9 +4,9 @@ import type { Scenario } from "./types";
 import { validateScenario } from "./validate";
 
 export const STEPS = [
-  { id: "restaurant", href: "/", n: 1, label: "Your restaurant" },
-  { id: "solutions", href: "/solutions", n: 2, label: "Solutions" },
-  { id: "summary", href: "/summary", n: 3, label: "Summary" },
+  { id: "restaurant", href: "/", n: 1, label: "Your restaurant", short: "Restaurant" },
+  { id: "solutions", href: "/solutions", n: 2, label: "Solutions", short: "Solutions" },
+  { id: "summary", href: "/summary", n: 3, label: "Summary", short: "Summary" },
 ] as const;
 
 export interface RequiredItem {
