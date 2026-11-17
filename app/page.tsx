@@ -12,6 +12,7 @@ import { ResultsPanel } from "@/components/marginlab/ResultsPanel";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { StepFooter } from "@/components/marginlab/StepFooter";
 import { StepHeader } from "@/components/marginlab/StepHeader";
+import { WhereYouStand } from "@/components/marginlab/WhereYouStand";
 import { AlcoholQuestion } from "@/components/marginlab/AlcoholQuestion";
 import { SecondaryButton } from "@/components/marginlab/Buttons";
 import { safeLocations } from "@/lib/calc";
@@ -183,6 +184,8 @@ export default function Step1Page() {
           <Section title="What to improve" required>
             <FocusPicker />
           </Section>
+
+          {st.complete && <WhereYouStand />}
 
           <div className="flex flex-col gap-3 lg:hidden">
             <ResultsPanel />
