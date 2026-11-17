@@ -209,7 +209,7 @@ describe("recommendations", () => {
     expect(recs.map((r) => r.solution.id).sort()).toEqual([...ids].sort());
   });
   it("insight products land in the reporting tier, never 'highest'", () => {
-    for (const r of recommendSolutions(prof({}))) if (r.solution.nature === "insight") expect(r.tier).toBe("visibility");
+    for (const r of recommendSolutions(prof({}))) if (r.solution.nature !== "workflow") expect(r.tier).toBe("visibility");
   });
   it("highest tier is capped and tied to the selected levers", () => {
     const labor = recommendSolutions(prof({ foodImprovementPts: 0, laborImprovementPts: 1 }));

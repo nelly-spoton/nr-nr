@@ -122,8 +122,38 @@ describe("public information only", () => {
     for (const [f, text] of Object.entries(src)) for (const re of banned) expect(text, `${f} ${re}`).not.toMatch(re);
   });
 
-  it("does not recommend Profit Assist or Profit AI", () => {
-    expect(SOLUTIONS.map((s) => s.id)).not.toContain("spoton-profit-assist");
+  it("lists the AI menu assistant as an efficiency tool with no cost claim", () => {
+    const m = SOLUTIONS.find((s) => s.id === "spoton-ai-menu-assistant")!;
+    expect(m.nature).toBe("efficiency");
+    expect(m.link.url).toBe("https://www.spoton.com/solutions/ai-menu-assistant/");
+    expect(m.mechanism.join(" ")).not.toMatch(/sav|cut|reduc|margin|profit/i);
+  });
+
+  it("lists Mobile Pay & Review without fee claims, as a guest-experience tool", () => {
+    const m = SOLUTIONS.find((s) => s.id === "spoton-mobile-pay-review")!;
+    expect(m.link.url).toBe("https://www.spoton.com/solutions/mobile-pay-and-review/");
+    expect(m.nature).toBe("efficiency");
+    expect(JSON.stringify(m)).not.toMatch(/software fees|no extra|RPOS/i);
+  });
+
+  it("lists Tip Management, linked to its two published customer stories", () => {
+    const m = SOLUTIONS.find((s) => s.id === "spoton-tip-management")!;
+    expect(m.link.url).toBe("https://www.spoton.com/solutions/tip-management/");
+    expect(m.nature).toBe("efficiency");
+    expect(m.claims!.join(" ")).toMatch(/Coco's Crush Bar/);
+    expect(m.claims!.join(" ")).toMatch(/Mudpuppy/);
+  });
+
+  it("lists Tip Access without any fee, cost or regulatory-footer text", () => {
+    const m = SOLUTIONS.find((s) => s.id === "spoton-tip-access")!;
+    expect(m.link.url).toBe("https://www.spoton.com/solutions/earned-tip-access/");
+    expect(JSON.stringify(m)).not.toMatch(/\bfee|no extra|low cost|1%|\$25|FDIC|Sutton/i);
+    expect(m.requirements.join(" ")).toMatch(/eligibility and state availability/);
+  });
+
+  it("lists Profit Assist from its public product page, and never Profit AI", () => {
+    const pa = SOLUTIONS.find((s) => s.id === "spoton-profit-assist")!;
+    expect(pa.link.url).toBe("https://www.spoton.com/solutions/profitability-analysis-software/");
     expect(SOLUTIONS.map((s) => s.id)).not.toContain("spoton-profit-ai");
   });
 

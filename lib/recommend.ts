@@ -21,6 +21,12 @@ export interface Recommendation {
   proofCaseIds: string[];
 }
 
+const EFFICIENCY_REASON: Partial<Record<Solution["influences"], string>> = {
+  efficiency: "Speeds up menu changes. It is not a direct cost lever.",
+  guest: "Targets checkout speed and guest reviews. It is not a direct cost lever.",
+  admin: "Targets the admin work of tips and payouts. It is not a direct cost lever.",
+};
+
 const TOP_N = 4;
 const HIGH_CUTOFF = 55;
 
@@ -36,6 +42,9 @@ export function recommendSolutions(p: Profile): Recommendation[] {
       const focus = p.foodPts > 0 && p.laborPts === 0 ? "food" : p.laborPts > 0 && p.foodPts === 0 ? "labor" : "both";
       const fit = samFit(focus);
       return { solution: s, tier: "visibility" as Tier, score: 0, reasons: [`${fit.headline} ${fit.detail}`], proofCaseIds: proof };
+    }
+    if (s.nature === "efficiency") {
+      return { solution: s, tier: "visibility" as Tier, score: 0, reasons: [EFFICIENCY_REASON[s.influences] ?? "Saves time. It is not a direct cost lever."], proofCaseIds: proof };
     }
     if (s.nature === "insight") {
       return { solution: s, tier: "visibility" as Tier, score: 0, reasons: ["Provides visibility to find and measure opportunities; it is not a direct cost lever."], proofCaseIds: proof };

@@ -40,7 +40,7 @@ export function SolutionCard({ rec }: { rec: Recommendation }) {
               <li key={m}>{m}</li>
             ))}
           </ul>
-          <p className="text-muted">Influences: {INFLUENCE_LABELS[x.influences]}. {x.nature === "workflow" ? "Changes a workflow." : "Gives visibility; not a direct cost lever."}</p>
+          <p className="text-muted">Influences: {INFLUENCE_LABELS[x.influences]}. {x.nature === "workflow" ? "Changes a workflow." : x.nature === "efficiency" ? "Saves time or speeds service; not a direct cost lever." : "Gives visibility; not a direct cost lever."}</p>
           {x.requirements.length > 1 && (
             <ul className="list-disc pl-5 text-muted">
               {x.requirements.map((m) => (
@@ -50,13 +50,24 @@ export function SolutionCard({ rec }: { rec: Recommendation }) {
           )}
           {x.examples && x.examples.length > 0 && (
             <div>
-              <p className="font-semibold">What operators ask</p>
+              <p className="font-semibold">{x.id === "sam" ? "What operators ask" : "Example requests"}</p>
               <ul className="list-disc pl-5">
                 {x.examples.map((q) => (
                   <li key={q}>“{q}”</li>
                 ))}
               </ul>
-              <p className="text-xs text-muted">Common requests listed in SpotOn&apos;s announcement. Not a promise of any particular answer.</p>
+              <p className="text-xs text-muted">Examples from SpotOn&apos;s own materials. Not a promise of any particular result.</p>
+            </div>
+          )}
+          {x.claims && x.claims.length > 0 && (
+            <div>
+              <p className="font-semibold">SpotOn reports</p>
+              <ul className="list-disc pl-5">
+                {x.claims.map((c) => (
+                  <li key={c}>{c}</li>
+                ))}
+              </ul>
+              <p className="text-xs text-muted">Not checked independently, and not a prediction for this restaurant.</p>
             </div>
           )}
           {rec.reasons.length > 1 && <p className="text-muted">Also: {rec.reasons.slice(1).join(" · ")}</p>}
