@@ -104,7 +104,7 @@ describe("Weinberger's Deli (from the public press release)", () => {
 });
 
 describe("public information only", () => {
-  const files = ["config/solutions.ts", "config/caseStudies.ts", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SamSpotlight.tsx", "components/marginlab/SolutionCard.tsx"];
+  const files = ["config/solutions.ts", "config/caseStudies.ts", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SolutionCard.tsx"];
   const src = Object.fromEntries(files.map((f) => [f, readFileSync(f, "utf8")]));
 
   it("never mentions pricing, in any solution or anywhere solutions are described", () => {
@@ -128,10 +128,8 @@ describe("public information only", () => {
   });
 
   it("the spotlight's numbers are the ones in the release", () => {
-    const spot = src["components/marginlab/SamSpotlight.tsx"]!;
-    for (const n of ["44%", "30%", "74%", "63%"]) expect(spot).toContain(n);
-    expect(spot).toMatch(/not a prediction for yours/);
-    expect(spot).toMatch(/doesn&apos;t say what period/);
+    const cases = src["config/caseStudies.ts"]!;
+    for (const n of ["44%", "30%", "74%", "63%"]) expect(cases).toContain(n);
   });
 
   it("the case-study library is the eight SpotOn success stories plus the public press release", () => {

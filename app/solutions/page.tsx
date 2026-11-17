@@ -10,7 +10,6 @@ import { Collapsible } from "@/components/marginlab/Collapsible";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
 import { FinancialHealth } from "@/components/marginlab/FinancialHealth";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
-import { SamSpotlight } from "@/components/marginlab/SamSpotlight";
 import { SolutionCard } from "@/components/marginlab/SolutionCard";
 import { StepFooter } from "@/components/marginlab/StepFooter";
 import { StepHeader } from "@/components/marginlab/StepHeader";
@@ -34,9 +33,9 @@ export default function Step2Page() {
     );
 
   const rep = buildReport(s, r);
-  const listed = rep.recs.filter((x) => !x.solution.featured);
-  const best = listed.filter((x) => x.tier === "highest");
-  const maybe = listed.filter((x) => x.tier === "additional" || x.tier === "visibility");
+  const listed = rep.recs;
+  const best = [...listed.filter((x) => x.tier === "highest"), ...listed.filter((x) => x.solution.featured && x.tier !== "highest")];
+  const maybe = listed.filter((x) => !best.includes(x) && (x.tier === "additional" || x.tier === "visibility"));
   const notFit = listed.filter((x) => x.tier === "not_recommended");
   const focus = FOCUS_OPTIONS.find((o) => o.value === s.focus)!.label;
 
@@ -52,8 +51,6 @@ export default function Step2Page() {
           <Link href="/" className="text-xs font-semibold text-link underline">Change answers</Link>
         </p>
       </div>
-
-      <SamSpotlight />
 
       <section aria-labelledby="best" className="mb-6">
         <h2 id="best" className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Best fit for you</h2>

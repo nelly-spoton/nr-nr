@@ -18,6 +18,7 @@ export function SolutionCard({ rec }: { rec: Recommendation }) {
       <header className="flex flex-wrap items-center gap-2">
         <h3 className="text-base font-semibold">{x.name}</h3>
         <Badge tone={x.kind === "partner" ? "brand" : "neutral"}>{x.kind === "partner" ? "Partner" : "SpotOn"}</Badge>
+        {x.featured && <Badge tone="brand">New</Badge>}
       </header>
       <p className="text-sm">{rec.reasons[0] ?? x.problem}</p>
       <dl className="grid gap-2 text-sm">
@@ -47,6 +48,17 @@ export function SolutionCard({ rec }: { rec: Recommendation }) {
               ))}
             </ul>
           )}
+          {x.examples && x.examples.length > 0 && (
+            <div>
+              <p className="font-semibold">What operators ask</p>
+              <ul className="list-disc pl-5">
+                {x.examples.map((q) => (
+                  <li key={q}>“{q}”</li>
+                ))}
+              </ul>
+              <p className="text-xs text-muted">Common requests listed in SpotOn&apos;s announcement. Not a promise of any particular answer.</p>
+            </div>
+          )}
           {rec.reasons.length > 1 && <p className="text-muted">Also: {rec.reasons.slice(1).join(" · ")}</p>}
           {proof.length > 0 && (
             <p>
@@ -66,6 +78,12 @@ export function SolutionCard({ rec }: { rec: Recommendation }) {
             {x.link.status === "verified_product_page" ? "Product page" : x.link.status === "provided_link" ? "Help article" : "Vendor site"} <ExternalLink className="h-3 w-3" aria-hidden />
             <span className="sr-only"> (opens in a new tab)</span>
           </a>
+          {x.moreLinks?.map((l) => (
+            <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-semibold text-link underline">
+              {l.label} <ExternalLink className="h-3 w-3" aria-hidden />
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          ))}
         </div>
       </details>
     </article>

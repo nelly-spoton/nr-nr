@@ -33,8 +33,12 @@ export interface Solution {
   poorFitReason: string;
   /** Attributes that make it more relevant. */
   attributeBoost: AttributeId[];
-  /** Shown as a spotlight on the Solutions step instead of in the ranked lists. */
+  /** New product: always listed under "Best fit" on the Solutions step, in the same card format as the rest, with a "New" tag. */
   featured?: boolean;
+  /** Example requests, shown under "More details". */
+  examples?: string[];
+  /** Extra public links shown under "More details". */
+  moreLinks?: { label: string; url: string }[];
 }
 
 export const SOLUTIONS_DISCLAIMER =
@@ -230,6 +234,11 @@ export const SOLUTIONS: Solution[] = [
     ],
     // Public help article, as provided by SpotOn; not opened from the build environment.
     link: { url: "https://help.spoton.com/space/SK/5631180809/Sam:+Your+Conversational+AI+Assistant+%7C+SpotOn+Dashboard", status: "provided_link" },
+    examples: ["How are sales today?", "How did this weekend compare with last weekend?", "Who has the highest tip average by server?"],
+    moreLinks: [
+      { label: "SpotOn Intelligence", url: "https://www.spoton.com/ai/" },
+      { label: "Maximize your insights with Sam", url: "https://help.spoton.com/space/SK/5774213606/Maximize+Your+Insights+with+Sam+%7C+SpotOn+Dashboard" },
+    ],
     serviceModels: ALL,
     poorFitReason: "",
     attributeBoost: [],
