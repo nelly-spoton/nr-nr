@@ -1,13 +1,13 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { computeScenario } from "@/lib/calc";
 import { applyGuided } from "@/lib/focus";
-import { matchCaseStudies } from "@/lib/matching";
 import { buildProfile } from "@/lib/profile";
 import { isIncluded, recommendSolutions } from "@/lib/recommend";
 import { samFit } from "@/lib/sam";
 import { blankScenario, exampleScenario } from "@/lib/scenario";
 import { buildSummaryText } from "@/lib/summary";
-import { CASE_BY_ID, CASE_STUDIES, metricQualifier } from "@/config/caseStudies";
+import { CASE_STUDIES } from "@/config/caseStudies";
 import { SOLUTIONS, SOLUTION_BY_ID } from "@/config/solutions";
 import type { Scenario } from "@/lib/types";
 
@@ -17,98 +17,65 @@ const recs = (s: Scenario) => recommendSolutions(buildProfile(s, computeScenario
 
 describe("Sam (SpotOn Assistant Manager)", () => {
   const sam = SOLUTION_BY_ID["sam"]!;
-  it("is one featured insight product with a help-article link and honest requirements", () => {
+  it("is one featured insight product with a public help-article link", () => {
     expect(sam.featured).toBe(true);
     expect(sam.nature).toBe("insight");
     expect(sam.influences).toBe("insight");
     expect(sam.link.url).toMatch(/^https:\/\/help\.spoton\.com\//);
     expect(sam.link.status).toBe("provided_link");
-    const req = sam.requirements.join(" ");
-    expect(req).toMatch(/owners and managers/i);
-    expect(req).toMatch(/inventory and accounting/i);
-    expect(req).toMatch(/pricing and availability/i);
+    expect(sam.costDriver).toMatch(/insight, not a direct cost lever/);
   });
-  it("is included in the summary by default, and the operator can still drop it", () => {
+  it("is included in the summary by default, and can still be dropped", () => {
     const r = recs(filled()).find((x) => x.solution.id === "sam")!;
     expect(isIncluded(r, {})).toBe(true);
     expect(isIncluded(r, { sam: false })).toBe(false);
     expect(buildSummaryText(exampleScenario(), computeScenario(exampleScenario()))).toContain("Sam (SpotOn Assistant Manager)");
   });
-  it("is an insight tool: it never claims to be a direct cost lever", () => {
-    expect(sam.costDriver).toMatch(/insight, not a direct cost lever/);
-    expect(JSON.stringify(sam)).not.toMatch(/guarantee|will save|reduces? (your )?(food|labor)/i);
-  });
-});
-
-describe("Profit AI and Profit Assist", () => {
-  it("Profit Assist is for existing merchants and points to Profit AI and Sam, for every concept", () => {
-    for (const concept of ["full_service", "fast_casual", "brewery_taproom", "cafe_bakery"] as const) {
-      const r = recs(filled({ concept })).find((x) => x.solution.id === "spoton-profit-assist")!;
-      expect(r.tier).toBe("not_recommended");
-      expect(r.exclusion).toMatch(/Profit AI and Sam/);
+  it("ties to the Step 1 focus without promising a result", () => {
+    expect(samFit("labor").headline).toMatch(/labor/);
+    expect(samFit("food").headline).toMatch(/food & beverage cost/);
+    expect(samFit("both").headline).toMatch(/food and labor/);
+    for (const f of ["food", "labor", "both"] as const) {
+      expect(samFit(f).detail).toMatch(/insight tool/);
+      expect(samFit(f).detail).toMatch(/does not cut cost by itself/);
     }
   });
-  it("Profit AI is offered as an insight product and flags beta availability", () => {
-    const r = recs(filled()).find((x) => x.solution.id === "spoton-profit-ai")!;
-    expect(r.tier).toBe("visibility");
-    expect(r.solution.requirements.join(" ")).toMatch(/beta/i);
-  });
-  it("older case studies that used Profit Assist still link to it", () => {
-    expect(CASE_BY_ID["butcher-paper-bbq"]!.products[0]!.solutionId).toBe("spoton-profit-assist");
-  });
 });
 
-describe("example questions follow what was entered", () => {
-  it("labor focus gets labor questions; food focus gets sales and menu questions", () => {
-    expect(samFit("labor").prompts.join(" ")).toMatch(/labor/i);
-    expect(samFit("labor").prompts.join(" ")).not.toMatch(/menu items/i);
-    expect(samFit("food").prompts.join(" ")).toMatch(/menu items/i);
-    expect(samFit("food").prompts.join(" ")).not.toMatch(/labor cost/i);
-    expect(samFit("both").prompts.length).toBeGreaterThanOrEqual(2);
-  });
-  it("every example is a question, and cost-of-goods caveats are stated when food is in scope", () => {
-    for (const f of ["food", "labor", "both"] as const) for (const p of samFit(f).prompts) expect(p.endsWith("?")).toBe(true);
-    expect(samFit("food").detail).toMatch(/inventory and accounting/i);
-    expect(samFit("both").detail).toMatch(/inventory and accounting/i);
-  });
-});
+describe("public information only", () => {
+  const files = ["config/solutions.ts", "config/caseStudies.ts", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SamSpotlight.tsx", "components/marginlab/SolutionCard.tsx"];
+  const src = Object.fromEntries(files.map((f) => [f, readFileSync(f, "utf8")]));
 
-describe("Weinberger's Deli", () => {
-  const c = CASE_BY_ID["weinbergers-deli"]!;
-  it("keeps the published wording and ties to Sam", () => {
-    expect(c.metric.wording).toBe("$2,000 a week saved in labor");
-    expect(c.additionalMetrics!.map((m) => m.wording)).toEqual(["3.5% lower food cost, 30% to 26.5%", "Done for the day at 5 pm, not 10 pm"]);
-    expect(c.products[0]!.solutionId).toBe("sam");
-    expect(c.concepts).toEqual(["cafe_bakery"]);
-    expect(c.outcomes).toMatchObject({ food: "direct", labor: "direct" });
+  it("never mentions pricing, in any solution or anywhere solutions are described", () => {
+    for (const [f, text] of Object.entries(src)) {
+      expect(text, f).not.toMatch(/\bpric(e|es|ing|ed)\b/i);
+      expect(text, f).not.toMatch(/subscription/i);
+      expect(text, f).not.toMatch(/\bfree\b/i);
+      expect(text, f).not.toMatch(/\b(cost|fee)s? (of|for) (the )?(product|software|license)/i);
+    }
+    expect(JSON.stringify(SOLUTIONS)).not.toMatch(/pric|subscription|\bfree\b|\bbeta\b/i);
   });
-  it("is labeled as taken from launch materials, not independently checked, and does not invent a challenge", () => {
-    expect(c.verification.note).toMatch(/not independently checked/i);
-    expect(c.verification.note).toMatch(/press release could not be opened/i);
-    expect(c.challenge).toBeNull();
-    expect(c.limitations.join(" ")).toMatch(/could not be opened/i);
-  });
-  it("food drop is qualified, never converted into this prospect's model", () => {
-    const q = metricQualifier(c.additionalMetrics![0]!);
-    expect(q).toMatch(/not captured/i);
-    expect(q).toMatch(/not applied to this prospect/i);
-    const s = filled({ concept: "cafe_bakery" });
-    const before = computeScenario(s);
-    matchCaseStudies(buildProfile(s, before));
-    expect(computeScenario(s)).toEqual(before);
-  });
-  it("is the lead example for a deli/cafe wanting both food and labor results", () => {
-    const m = matchCaseStudies(buildProfile(filled({ concept: "cafe_bakery", focus: "both" }), computeScenario(filled({ concept: "cafe_bakery", focus: "both" }))));
-    expect(m[0]!.study.id).toBe("weinbergers-deli");
-  });
-});
 
-describe("keeps internal-only launch material out of the public app", () => {
-  const all = JSON.stringify({ SOLUTIONS, CASE_STUDIES });
-  it("has no competitor comparison, internal pricing plans, launch logistics or channel names", () => {
-    for (const bad of [/Toast/i, /Lightspeed/i, /Squaremates/i, /Square AI/i, /Clover/i, /2027/, /free forever/i, /sell sheet/i, /Demo to Deal/i, /pendo/i, /slack/i, /alpha/i]) expect(all).not.toMatch(bad);
+  it("carries no internal launch material: competitors, plans, enablement, Slack, internal limits or customer names from internal decks", () => {
+    const banned = [/Toast/i, /Lightspeed/i, /Squaremates/i, /Square AI/i, /Clover/i, /2027/, /sell sheet/i, /Demo to Deal/i, /pendo/i, /slack/i, /\balpha\b/i, /shift leads?/i, /RPOS/, /Weinberger/i, /Profit AI/, /do not (pitch|sell)/i, /new merchants/i, /launch timeline/i];
+    for (const [f, text] of Object.entries(src)) for (const re of banned) expect(text, `${f} ${re}`).not.toMatch(re);
   });
-  it("does not state that Sam or Profit AI is free", () => {
-    expect(JSON.stringify([SOLUTION_BY_ID["sam"], SOLUTION_BY_ID["spoton-profit-ai"]])).not.toMatch(/\bfree\b/i);
+
+  it("does not recommend Profit Assist or Profit AI", () => {
+    expect(SOLUTIONS.map((s) => s.id)).not.toContain("spoton-profit-assist");
+    expect(SOLUTIONS.map((s) => s.id)).not.toContain("spoton-profit-ai");
+  });
+
+  it("Sam's only quantified claim is the announcement headline, and it is qualified", () => {
+    const spot = src["components/marginlab/SamSpotlight.tsx"]!;
+    expect(spot).toMatch(/more than \$124,000/);
+    expect(spot).toMatch(/not captured here/);
+    expect(spot).toMatch(/not a prediction for yours/);
+    expect(spot).not.toMatch(/3\.5%|\$2,000|26\.5/);
+  });
+
+  it("the case-study library holds only the eight public SpotOn success stories", () => {
+    expect(CASE_STUDIES).toHaveLength(8);
+    for (const c of CASE_STUDIES) expect(c.sourceUrl).toMatch(/^https:\/\/www\.spoton\.com\/success-stories\//);
   });
 });

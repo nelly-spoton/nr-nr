@@ -42,8 +42,8 @@ Or via CLI: `npx vercel` (preview) / `npx vercel --prod`.
    food/alcohol split, industry comparison) is optional and tucked away.
    Once those are answered, **Where you stand** shows food, labor and prime cost on a scale against the NRA medians (marker, median tick,
    shaded "typical" band), with a one-line headline of the largest difference.
-   **Sam (SpotOn Assistant Manager)** is featured first on Step 2 with example questions tied to the Step 1 focus and one restaurant's published
-   results; Profit Assist is shown as existing-merchants-only and Profit AI is offered instead.
+   **Sam (SpotOn Assistant Manager)** is featured first on Step 2, using public information only (SpotOn's press release headline and help
+   articles). The app carries no pricing for any solution and no internal launch material.
 2. **Solutions.** Recommendations and similar-restaurant results are built from the Step 1 answers and change when they change.
 3. **Summary.** A one-page summary to print, save as a PDF, or copy.
 

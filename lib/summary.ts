@@ -20,7 +20,7 @@ export function validationItems(s: Scenario, r: ScenarioResult): string[] {
     "Confirm monthly net sales against POS or financial statements.",
     "Confirm food & beverage COGS % using actual invoices / inventory counts.",
     "Confirm fully loaded labor % (wages, employer payroll taxes, benefits) on the same net-sales basis.",
-    "Confirm product compatibility, availability and pricing with SpotOn and each partner.",
+    "Confirm product compatibility and availability with SpotOn and each partner.",
     "Validate improvement assumptions against observed operational change.",
   ];
   if (r.sales.preliminary) items.unshift("Sales figure is an estimate or GPV-derived: all savings are PRELIMINARY.");
