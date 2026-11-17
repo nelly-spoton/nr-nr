@@ -1,90 +1,106 @@
 "use client";
+import Link from "next/link";
+import { useState } from "react";
 import { CONCEPT_LABELS } from "@/config/concepts";
-import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
-import { Callout, ContentCard, PageHeader, SectionHeader } from "@/components/marginlab/Cards";
+import { FOCUS_OPTIONS } from "@/lib/focus";
 import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
+import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
+import { Badge } from "@/components/marginlab/Cards";
+import { Collapsible } from "@/components/marginlab/Collapsible";
+import { EmptyStep } from "@/components/marginlab/EmptyStep";
 import { useScenario } from "@/components/marginlab/ScenarioProvider";
 import { SolutionCard } from "@/components/marginlab/SolutionCard";
+import { StepFooter } from "@/components/marginlab/StepFooter";
+import { StepProgress } from "@/components/marginlab/StepProgress";
 import { pts } from "@/lib/format";
 import { buildReport } from "@/lib/report";
-import { TIER_LABELS, type Tier } from "@/lib/recommend";
+import { requiredStatus } from "@/lib/steps";
 
-const TIER_NOTE: Record<Tier, string> = {
-  highest: "Workflow products whose cost driver matches the improvement selected and that fit this service model.",
-  additional: "Plausible for this concept, but the lever is not selected or the evidence is weaker.",
-  visibility: "Insight tools help management find and measure opportunities; they are not direct cost levers.",
-  not_recommended: "Not a fit for this concept or service model as currently profiled.",
-};
+export default function Step2Page() {
+  const { scenario: s, result: r } = useScenario();
+  const [more, setMore] = useState(false);
+  const [no, setNo] = useState(false);
+  const st = requiredStatus(s, r);
 
-export default function SolutionsPage() {
-  const { scenario: s, result: r, update } = useScenario();
+  if (!st.complete)
+    return (
+      <>
+        <StepProgress />
+        <h1 className="mb-4 text-2xl font-semibold tracking-tight sm:text-3xl">Solutions that fit</h1>
+        <EmptyStep what="Recommendations" />
+      </>
+    );
+
   const rep = buildReport(s, r);
-  const tiers: Tier[] = ["highest", "additional", "visibility", "not_recommended"];
-  const toggle = (id: string, included: boolean) => update((x) => ({ ...x, solutionOverrides: { ...x.solutionOverrides, [id]: included } }));
+  const best = rep.recs.filter((x) => x.tier === "highest");
+  const maybe = rep.recs.filter((x) => x.tier === "additional" || x.tier === "visibility");
+  const notFit = rep.recs.filter((x) => x.tier === "not_recommended");
+  const focus = FOCUS_OPTIONS.find((o) => o.value === s.focus)!.label;
 
   return (
     <>
-      <PageHeader
-        title="SpotOn Solutions"
-        description="Ranked for this restaurant's profile. Each product appears once; outcome tags show what it may influence. Possibilities, not guaranteed results."
-      />
-      <div className="mb-6 flex flex-col gap-3">
-        <ContentCard tone="muted">
-          <p className="text-sm">
-            <strong>Profile:</strong> {CONCEPT_LABELS[s.concept]}
-            {rep.profile.attributes.length > 0 && <> · {rep.profile.attributes.map((a) => a.replace(/_/g, " ")).join(", ")}</>} ·{" "}
-            {r.locations} location{r.locations > 1 ? "s" : ""} · improvement {pts(r.improvement.foodPts)} food, {pts(r.improvement.laborPts)} labor. Change these on the Overview page.
+      <StepProgress />
+      <div className="mb-5">
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Solutions that fit</h1>
+        <p className="mt-1 text-sm text-muted">Built from your answers. Change them in Step 1 and this page updates.</p>
+        <p className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+          <Badge tone="brand">{CONCEPT_LABELS[s.concept]}</Badge>
+          <Badge>{r.locations} location{r.locations > 1 ? "s" : ""}</Badge>
+          <Badge>Improving: {focus.toLowerCase()}</Badge>
+          <Badge>{pts(r.improvement.totalPts)}</Badge>
+          <Link href="/" className="text-xs font-semibold text-link underline">Change answers</Link>
+        </p>
+      </div>
+
+      <section aria-labelledby="best" className="mb-6">
+        <h2 id="best" className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Best fit for you</h2>
+        {best.length ? (
+          <div className="grid gap-3 md:grid-cols-2">
+            {best.map((x) => (
+              <SolutionCard key={x.solution.id} rec={x} />
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-ctl border border-rule bg-surface-2 p-4 text-sm text-muted">
+            No product is a strong fit for these answers. See the others below.
           </p>
-        </ContentCard>
-        <Callout>{SOLUTIONS_DISCLAIMER}</Callout>
-        <Callout tone="info">{OVERLAP_NOTE}</Callout>
+        )}
+      </section>
+
+      <div className="mb-6 flex flex-col gap-3">
+        {maybe.length > 0 && (
+          <Collapsible title="Also worth a look" tag="Optional" count={maybe.length} open={more} onToggle={() => setMore((o) => !o)}>
+            <div className="grid gap-3 md:grid-cols-2">
+              {maybe.map((x) => (
+                <SolutionCard key={x.solution.id} rec={x} />
+              ))}
+            </div>
+          </Collapsible>
+        )}
+        {notFit.length > 0 && (
+          <Collapsible title="Not a fit for this restaurant" tag="Why not" count={notFit.length} open={no} onToggle={() => setNo((o) => !o)}>
+            <ul className="divide-y divide-rule text-sm">
+              {notFit.map((x) => (
+                <li key={x.solution.id} className="py-2">
+                  <strong>{x.solution.name}</strong> <span className="text-muted">— {x.exclusion}</span>
+                </li>
+              ))}
+            </ul>
+          </Collapsible>
+        )}
       </div>
 
-      <div className="flex flex-col gap-10">
-        {tiers.map((t) => {
-          const items = rep.recs.filter((x) => x.tier === t);
-          if (!items.length) return null;
-          return (
-            <section key={t} aria-labelledby={`tier-${t}`}>
-              <h2 id={`tier-${t}`} className="sr-only">{TIER_LABELS[t]}</h2>
-              <SectionHeader title={TIER_LABELS[t]} description={TIER_NOTE[t]} />
-              {t === "not_recommended" ? (
-                <ul className="divide-y divide-rule rounded-card border border-rule bg-surface">
-                  {items.map((x) => (
-                    <li key={x.solution.id} className="p-4 text-sm">
-                      <strong>{x.solution.name}</strong>
-                      <span className="text-muted"> — {x.exclusion}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="grid gap-4 lg:grid-cols-2">
-                  {items.map((x) => (
-                    <SolutionCard key={x.solution.id} rec={x} overrides={s.solutionOverrides} onToggle={(inc) => toggle(x.solution.id, inc)} />
-                  ))}
-                </div>
-              )}
-            </section>
-          );
-        })}
+      <section aria-labelledby="proof" className="mb-6">
+        <h2 id="proof" className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-accent">What similar restaurants reported</h2>
+        <p className="mb-3 text-sm text-muted">Published results from other restaurants. Not predictions, and they don&apos;t change your numbers.</p>
+        <CaseStudyGrid matches={rep.matches} compact />
+      </section>
 
-        <section aria-labelledby="proof">
-          <h2 id="proof" className="sr-only">Customer proof</h2>
-          <SectionHeader title="Customer proof for this profile" description="Published examples from other restaurants. They do not change the financial model." />
-          <CaseStudyGrid matches={rep.matches} />
-        </section>
+      <CoachingPanel />
 
-        <ContentCard tone="muted">
-          <SectionHeader title="Business impact & compatibility considerations" />
-          <ul className="list-disc space-y-1.5 pl-5 text-sm">
-            <li>Cost improvements depend on adoption, process change and data quality, not on purchase alone.</li>
-            <li>Not every solution works independently of SpotOn POS, and not every integration is available to every merchant.</li>
-            <li>Partner products carry their own subscriptions, onboarding and support.</li>
-            <li>Payment-processing, delivery-commission and sales-lift effects are excluded from prime-cost savings here.</li>
-            <li>Validate any improvement assumption against the restaurant&apos;s actual invoices, schedules and POS data.</li>
-          </ul>
-        </ContentCard>
-      </div>
+      <p className="mt-4 text-xs text-muted">Possibilities, not guarantees. Confirm compatibility and availability with SpotOn before promising anything.</p>
+
+      <StepFooter backHref="/" backLabel="Back: Your restaurant" nextHref="/summary" nextLabel="Next: Summary" />
     </>
   );
 }

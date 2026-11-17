@@ -40,6 +40,7 @@ export function exampleScenario(): Scenario {
     restaurantName: "Example Restaurant Group",
     scenarioName: "Example scenario",
     concept: "full_service",
+    conceptConfirmed: true,
     attributes: [],
     locations: 5,
     salesMode: "net",
@@ -54,12 +55,37 @@ export function exampleScenario(): Scenario {
     nearWindowPts: 1,
     expenses: emptyExpenses(),
     benchmarkPick: {},
+    focus: "both",
+    level: 1,
+    improvementMode: "custom",
     foodImprovementPts: 0.4,
     laborImprovementPts: 0.6,
     roi: { monthlySoftwareCost: null, oneTimeCost: null, otherMonthlyCost: null },
     beverageMix: emptyBeverageMix(),
     planning: defaultPlanning(),
     solutionOverrides: {},
+  };
+}
+
+/**
+ * What a first-time visitor sees: nothing assumed. Required answers are empty until entered.
+ * (The example scenario is still available through "Try an example".)
+ */
+export function blankScenario(): Scenario {
+  return {
+    ...exampleScenario(),
+    restaurantName: "",
+    scenarioName: "",
+    conceptConfirmed: false,
+    amount: null,
+    foodPct: null,
+    laborPct: null,
+    focus: "both",
+    level: 1,
+    improvementMode: "guided",
+    foodImprovementPts: null,
+    laborImprovementPts: null,
+    locations: 1,
   };
 }
 
@@ -118,6 +144,10 @@ export function hydrateScenario(raw: unknown): Scenario {
       mixPct: { ...bevBase.mixPct, ...(bev.mixPct ?? {}) },
       costPct: { ...bevBase.costPct, ...(bev.costPct ?? {}) },
     },
+    conceptConfirmed: r.conceptConfirmed === undefined ? true : !!r.conceptConfirmed,
+    focus: r.focus === "food" || r.focus === "labor" || r.focus === "both" ? r.focus : "both",
+    level: typeof r.level === "number" && Number.isFinite(r.level) ? r.level : 1,
+    improvementMode: r.improvementMode === "guided" ? "guided" : "custom",
     costMode: r.costMode === "detailed" ? "detailed" : "quick",
     detailed: { ...emptyDetailed(), ...(r.detailed ?? {}) },
     nearWindowPts: nw,

@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { computeScenario, type ScenarioResult } from "@/lib/calc";
-import { exampleScenario } from "@/lib/scenario";
+import { applyGuided } from "@/lib/focus";
+import { blankScenario, exampleScenario } from "@/lib/scenario";
 import { loadCurrent, loadSaved, saveCurrent, writeSaved, type SavedScenario } from "@/lib/storage";
 import { validateScenario } from "@/lib/validate";
 import type { Issue, Scenario } from "@/lib/types";
@@ -12,7 +13,10 @@ interface Ctx {
   result: ScenarioResult;
   issues: Issue[];
   update: (patch: Partial<Scenario> | ((s: Scenario) => Scenario)) => void;
+  /** Start over with nothing entered. */
   reset: () => void;
+  /** Fill in a sample restaurant. */
+  loadExample: () => void;
   saved: SavedScenario[];
   saveNamed: () => void;
   loadSavedScenario: (id: string) => void;
@@ -22,7 +26,7 @@ interface Ctx {
 const ScenarioContext = createContext<Ctx | null>(null);
 
 export function ScenarioProvider({ children }: { children: ReactNode }) {
-  const [scenario, setScenario] = useState<Scenario>(exampleScenario);
+  const [scenario, setScenario] = useState<Scenario>(blankScenario);
   const [saved, setSaved] = useState<SavedScenario[]>([]);
   const [ready, setReady] = useState(false);
 
@@ -39,10 +43,11 @@ export function ScenarioProvider({ children }: { children: ReactNode }) {
   }, [scenario, ready]);
 
   const update = useCallback<Ctx["update"]>((patch) => {
-    setScenario((s) => (typeof patch === "function" ? patch(s) : { ...s, ...patch }));
+    setScenario((s) => applyGuided(typeof patch === "function" ? patch(s) : { ...s, ...patch }));
   }, []);
 
-  const reset = useCallback(() => setScenario(exampleScenario()), []);
+  const reset = useCallback(() => setScenario(blankScenario()), []);
+  const loadExample = useCallback(() => setScenario(exampleScenario()), []);
 
   const saveNamed = useCallback(() => {
     const entry: SavedScenario = {
@@ -77,8 +82,8 @@ export function ScenarioProvider({ children }: { children: ReactNode }) {
   const issues = useMemo(() => validateScenario(scenario), [scenario]);
 
   const value = useMemo<Ctx>(
-    () => ({ scenario, result, issues, update, reset, saved, saveNamed, loadSavedScenario, deleteSaved }),
-    [scenario, result, issues, update, reset, saved, saveNamed, loadSavedScenario, deleteSaved],
+    () => ({ scenario, result, issues, update, reset, loadExample, saved, saveNamed, loadSavedScenario, deleteSaved }),
+    [scenario, result, issues, update, reset, loadExample, saved, saveNamed, loadSavedScenario, deleteSaved],
   );
   return <ScenarioContext.Provider value={value}>{children}</ScenarioContext.Provider>;
 }

@@ -15,7 +15,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 /** Customer proof card. Shows a published example; it never feeds the financial model. */
-export function CaseStudyCard({ match }: { match: CaseMatch }) {
+export function CaseStudyCard({ match, compact = false }: { match: CaseMatch; compact?: boolean }) {
   const c = match.study;
   const verified = c.verification.status === "verified";
   return (
@@ -23,7 +23,7 @@ export function CaseStudyCard({ match }: { match: CaseMatch }) {
       <header>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h3 className="text-lg font-semibold">{c.name}</h3>
-          <Badge tone={verified ? "good" : c.verification.status === "requester_confirmed" ? "neutral" : "warn"}>{verificationLabel(c)}</Badge>
+          <Badge tone={verified ? "good" : c.verification.status === "requester_confirmed" ? "neutral" : "warn"}>{compact && !verified ? "Not independently checked" : verificationLabel(c)}</Badge>
         </div>
         <p className="text-sm text-muted">
           {c.conceptLabel}
@@ -34,6 +34,28 @@ export function CaseStudyCard({ match }: { match: CaseMatch }) {
           {match.indirect && <Badge tone="neutral">Indirect evidence, not a cost saving</Badge>}
         </div>
       </header>
+      {compact ? (
+        <>
+          <p className="text-xl font-semibold">{c.metric.wording}</p>
+          <p className="text-sm text-muted">Why it may fit: {match.reasons.slice(0, 2).join(" · ")}</p>
+          <details className="text-sm">
+            <summary className="cursor-pointer text-xs font-semibold text-link">Details and limits</summary>
+            <dl className="mt-2 grid gap-2 rounded-ctl bg-surface-2 p-3">
+              <Field label="Challenge">{c.challenge ?? <em className="text-muted">{NOT_CAPTURED}</em>}</Field>
+              <Field label="What changed">{c.improvement ?? <em className="text-muted">{NOT_CAPTURED}</em>}</Field>
+              <Field label="Technology">{c.products.length ? c.products.map((p) => p.name).join(", ") : <em className="text-muted">{NOT_CAPTURED}</em>}</Field>
+              <Field label="Keep in mind">
+                <ul className="list-disc space-y-0.5 pl-5 text-xs text-muted">
+                  <li>{metricQualifier(c.metric)}</li>
+                  {c.limitations.map((l) => (
+                    <li key={l}>{l}</li>
+                  ))}
+                </ul>
+              </Field>
+            </dl>
+          </details>
+        </>
+      ) : (
       <dl className="grid gap-3">
         <Field label="Published result">
           <span className="text-xl font-semibold">{c.metric.wording}</span>
@@ -56,6 +78,7 @@ export function CaseStudyCard({ match }: { match: CaseMatch }) {
           </ul>
         </Field>
       </dl>
+      )}
       <a
         href={c.sourceUrl}
         target="_blank"
@@ -69,7 +92,7 @@ export function CaseStudyCard({ match }: { match: CaseMatch }) {
   );
 }
 
-export function CaseStudyGrid({ matches }: { matches: CaseMatch[] }) {
+export function CaseStudyGrid({ matches, compact = false }: { matches: CaseMatch[]; compact?: boolean }) {
   if (!matches.length)
     return (
       <p className="rounded-ctl border border-rule bg-surface-2 p-4 text-sm text-muted">
@@ -79,7 +102,7 @@ export function CaseStudyGrid({ matches }: { matches: CaseMatch[] }) {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       {matches.map((m) => (
-        <CaseStudyCard key={m.study.id} match={m} />
+        <CaseStudyCard key={m.study.id} match={m} compact={compact} />
       ))}
     </div>
   );

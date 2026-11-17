@@ -1,76 +1,58 @@
 "use client";
-import { Callout, ContentCard, MetricCard, Badge } from "./Cards";
+import { Callout, ContentCard, MetricCard } from "./Cards";
 import { useScenario } from "./ScenarioProvider";
 import { pct, pts, usd } from "@/lib/format";
-import { SALES_STATUS_LABEL } from "@/lib/summary";
+import { requiredStatus } from "@/lib/steps";
 
-/** Live financial result. Sticky on desktop beside the inputs; stacked on mobile. */
-export function ResultsPanel({ compact = false }: { compact?: boolean }) {
+/** Live result. Shows a dash until the required answers exist, then the opportunity and what it is made of. */
+export function ResultsPanel() {
   const { result: r, scenario } = useScenario();
-  const ok = r.sales.resolved;
+  const st = requiredStatus(scenario, r);
+  if (!st.complete)
+    return (
+      <MetricCard
+        tone="brand"
+        size="lg"
+        label="Your estimated annual opportunity"
+        value="—"
+        sub="Answer the required questions to see it."
+      />
+    );
   return (
     <div className="flex flex-col gap-3" aria-live="polite">
       <MetricCard
         tone="brand"
         size="lg"
-        label="Est. annual opportunity"
-        tooltip="Hypothetical annual prime-cost reduction if the selected percentage-point improvements were achieved. Not a guarantee."
-        value={ok ? usd(r.savings.annualTotal) : "—"}
+        label="Your estimated annual opportunity"
+        tooltip="A hypothetical yearly saving if costs improved by the points you chose. Not a guarantee."
+        value={usd(r.savings.annualTotal)}
         sub={
-          ok ? (
-            <>
-              {usd(r.savings.monthlyTotal)} per month · {pts(r.improvement.totalPts)} improvement
-            </>
-          ) : (
-            "Enter net sales (or a GPV conversion) to calculate"
-          )
+          <>
+            {usd(r.savings.monthlyTotal)} a month · {pts(r.improvement.totalPts)} lower cost
+          </>
         }
       />
-      {r.sales.preliminary && (
-        <Callout>
-          <strong>Preliminary.</strong> {SALES_STATUS_LABEL[r.sales.status]}. Treat all results as estimates until sales and
-          costs are verified.
-        </Callout>
-      )}
       <div className="grid grid-cols-2 gap-3">
-        <MetricCard label="Current prime cost" value={pct(r.current.prime)} sub={`${usd(r.current.primeMonthly)}/mo`} />
-        <MetricCard
-          label="Improved prime cost"
-          tone="good"
-          value={pct(r.improved.prime)}
-          sub={`${pts(r.improvement.totalPts)} lower`}
-        />
+        <MetricCard label="Prime cost now" value={pct(r.current.prime)} sub="food + labor" />
+        <MetricCard label="After improving" tone="good" value={pct(r.improved.prime)} sub={`${pts(r.improvement.totalPts)} lower`} />
       </div>
-      {!compact && (
-        <ContentCard className="hidden !p-4 lg:block">
-          <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 text-sm">
-            <dt className="text-muted">Monthly group net sales</dt>
-            <dd className="tabular text-right font-semibold">{usd(r.sales.monthlyGroup)}</dd>
-            <dt className="text-muted">Annual group net sales</dt>
-            <dd className="tabular text-right font-semibold">{usd(r.sales.annualGroup)}</dd>
-            <dt className="text-muted">Food savings (mo / yr)</dt>
-            <dd className="tabular text-right font-semibold">
-              {usd(r.savings.monthlyFood)} / {usd(r.savings.annualFood)}
-            </dd>
-            <dt className="text-muted">Labor savings (mo / yr)</dt>
-            <dd className="tabular text-right font-semibold">
-              {usd(r.savings.monthlyLabor)} / {usd(r.savings.annualLabor)}
-            </dd>
-            {r.locations > 1 && (
-              <>
-                <dt className="text-muted">Per location (mo / yr)</dt>
-                <dd className="tabular text-right font-semibold">
-                  {usd(r.savings.perLocationMonthly)} / {usd(r.savings.perLocationAnnual)}
-                </dd>
-              </>
-            )}
-          </dl>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Badge tone="neutral">{scenario.volumeScope === "group" ? "Group volume entered" : "Per-location volume entered"}</Badge>
-            <Badge tone="neutral">Estimates only</Badge>
-          </div>
-        </ContentCard>
-      )}
+      <ContentCard className="!p-4">
+        <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 text-sm">
+          <dt className="text-muted">Food savings</dt>
+          <dd className="tabular text-right font-semibold">{usd(r.savings.annualFood)}/yr</dd>
+          <dt className="text-muted">Labor savings</dt>
+          <dd className="tabular text-right font-semibold">{usd(r.savings.annualLabor)}/yr</dd>
+          {r.locations > 1 && (
+            <>
+              <dt className="text-muted">Per location</dt>
+              <dd className="tabular text-right font-semibold">{usd(r.savings.perLocationAnnual)}/yr</dd>
+            </>
+          )}
+          <dt className="text-muted">Annual sales</dt>
+          <dd className="tabular text-right font-semibold">{usd(r.sales.annualGroup)}</dd>
+        </dl>
+      </ContentCard>
+      {r.sales.preliminary && <Callout>Preliminary: based on an estimated sales figure.</Callout>}
     </div>
   );
 }
