@@ -1,5 +1,8 @@
 "use client";
+import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
+import { CASE_BY_ID, metricQualifier } from "@/config/caseStudies";
 import { INFLUENCE_LABELS } from "@/config/solutions";
 import { PRIMER, SOLUTION_GUIDES } from "@/config/solutionGuides";
 import type { HealthModel } from "@/lib/health";
@@ -46,10 +49,11 @@ export function CoachingNotes({ recs, health }: { recs: Recommendation[]; health
   return (
     <section className="mt-8" aria-labelledby="coach-notes">
       <h2 id="coach-notes" className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
-        Coaching notes · why each solution matters for prime cost
+        From Step 2 · The solutions: why each matters for prime cost
       </h2>
       <p className="mb-3 mt-1 text-sm text-muted">
-        Training reference. &ldquo;Why it moves&rdquo;, &ldquo;What to look for&rdquo; and the questions are general
+        These are the best-fit solutions from Step 2.{" "}
+        <Link href="/solutions" className="font-semibold text-link underline">Review Step 2</Link>. &ldquo;Why it moves&rdquo;, &ldquo;What to look for&rdquo; and the questions are general
         restaurant knowledge written for training, not SpotOn statements. &ldquo;How it works&rdquo; comes from SpotOn&apos;s public product information.
       </p>
 
@@ -69,6 +73,7 @@ export function CoachingNotes({ recs, health }: { recs: Recommendation[]; health
           {recs.map((rec, i) => {
             const x = rec.solution;
             const g = SOLUTION_GUIDES[x.id];
+            const stories = rec.proofCaseIds.map((id) => CASE_BY_ID[id]).filter((c): c is NonNullable<typeof c> => !!c);
             return (
               <details key={x.id} className="rounded-card border border-rule bg-surface p-4 shadow-card" open={i === 0}>
                 <summary className="flex cursor-pointer flex-wrap items-center gap-2">
@@ -110,6 +115,34 @@ export function CoachingNotes({ recs, health }: { recs: Recommendation[]; health
                       </div>
                     </>
                   )}
+                  <div>
+                    <H>Customer stories</H>
+                    {stories.length === 0 ? (
+                      <p className="mt-1 text-muted">No published customer story is linked to this product in the tool.</p>
+                    ) : (
+                      <ul className="mt-1 grid gap-2">
+                        {stories.map((c) => (
+                          <li key={c.id} className="rounded-ctl bg-surface-2 p-3">
+                            <p>
+                              <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-link underline">
+                                {c.name}
+                                <ExternalLink className="h-3 w-3" aria-hidden />
+                                <span className="sr-only"> (opens in a new tab)</span>
+                              </a>
+                              {c.locationText ? <span className="text-muted"> · {c.locationText}</span> : null}
+                            </p>
+                            <p className="font-semibold">{c.metric.wording}</p>
+                            {c.additionalMetrics?.map((m) => (
+                              <p key={m.wording} className="font-semibold">{m.wording}</p>
+                            ))}
+                            <p className="mt-1 text-xs text-muted">
+                              {metricQualifier(c.metric)}{c.products.length > 1 ? " Used alongside other products, so the result isn't down to one product." : ""} One restaurant's result, not a prediction.
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                   <div>
                     <H>Where it may not fit</H>
                     <ul className="mt-1 list-disc pl-5">

@@ -19,8 +19,6 @@ import { buildReport } from "@/lib/report";
 import { pct, pts, usd } from "@/lib/format";
 import {
   SALES_STATUS_LABEL,
-  keyAssumptions,
-  validationItems,
 } from "@/lib/summary";
 
 function H({ children }: { children: string }) {
@@ -57,7 +55,7 @@ export default function SummaryPage() {
 
   return (
     <>
-      <StepHeader step={3} title="Your summary" subtitle="The numbers, what they mean, and coaching notes for each solution." />
+      <StepHeader step={3} title="Your summary" subtitle="Steps 1 and 2 in one place, with coaching notes and customer stories tied to them." />
 
       <div className="no-print mb-4 max-w-md">
         <FormField label="Restaurant name" htmlFor="name" hint="Shown at the top of the numbers below.">
@@ -68,7 +66,7 @@ export default function SummaryPage() {
       <article className="rounded-card border border-rule bg-surface p-5 shadow-card sm:p-8" aria-label="The numbers">
         <header className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-ink pb-3">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-muted">MarginLab · Summary</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-muted">From Step 1 · The restaurant</p>
             <h2 className="text-2xl font-extrabold tracking-tight">{s.restaurantName || "Restaurant"}</h2>
             <p className="text-sm text-muted">
               {CONCEPT_LABELS[s.concept]} · {r.locations} location{r.locations > 1 ? "s" : ""}
@@ -182,35 +180,10 @@ export default function SummaryPage() {
 
       <CoachingNotes recs={sols} health={health} />
 
-      <section className="no-print mt-8" aria-labelledby="rely">
-        <h2 id="rely" className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Before you rely on these numbers</h2>
-        <div className="mt-3 grid gap-5 rounded-card border border-rule bg-surface p-5 text-sm shadow-card md:grid-cols-2">
-          <section>
-            <H>Key assumptions</H>
-            <ul className="list-disc pl-5 text-xs">
-              {keyAssumptions(s, r).map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
-          </section>
-          <section>
-            <H>Still to confirm</H>
-            <ul className="list-disc pl-5 text-xs">
-              {validationItems(s, r).map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
-          </section>
-        </div>
-      </section>
-
-      <section className="no-print mt-8" aria-labelledby="hs-ref">
-        <h2 id="hs-ref" className="sr-only">Customer proof, Hospitality Specialist reference</h2>
-        <SectionHeader
-          title="Customer proof · Hospitality Specialist reference"
-          description="For your own preparation."
-        />
-        <CaseStudyGrid matches={rep.proofPoints} />
+      <section className="mt-8" aria-labelledby="proof">
+        <h2 id="proof" className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Similar restaurants · customer stories tied to your answers</h2>
+        <p className="mb-3 mt-1 text-sm text-muted">Published results from restaurants like this one. Not predictions, and they don&apos;t change your numbers.</p>
+        <CaseStudyGrid matches={rep.matches} compact />
         <p className="mt-2 text-xs text-muted">{PROOF_DISCLAIMER}</p>
       </section>
 

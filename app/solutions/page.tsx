@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CONCEPT_LABELS } from "@/config/concepts";
 import { OTHER_SOLUTIONS, OTHER_SOLUTIONS_NOTE } from "@/config/otherSolutions";
 import { FOCUS_OPTIONS } from "@/lib/focus";
-import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { CoachingPanel } from "@/components/marginlab/CoachingPanel";
 import { Badge } from "@/components/marginlab/Cards";
 import { Collapsible } from "@/components/marginlab/Collapsible";
@@ -102,12 +101,6 @@ export default function Step2Page() {
           </dl>
         </Collapsible>
       </div>
-
-      <section aria-labelledby="proof" className="mb-6">
-        <h2 id="proof" className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-accent">What similar restaurants reported</h2>
-        <p className="mb-3 text-sm text-muted">Published results from other restaurants. Not predictions, and they don&apos;t change your numbers.</p>
-        <CaseStudyGrid matches={rep.matches} compact />
-      </section>
 
       <div className="mb-6">
         <Collapsible title="How you compare with industry medians" tag="Optional" open={cmp} onToggle={() => setCmp((o) => !o)}>
