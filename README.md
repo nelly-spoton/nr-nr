@@ -3,7 +3,9 @@
 A consultative prime-cost discovery tool for SpotOn Hospitality Specialists. It compares a restaurant's
 food and labor cost ratios to benchmarks, models **percentage-point** improvements, and maps possible
 SpotOn solutions. **All results are hypothetical estimates, not guaranteed savings.** No data leaves the
-browser (state lives in `localStorage`); there is no backend, database, auth or paid API.
+browser (state lives in `localStorage`); there is no database or paid API. The only server piece is Google
+sign-in, limited to `@spoton.com` accounts (see **Access** below). This is an internal **training tool**
+used in a controlled setting, not a tool for live customer meetings.
 
 > **Design note:** styling follows a single Deal Prep home-page screenshot (desktop only). The live site, the
 > `/releases` page, mobile and interactive states were not inspected, so the match is partial. See
@@ -31,9 +33,28 @@ npm run dev          # http://localhost:3000
 1. Push this repo to GitHub.
 2. In Vercel: **Add New → Project**, import the repo. Framework preset **Next.js** is detected; leave
    build command (`next build`) and output defaults.
-3. No environment variables are required. Click **Deploy**.
+3. Add the four sign-in settings below, then click **Deploy**.
 
 Or via CLI: `npx vercel` (preview) / `npx vercel --prod`.
+
+### Access (SpotOn staff only)
+
+Every page requires a Google sign-in with a verified `@spoton.com` Workspace account. The check runs on the
+server (the sign-in callback and `middleware.ts`), not in the browser; the `hd` hint sent to Google only
+pre-selects the account chooser. Sessions are 12-hour signed cookies; no database and no other data is stored.
+**Without all four settings the site stays closed** and the sign-in page says so.
+
+1. In Google Cloud Console, create an **OAuth client ID** (type *Web application*). Set the authorized redirect
+   URI to `https://<your-domain>/api/auth/callback/google`. Set the consent screen's user type to **Internal**
+   if your Google Workspace allows it (that alone limits it to the organization).
+2. In Vercel, **Settings → Environment Variables**, add for Production (see `.env.example`):
+   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXTAUTH_SECRET` (`openssl rand -base64 32`) and
+   `NEXTAUTH_URL` (the site's public address, e.g. `https://nr-nr.vercel.app`). Redeploy.
+3. Preview deployments have different addresses, so Google will not sign in on them unless each address is also
+   added as a redirect URI. Use the production address for testing.
+
+`MARGINLAB_AUTH_BYPASS=1` skips sign-in for automated browser tests on a local machine only; it is ignored on
+Vercel.
 
 ## How it works (three steps)
 

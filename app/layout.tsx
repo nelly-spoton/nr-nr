@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { Providers } from "@/components/marginlab/Providers";
 import { AppShell } from "@/components/marginlab/AppShell";
 import { ScenarioProvider } from "@/components/marginlab/ScenarioProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MarginLab — Restaurant Profit Opportunity Calculator",
-  description: "Consultative prime-cost discovery tool for SpotOn Hospitality Specialists.",
+  description: "SpotOn internal training tool for practicing prime-cost and profit conversations.",
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
@@ -23,9 +24,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <ScenarioProvider>
-          <AppShell>{children}</AppShell>
-        </ScenarioProvider>
+        <Providers>
+          <ScenarioProvider>
+            <AppShell>{children}</AppShell>
+          </ScenarioProvider>
+        </Providers>
       </body>
     </html>
   );

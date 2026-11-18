@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import type { ReactNode } from "react";
 import { Navigation } from "./Navigation";
 import { useScenario } from "./ScenarioProvider";
@@ -10,6 +11,7 @@ import { requiredStatus } from "@/lib/steps";
 function Header() {
   const { scenario, result } = useScenario();
   const started = requiredStatus(scenario, result).complete;
+  const { data: session } = useSession();
   return (
     <header className="no-print sticky top-0 z-40 bg-nav text-white">
       <div className="mx-auto flex h-14 max-w-page items-center justify-between gap-4 px-4 sm:px-6">
@@ -22,6 +24,7 @@ function Header() {
               M
             </span>
             <span className="text-lg font-semibold tracking-tight">MarginLab</span>
+            <span className="hidden rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-nav-fg sm:inline">Training</span>
           </Link>
           <Navigation variant="top" />
         </div>
@@ -37,6 +40,18 @@ function Header() {
               }
             >
               {result.sales.preliminary ? "Preliminary estimate" : "Estimate"}
+            </span>
+          )}
+          {session?.user?.email && (
+            <span className="flex items-center gap-2 text-xs text-nav-fg">
+              <span className="hidden max-w-[12rem] truncate md:inline">{session.user.email}</span>
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: "/signin" })}
+                className="rounded-full bg-white/10 px-3 py-1 font-semibold text-white hover:bg-white/20"
+              >
+                Sign out
+              </button>
             </span>
           )}
         </div>
@@ -66,12 +81,15 @@ function MobileResultBar() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const path = usePathname();
+  if (path === "/signin")
+    return <main>{children}</main>;
   return (
     <>
       <Header />
       <main className="mx-auto max-w-page px-4 py-6 pb-32 sm:px-6 sm:py-8 lg:pb-12">{children}</main>
       <p className="no-print mx-auto max-w-page px-4 pb-24 text-xs text-muted sm:px-6 lg:pb-10">
-        Illustrative estimates for discovery conversations. Not a quote, proposal or guarantee. Inputs stay in this browser.
+        SpotOn training tool for practice conversations, not for use with customers. Illustrative estimates only, not a quote or guarantee. Inputs stay in this browser.
       </p>
       <MobileResultBar />
       <Navigation variant="bottom" />
