@@ -8,6 +8,7 @@ import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
 import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
 import { GhostButton, LimeButton, SecondaryButton } from "@/components/marginlab/Buttons";
 import { Badge, ContentCard, SectionHeader } from "@/components/marginlab/Cards";
+import { CoachingNotes } from "@/components/marginlab/CoachingNotes";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
 import { StepFooter } from "@/components/marginlab/StepFooter";
 import { FormField, TextField } from "@/components/marginlab/Fields";
@@ -279,6 +280,8 @@ export default function SummaryPage() {
         <CaseStudyGrid matches={rep.proofPoints} />
         <p className="mt-2 text-xs text-muted">{PROOF_DISCLAIMER}</p>
       </section>
+
+      <CoachingNotes recs={sols} health={health} />
 
       <div className="no-print mt-8 grid gap-6">
         <ContentCard>

@@ -66,7 +66,7 @@ Vercel.
    **Sam (SpotOn Assistant Manager)** is a regular solution card on Step 2 (tagged New, listed under Best fit), using public information only (SpotOn's Nov 17, 2026 press release and help
    articles), including Weinberger's Deli as a customer example. The app carries no pricing for any solution and no internal launch material.
 2. **Solutions.** Recommendations and similar-restaurant results are built from the Step 1 answers and change when they change.
-3. **Summary.** A one-page summary to print, save as a PDF, or copy.
+3. **Summary.** A one-page summary to print, save as a PDF, or copy. Below it, on screen only, **Coaching notes** teach beginners why each chosen solution matters for prime cost (a primer plus, per solution: the restaurant's own numbers, why the cost moves, how the product works, what to look for, questions to ask, where it may not fit). Content lives in `config/solutionGuides.ts`; how-it-works text comes from `config/solutions.ts`.
 
 **Industry Stats** is a separate research reference. Steps 2 and 3 ask you to finish Step 1 first. The old Savings Calculator tab was merged
 into Step 1 (`/calculator` redirects to it); Benchmarks was retired earlier (`/benchmarks` redirects to Industry Stats).
