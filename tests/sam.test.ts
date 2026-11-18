@@ -105,7 +105,7 @@ describe("Weinberger's Deli (from the public press release)", () => {
 });
 
 describe("public information only", () => {
-  const files = ["config/solutions.ts", "config/caseStudies.ts", "config/otherSolutions.ts", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SolutionCard.tsx"];
+  const files = ["config/solutions.ts", "config/caseStudies.ts", "config/otherSolutions.ts", "config/solutionGuides.ts", "components/marginlab/CoachingNotes.tsx", "lib/sam.ts", "lib/summary.ts", "lib/coaching.ts", "components/marginlab/SolutionCard.tsx"];
   const src = Object.fromEntries(files.map((f) => [f, readFileSync(f, "utf8")]));
 
   it("never mentions pricing, in any solution or anywhere solutions are described", () => {
@@ -156,6 +156,19 @@ describe("public information only", () => {
     const all = JSON.stringify(OTHER_SOLUTIONS);
     expect(all).not.toMatch(/processing|capital|loan/i);
     expect(OTHER_SOLUTIONS.flatMap((g) => g.items)).toContain("Loyalty");
+  });
+
+  it("every solution has a training guide with questions, and the guides promise nothing", async () => {
+    const { SOLUTION_GUIDES, PRIMER } = await import("@/config/solutionGuides");
+    for (const s of SOLUTIONS) {
+      const g = SOLUTION_GUIDES[s.id];
+      expect(g, s.id).toBeDefined();
+      expect(g!.questions.length, s.id).toBeGreaterThanOrEqual(3);
+      expect(g!.why.length, s.id).toBeGreaterThan(40);
+    }
+    expect(Object.keys(SOLUTION_GUIDES).sort()).toEqual(SOLUTIONS.map((s) => s.id).sort());
+    const all = JSON.stringify(SOLUTION_GUIDES) + JSON.stringify(PRIMER);
+    expect(all).not.toMatch(/\b(guarantee[sd]?|will (save|cut|lower|reduce)|you will save|ROI)\b/i);
   });
 
   it("lists Profit Assist from its public product page, and never Profit AI", () => {
