@@ -136,7 +136,7 @@ export function CoachingNotes({ recs, health }: { recs: Recommendation[]; health
                               <p key={m.wording} className="font-semibold">{m.wording}</p>
                             ))}
                             <p className="mt-1 text-xs text-muted">
-                              {metricQualifier(c.metric)}{c.products.length > 1 ? " Used alongside other products, so the result isn't down to one product." : ""} One restaurant's result, not a prediction.
+                              {metricQualifier(c.metric)}{c.products.length > 1 ? " Used alongside other products, so the result isn't down to one product." : ""} One restaurant&apos;s result, not a prediction.
                             </p>
                           </li>
                         ))}
