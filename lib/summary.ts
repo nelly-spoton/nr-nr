@@ -46,7 +46,7 @@ export function keyAssumptions(s: Scenario, r: ScenarioResult): string[] {
   return list;
 }
 
-/** Compact text lines for the financial-health section (also used by the printed summary). */
+/** Compact text lines for the financial-health section. */
 export function healthLines(h: HealthModel): string[] {
   const out: string[] = [];
   for (const row of h.rows) {

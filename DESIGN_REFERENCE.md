@@ -64,4 +64,4 @@ No Deal Prep content, data or product functionality was copied; only generic vis
 - Tooltips are tap/click toggles (hover also works) because hover-only fails on touch.
 - Controls are at least 44px tall on touch; inputs use 16px text on small screens (prevents iOS zoom).
 - Status never relies on color alone (every benchmark badge has a text label).
-- Print stylesheet hides chrome; the printed Operator Summary fits one US Letter page with the example scenario.
+- Browser print hides the app chrome; there is no dedicated print layout (the print/copy summary was removed).
