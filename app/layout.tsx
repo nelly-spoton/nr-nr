@@ -7,7 +7,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MarginLab — Restaurant Profit Opportunity Calculator",
-  description: "Consultative prime-cost discovery tool for SpotOn Hospitality Specialists.",
+  description: "SpotOn internal training tool for practicing prime-cost and profit conversations.",
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
