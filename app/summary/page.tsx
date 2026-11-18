@@ -182,7 +182,7 @@ export default function SummaryPage() {
 
       <section className="mt-8" aria-labelledby="proof">
         <h2 id="proof" className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Similar restaurants · customer stories tied to your answers</h2>
-        <p className="mb-3 mt-1 text-sm text-muted">Published results from restaurants like this one. Not predictions, and they don&apos;t change your numbers.</p>
+        <p className="mb-3 mt-1 text-sm text-muted">SpotOn success stories from restaurants like this one. Not predictions, and they don&apos;t change your numbers.</p>
         <CaseStudyGrid matches={rep.matches} compact />
         <p className="mt-2 text-xs text-muted">{PROOF_DISCLAIMER}</p>
       </section>

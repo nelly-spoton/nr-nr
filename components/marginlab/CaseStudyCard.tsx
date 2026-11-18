@@ -1,5 +1,5 @@
 import { ExternalLink } from "lucide-react";
-import { metricQualifier, verificationLabel } from "@/config/caseStudies";
+import { metricQualifier } from "@/config/caseStudies";
 import type { CaseMatch } from "@/lib/matching";
 import { Badge } from "./Cards";
 
@@ -15,15 +15,13 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 /** Customer proof card. Shows a published example; it never feeds the financial model. */
-export function CaseStudyCard({ match, compact = false }: { match: CaseMatch; compact?: boolean }) {
+export function CaseStudyCard({ match, compact = false, showFit = true }: { match: CaseMatch; compact?: boolean; showFit?: boolean }) {
   const c = match.study;
-  const verified = c.verification.status === "verified";
   return (
     <article className="flex flex-col gap-3 rounded-card border border-rule bg-surface p-5 shadow-card">
       <header>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h3 className="text-lg font-semibold">{c.name}</h3>
-          <Badge tone={verified ? "good" : c.verification.status === "requester_confirmed" ? "neutral" : "warn"}>{compact && !verified ? "Not independently checked" : verificationLabel(c)}</Badge>
         </div>
         <p className="text-sm text-muted">
           {c.conceptLabel}
@@ -40,7 +38,7 @@ export function CaseStudyCard({ match, compact = false }: { match: CaseMatch; co
           {c.additionalMetrics?.map((m) => (
             <p key={m.wording} className="text-sm font-semibold">{m.wording}</p>
           ))}
-          <p className="text-sm text-muted">Why it may fit: {match.reasons.slice(0, 2).join(" · ")}</p>
+          {showFit && <p className="text-sm text-muted">Why it may fit: {match.reasons.slice(0, 2).join(" · ")}</p>}
           <details className="text-sm">
             <summary className="cursor-pointer text-xs font-semibold text-link">Details and limits</summary>
             <dl className="mt-2 grid gap-2 rounded-ctl bg-surface-2 p-3">

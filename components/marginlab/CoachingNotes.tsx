@@ -1,14 +1,14 @@
 "use client";
-import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CASE_BY_ID, metricQualifier } from "@/config/caseStudies";
+import { CASE_BY_ID } from "@/config/caseStudies";
 import { INFLUENCE_LABELS } from "@/config/solutions";
 import { PRIMER, SOLUTION_GUIDES } from "@/config/solutionGuides";
 import type { HealthModel } from "@/lib/health";
 import type { Recommendation } from "@/lib/recommend";
 import { pct } from "@/lib/format";
 import { Badge } from "./Cards";
+import { CaseStudyCard } from "./CaseStudyCard";
 
 const H = ({ children }: { children: string }) => (
   <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">{children}</h4>
@@ -117,30 +117,15 @@ export function CoachingNotes({ recs, health }: { recs: Recommendation[]; health
                   )}
                   <div>
                     <H>Customer stories</H>
+                    {stories.length > 0 && <p className="mt-1 text-xs text-muted">SpotOn success stories that mention this product. One restaurant&apos;s result each, not a prediction.</p>}
                     {stories.length === 0 ? (
                       <p className="mt-1 text-muted">No published customer story is linked to this product in the tool.</p>
                     ) : (
-                      <ul className="mt-1 grid gap-2">
+                      <div className="mt-2 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                         {stories.map((c) => (
-                          <li key={c.id} className="rounded-ctl bg-surface-2 p-3">
-                            <p>
-                              <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-link underline">
-                                {c.name}
-                                <ExternalLink className="h-3 w-3" aria-hidden />
-                                <span className="sr-only"> (opens in a new tab)</span>
-                              </a>
-                              {c.locationText ? <span className="text-muted"> · {c.locationText}</span> : null}
-                            </p>
-                            <p className="font-semibold">{c.metric.wording}</p>
-                            {c.additionalMetrics?.map((m) => (
-                              <p key={m.wording} className="font-semibold">{m.wording}</p>
-                            ))}
-                            <p className="mt-1 text-xs text-muted">
-                              {metricQualifier(c.metric)}{c.products.length > 1 ? " Used alongside other products, so the result isn't down to one product." : ""} One restaurant&apos;s result, not a prediction.
-                            </p>
-                          </li>
+                          <CaseStudyCard key={c.id} compact showFit={false} match={{ study: c, score: 0, reasons: [], lever: "other", indirect: false, closestConcept: false }} />
                         ))}
-                      </ul>
+                      </div>
                     )}
                   </div>
                   <div>

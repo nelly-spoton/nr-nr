@@ -67,7 +67,7 @@ export function SolutionCard({ rec }: { rec: Recommendation }) {
                   <li key={c}>{c}</li>
                 ))}
               </ul>
-              <p className="text-xs text-muted">Not checked independently, and not a prediction for this restaurant.</p>
+              <p className="text-xs text-muted">Figures published by SpotOn. Not a prediction for this restaurant.</p>
             </div>
           )}
           {rec.reasons.length > 1 && <p className="text-muted">Also: {rec.reasons.slice(1).join(" · ")}</p>}
