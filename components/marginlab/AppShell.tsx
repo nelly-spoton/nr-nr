@@ -83,7 +83,7 @@ function MobileResultBar() {
 export function AppShell({ children }: { children: ReactNode }) {
   const path = usePathname();
   if (path === "/signin")
-    return <main className="mx-auto max-w-page px-4 py-6 sm:px-6">{children}</main>;
+    return <main>{children}</main>;
   return (
     <>
       <Header />
