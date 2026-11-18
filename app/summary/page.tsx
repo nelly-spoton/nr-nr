@@ -1,12 +1,11 @@
 "use client";
-import { Check, Copy, Printer, RotateCcw, Save, Trash2 } from "lucide-react";
+import { RotateCcw, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CONCEPT_LABELS } from "@/config/concepts";
 import { NRA_SOURCE } from "@/config/benchmarks";
 import { PROOF_DISCLAIMER } from "@/config/caseStudies";
 import { CaseStudyGrid } from "@/components/marginlab/CaseStudyCard";
-import { OVERLAP_NOTE, SOLUTIONS_DISCLAIMER } from "@/config/solutions";
-import { GhostButton, LimeButton, SecondaryButton } from "@/components/marginlab/Buttons";
+import { GhostButton, SecondaryButton } from "@/components/marginlab/Buttons";
 import { Badge, ContentCard, SectionHeader } from "@/components/marginlab/Cards";
 import { CoachingNotes } from "@/components/marginlab/CoachingNotes";
 import { EmptyStep } from "@/components/marginlab/EmptyStep";
@@ -20,7 +19,6 @@ import { buildReport } from "@/lib/report";
 import { pct, pts, usd } from "@/lib/format";
 import {
   SALES_STATUS_LABEL,
-  buildSummaryText,
   keyAssumptions,
   validationItems,
 } from "@/lib/summary";
@@ -39,39 +37,15 @@ function Row({ k, v, strong }: { k: string; v: string; strong?: boolean }) {
 
 export default function SummaryPage() {
   const { scenario: s, result: r, update, reset, saved, saveNamed, loadSavedScenario, deleteSaved } = useScenario();
-  const [copied, setCopied] = useState<"idle" | "ok" | "fail">("idle");
   const [today, setToday] = useState("");
   useEffect(() => setToday(new Date().toLocaleDateString("en-US", { dateStyle: "long" })), []);
 
-  const text = buildSummaryText(s, r);
   const rep = buildReport(s, r);
   const health = buildHealth(s, r);
   const hp = health.profit;
   const sols = rep.included;
   const foodPct = Math.round(rep.contribution.foodShare * 100);
   const laborPct = Math.round(rep.contribution.laborShare * 100);
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied("ok");
-    } catch {
-      try {
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        ta.style.position = "fixed";
-        ta.style.opacity = "0";
-        document.body.appendChild(ta);
-        ta.select();
-        const ok = document.execCommand("copy");
-        ta.remove();
-        setCopied(ok ? "ok" : "fail");
-      } catch {
-        setCopied("fail");
-      }
-    }
-    setTimeout(() => setCopied("idle"), 2500);
-  }
 
   if (!requiredStatus(s, r).complete)
     return (
@@ -83,36 +57,18 @@ export default function SummaryPage() {
 
   return (
     <>
-      <StepHeader
-        step={3}
-        title="Your summary"
-        subtitle="One page to print, save as a PDF, or copy. Nothing is uploaded."
-        actions={
-          <>
-            <LimeButton onClick={() => window.print()}>
-              <Printer className="h-4 w-4" aria-hidden /> Print / Save PDF
-            </LimeButton>
-            <SecondaryButton onClick={copy}>
-              {copied === "ok" ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
-              {copied === "ok" ? "Copied" : copied === "fail" ? "Copy failed" : "Copy summary"}
-            </SecondaryButton>
-          </>
-        }
-      />
-      <span aria-live="polite" className="sr-only">
-        {copied === "ok" ? "Summary copied to clipboard" : copied === "fail" ? "Could not copy" : ""}
-      </span>
+      <StepHeader step={3} title="Your summary" subtitle="The numbers, what they mean, and coaching notes for each solution." />
 
       <div className="no-print mb-4 max-w-md">
-        <FormField label="Restaurant name" htmlFor="name" hint="Shown at the top of the summary.">
+        <FormField label="Restaurant name" htmlFor="name" hint="Shown at the top of the numbers below.">
           <TextField id="name" value={s.restaurantName} onChange={(v) => update({ restaurantName: v })} placeholder="e.g. Harbor Grill" />
         </FormField>
       </div>
 
-      <article className="print-page rounded-card border border-rule bg-surface p-5 shadow-card sm:p-8" aria-label="Printable operator summary">
+      <article className="rounded-card border border-rule bg-surface p-5 shadow-card sm:p-8" aria-label="The numbers">
         <header className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-ink pb-3">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-muted">MarginLab · Operator Summary</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-muted">MarginLab · Summary</p>
             <h2 className="text-2xl font-extrabold tracking-tight">{s.restaurantName || "Restaurant"}</h2>
             <p className="text-sm text-muted">
               {CONCEPT_LABELS[s.concept]} · {r.locations} location{r.locations > 1 ? "s" : ""}
@@ -126,7 +82,7 @@ export default function SummaryPage() {
         </header>
 
         <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
-          <section className="print-avoid-break">
+          <section>
             <H>Financial snapshot</H>
             <dl>
               <Row k="Monthly group net sales" v={usd(r.sales.monthlyGroup)} />
@@ -137,7 +93,7 @@ export default function SummaryPage() {
             </dl>
             <p className="mt-1 text-xs text-muted">Sales basis: {SALES_STATUS_LABEL[r.sales.status]}</p>
           </section>
-          <section className="print-avoid-break">
+          <section>
             <H>Selected improvement scenario</H>
             <dl>
               <Row k="Food improvement" v={`${pts(r.improvement.foodPts)} → ${pct(r.improved.food)}`} />
@@ -148,7 +104,7 @@ export default function SummaryPage() {
           </section>
         </div>
 
-        <section className="print-avoid-break mt-4 rounded-ctl bg-brand-soft p-4">
+        <section className="mt-4 rounded-ctl bg-brand-soft p-4">
           <H>Potential cost reduction (hypothetical estimate)</H>
           <div className="flex flex-wrap items-end gap-x-8 gap-y-2">
             <div>
@@ -179,7 +135,7 @@ export default function SummaryPage() {
           </div>
         </section>
 
-        <section className="print-avoid-break mt-4 text-sm">
+        <section className="mt-4 text-sm">
           <H>Financial health vs. published peer medians</H>
           <ul className="grid gap-x-6 gap-y-1 md:grid-cols-2">
             {health.rows
@@ -222,34 +178,14 @@ export default function SummaryPage() {
           </p>
         </section>
 
-        <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
-          <section className="print-avoid-break">
-            <H>Operational improvements to validate</H>
-            <ul className="list-disc pl-5 text-xs">
-              {rep.coaching.validate.map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
-          </section>
-          <section className="print-avoid-break">
-            <H>Relevant solutions (possibilities)</H>
-            {sols.length === 0 ? (
-              <p className="text-xs text-muted">None selected.</p>
-            ) : (
-              <ul className="list-disc pl-5 text-xs">
-                {sols.map((x) => (
-                  <li key={x.solution.id}>
-                    <strong>{x.solution.name}</strong> <span className="text-muted">— {x.solution.costDriver}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p className="mt-1 text-[11px] text-muted">{OVERLAP_NOTE}</p>
-          </section>
-        </div>
+      </article>
 
-        <div className="mt-4 grid gap-5 text-sm md:grid-cols-2">
-          <section className="print-avoid-break">
+      <CoachingNotes recs={sols} health={health} />
+
+      <section className="no-print mt-8" aria-labelledby="rely">
+        <h2 id="rely" className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Before you rely on these numbers</h2>
+        <div className="mt-3 grid gap-5 rounded-card border border-rule bg-surface p-5 text-sm shadow-card md:grid-cols-2">
+          <section>
             <H>Key assumptions</H>
             <ul className="list-disc pl-5 text-xs">
               {keyAssumptions(s, r).map((x) => (
@@ -257,8 +193,8 @@ export default function SummaryPage() {
               ))}
             </ul>
           </section>
-          <section className="print-avoid-break">
-            <H>Requires validation</H>
+          <section>
+            <H>Still to confirm</H>
             <ul className="list-disc pl-5 text-xs">
               {validationItems(s, r).map((x) => (
                 <li key={x}>{x}</li>
@@ -266,22 +202,17 @@ export default function SummaryPage() {
             </ul>
           </section>
         </div>
-        <p className="mt-4 border-t border-rule pt-2 text-[11px] leading-snug text-muted">
-          {SOLUTIONS_DISCLAIMER} This is a consultative estimate, not a quote, proposal or guarantee of savings.
-        </p>
-      </article>
+      </section>
 
       <section className="no-print mt-8" aria-labelledby="hs-ref">
         <h2 id="hs-ref" className="sr-only">Customer proof, Hospitality Specialist reference</h2>
         <SectionHeader
           title="Customer proof · Hospitality Specialist reference"
-          description="For your own preparation. Not included in the printed summary or the copied text."
+          description="For your own preparation."
         />
         <CaseStudyGrid matches={rep.proofPoints} />
         <p className="mt-2 text-xs text-muted">{PROOF_DISCLAIMER}</p>
       </section>
-
-      <CoachingNotes recs={sols} health={health} />
 
       <div className="no-print mt-8 grid gap-6">
         <ContentCard>

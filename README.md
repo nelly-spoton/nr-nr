@@ -66,7 +66,7 @@ Vercel.
    **Sam (SpotOn Assistant Manager)** is a regular solution card on Step 2 (tagged New, listed under Best fit), using public information only (SpotOn's Nov 17, 2026 press release and help
    articles), including Weinberger's Deli as a customer example. The app carries no pricing for any solution and no internal launch material.
 2. **Solutions.** Recommendations and similar-restaurant results are built from the Step 1 answers and change when they change.
-3. **Summary.** A one-page summary to print, save as a PDF, or copy. Below it, on screen only, **Coaching notes** teach beginners why each chosen solution matters for prime cost (a primer plus, per solution: the restaurant's own numbers, why the cost moves, how the product works, what to look for, questions to ask, where it may not fit). Content lives in `config/solutionGuides.ts`; how-it-works text comes from `config/solutions.ts`.
+3. **Summary.** The restaurant's numbers and how they compare with the medians, then **Coaching notes** that teach beginners why each chosen solution matters for prime cost (a primer plus, per solution: the restaurant's own numbers, why the cost moves, how the product works, what to look for, questions to ask, where it may not fit). Content lives in `config/solutionGuides.ts`; how-it-works text comes from `config/solutions.ts`. The summary ends with "Before you rely on these numbers" (assumptions and what is still to confirm). There is no print or copy export; this is a training tool.
 
 **Industry Stats** is a separate research reference. Steps 2 and 3 ask you to finish Step 1 first. The old Savings Calculator tab was merged
 into Step 1 (`/calculator` redirects to it); Benchmarks was retired earlier (`/benchmarks` redirects to Industry Stats).
@@ -83,10 +83,9 @@ into Step 1 (`/calculator` redirects to it); Benchmarks was retired earlier (`/b
   never converted into percentage points.
 - **Recommendations:** `lib/recommend.ts` ranks one record per product into Highest relevance / Additional consideration /
   Reporting / Not recommended.
-- **Operator summary:** customer evidence is a Hospitality Specialist reference on screen only; it is excluded from the printed
-  summary and the copied text.
-- **Coaching + summary:** `lib/coaching.ts`, `lib/report.ts`; the one-page summary adds food-vs-labor contribution, two proof points,
-  items to validate and sources.
+- **Summary:** customer evidence is a Hospitality Specialist reference shown on screen.
+- **Coaching + summary:** `lib/coaching.ts`, `lib/report.ts`; the Summary adds food-vs-labor contribution, two proof points,
+  assumptions, items still to confirm and sources.
 - **Website research (future, not built):** `lib/research.ts` defines the contract and a pure adapter only. No scraper, no estimates.
 
 ### Case-study verification (optional hardening)

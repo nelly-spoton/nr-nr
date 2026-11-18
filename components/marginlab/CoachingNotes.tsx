@@ -44,12 +44,12 @@ function yourNumbers(rec: Recommendation, health: HealthModel): ReactNode {
 /** Training reference for the Summary step: why each chosen solution matters for prime cost. On screen only. */
 export function CoachingNotes({ recs, health }: { recs: Recommendation[]; health: HealthModel }) {
   return (
-    <section className="no-print mt-8" aria-labelledby="coach-notes">
+    <section className="mt-8" aria-labelledby="coach-notes">
       <h2 id="coach-notes" className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
         Coaching notes · why each solution matters for prime cost
       </h2>
       <p className="mb-3 mt-1 text-sm text-muted">
-        Training reference for you. Not included in the printed summary or the copied text. &ldquo;Why it moves&rdquo;, &ldquo;What to look for&rdquo; and the questions are general
+        Training reference. &ldquo;Why it moves&rdquo;, &ldquo;What to look for&rdquo; and the questions are general
         restaurant knowledge written for training, not SpotOn statements. &ldquo;How it works&rdquo; comes from SpotOn&apos;s public product information.
       </p>
 

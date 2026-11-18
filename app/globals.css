@@ -67,48 +67,9 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- Print: one-page operator summary ---- */
+/* Browser print: hide the app chrome. There is no dedicated print layout. */
 @media print {
-  @page {
-    margin: 0.5in;
-  }
-  html,
-  body {
-    background: #fff !important;
-    font-size: 11px;
-  }
   .no-print {
     display: none !important;
   }
-  .print-only {
-    display: block !important;
-  }
-  .print-page {
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-    max-width: none !important;
-  }
-  .print-avoid-break {
-    break-inside: avoid;
-  }
-  .print-page {
-    font-size: 9.5px;
-    line-height: 1.35;
-  }
-  .print-page h2 {
-    font-size: 18px;
-  }
-  .print-page .text-3xl {
-    font-size: 22px;
-  }
-  .print-page .mt-4 {
-    margin-top: 8px;
-  }
-  .print-page .grid {
-    gap: 10px;
-  }
-}
-.print-only {
-  display: none;
 }
